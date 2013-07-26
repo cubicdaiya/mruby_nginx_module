@@ -1,98 +1,24 @@
-## What's ngx_mruby
-ngx_mruby - to provide an alternative to mod_mruby for nginx.
+## Summary
 
-nginx modules can be implemeted by mruby scripts on nginx installed ngx_mruby.
+mruby_nginx_module is the powerful extension by mruby for nginx.
+mruby_nginx_module is based [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby).
 
-## How to use
+## Dependencies
 
-### 1. Download
+  - [Nginx](http://nginx.org/)
+  - [mruby](https://github.com/mruby/mruby)
 
-        git clone git://github.com/matsumoto-r/ngx_mruby.git
-        cd ngx_mruby
+## Build
 
+    cd ${mruby_nginx_module_src_dir}
+    git submodule update --init
+    cd mruby
+    rake ENABLE_GEMS="true" CFLAGS="-O2 -fPIC"
+    cd {$nginx_src_dir}
+    ./configure --add-module=${mruby_nginx_module_src_dir}
+    make
+    make install
 
-### 2. Build
-* configure example
+## How to
 
-        ./configure --with-ngx-src-root=nginx/nginx-1.2.2 --with-ngx-config-opt="--prefix=/usr/local/nginx"
-
-* mruby build
-
-        make build_mruby
-
-* ngx_mruby build
-
-        make
-
-
-### 3. Install
-
-        sudo make install
-
-### 4. Add setting
-
-        location /mruby {
-            mruby_content_handler /usr/local/nginx122/html/hello.mrb;
-        }
-
-### 5. Create mruby script /usr/local/nginx122/html/hello.mrb
-
-        Nginx.rputs(Time.now.to_s + "hello mruby world for nginx.")
-
-### 6. Start nginx
-
-        /usr/local/nginx122/sbin/nginx
-
-### 7. Access http://example.com/mruby (sed/example.com/mydomain/)
-
-        Sat Jul 28 18:05:51 2012 hello mruby world for nginx.
-
-Display above. Welcome mruby world for nginx!!
-
-
-
-## How to use (experiment)
-* Download
-
-        git clone git://github.com/matsumoto-r/ngx_mruby.git
-
-* Set mruby directory
-
-        mruby_root=/usr/local/src/mruby
-
-* Download nginx1.2.2stable
-
-        wget http://nginx.org/download/nginx-1.2.2.tar.gz
-
-* Build nginx with ngx_mruby
-
-        ./configure --add-module=/usr/local/src/ngx_mruby --prefix=/usr/local/nginx122
-        make
-        sudo make install
-
-* Add setting
-
-        location /mruby {
-            mrubyHandler /usr/local/nginx122/html/hello.mrb;
-        }
-
-* Create mruby script /usr/local/nginx122/html/hello.mrb
-
-        Nginx.rputs(Time.now.to_s + "hello mruby world for nginx.")
-
-* Start nginx
-
-        /usr/local/nginx122/sbin/nginx
-
-* Access http://example.com/mruby (sed/example.com/mydomain/)
-
-        Sat Jul 28 18:05:51 2012 hello mruby world for nginx.
-
-Display above. Welcome mruby world for nginx!!
-
-
-# License
-under the MIT License:
-
-* http://www.opensource.org/licenses/mit-license.php
-
+Comming soon...

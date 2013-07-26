@@ -1,8 +1,11 @@
-/*
-// ngx_http_mruby_core.c - ngx_mruby mruby module
-//
-// See Copyright Notice in ngx_http_mruby_module.c
-*/
+/**
+ *  Copyright (c) 2013 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+ *  Copyright (c) ngx_mruby developers 2012-
+ *
+ *  Use and distribution licensed under the MIT license.
+ *  See LICENSE for full text.
+ *
+ */
 
 #include "ngx_http_mruby_module.h"
 #include "ngx_http_mruby_core.h"
@@ -60,7 +63,15 @@ ngx_int_t ngx_mrb_run_conf(ngx_conf_t *cf, ngx_mrb_state_t *state, ngx_mrb_code_
 ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached,
                            ngx_http_variable_value_t *args, size_t nargs, ngx_str_t *result)
 {
-    mrb_value mrb_result;
+    ngx_uint_t i;
+    mrb_value ARGV, mrb_result;
+
+    ARGV = mrb_ary_new_capa(state->mrb, nargs);
+
+    for (i = 0; i < nargs; i++) {
+        mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)args[i].data, args[i].len));
+    }
+    mrb_define_global_const(state->mrb, "ARGV", ARGV);
 
     ngx_mrb_push_request(r);
     mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
@@ -87,6 +98,7 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
+
     return NGX_OK;
 }
 

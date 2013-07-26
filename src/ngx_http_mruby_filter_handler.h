@@ -1,8 +1,11 @@
-/*
-// ngx_http_mruby_module.h - ngx_mruby mruby module header
-//
-// See Copyright Notice in ngx_http_mruby_module.c
-*/
+/**
+ *  Copyright (c) 2013 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+ *  Copyright (c) ngx_mruby developers 2012-
+ *
+ *  Use and distribution licensed under the MIT license.
+ *  See LICENSE for full text.
+ *
+ */
 
 #include <nginx.h>
 #include <ngx_http.h>

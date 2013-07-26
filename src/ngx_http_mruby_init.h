@@ -1,8 +1,11 @@
-/*
-// ngx_http_mruby_init.h - ngx_mruby mruby init header
-//
-// See Copyright Notice in ngx_http_mruby_module.c
-*/
+/**
+ *  Copyright (c) 2013 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+ *  Copyright (c) ngx_mruby developers 2012-
+ *
+ *  Use and distribution licensed under the MIT license.
+ *  See LICENSE for full text.
+ *
+ */
 
 #ifndef NGX_HTTP_MRUBY_INIT_H
 #define NGX_HTTP_MRUBY_INIT_H

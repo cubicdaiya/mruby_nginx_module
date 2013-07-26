@@ -1,8 +1,11 @@
-/*
-// ngx_http_mruby_handler.c - ngx_mruby mruby handler functions
-//
-// See Copyright Notice in ngx_http_mruby_module.c
-*/
+/**
+ *  Copyright (c) 2013 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+ *  Copyright (c) ngx_mruby developers 2012-
+ *
+ *  Use and distribution licensed under the MIT license.
+ *  See LICENSE for full text.
+ *
+ */
 
 #include "ngx_http_mruby_handler.h"
 #include "ngx_http_mruby_state.h"
@@ -57,7 +60,7 @@ ngx_int_t ngx_http_mruby_set_handler(ngx_http_request_t *r, ngx_str_t *val,
                       filter_data->script.data, __FUNCTION__, __LINE__);
         return NGX_ERROR;
     }
- 
+
     return ngx_mrb_run_args(r, filter_data->state, filter_data->code, mlcf->cached, v, filter_data->size, val);
 }
 
