@@ -90,14 +90,12 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
     size_t len;
     ngx_uint_t key;
 
-    // get ngx_http_request_t
     r = ngx_mrb_get_request();
 
-    // ngx_str_set(&ngx_name, c_name);
     ngx_name.len  = strlen(c_name);
     ngx_name.data = (u_char *)c_name;
     len                     = ngx_name.len;
-    // check alloced memory
+
     if (len) {
         low = ngx_pnalloc(r->pool, len);
         if (low == NULL) {
@@ -106,11 +104,10 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
     } else {
         return mrb_nil_value();
     }
-    // get variable with c string from nginx
+
     key = ngx_hash_strlow(low, ngx_name.data, len);
     var = ngx_http_get_variable(r, &ngx_name, key);
 
-    // return variable value wraped with mruby string
     if (!var->not_found)
         return mrb_str_new(mrb, (char *)var->data, var->len);
     else
@@ -119,16 +116,13 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
 
 static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self)
 {
-    mrb_value name, *a;
-    int alen; mrb_value s_name;
+    mrb_value name, a;
+    int alen;
+    mrb_value s_name;
     char *c_name;
 
-    // get var symble from method_missing(sym, *args)
     mrb_get_args(mrb, "n*", &name, &a, &alen);
 
-    // name is a symble obj
-    // first init name with mrb_symbol
-    // second get mrb_string with mrb_sym2str
     s_name = mrb_sym2str(mrb, mrb_symbol(name));
     c_name = mrb_str_to_cstr(mrb, s_name);
 
@@ -153,9 +147,9 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
     if (mrb_type(o) != MRB_TT_STRING) {
         o = mrb_funcall(mrb, o, "to_s", 0, NULL);
     }
-    val       = (u_char *)RSTRING_PTR(o);
-    key.len   = strlen(k);
-    key.data  = (u_char *)k;
+    val      = (u_char *)RSTRING_PTR(o);
+    key.len  = strlen(k);
+    key.data = (u_char *)k;
     if (key.len) {
         low = ngx_pnalloc(r->pool, key.len);
         if (low == NULL) {
@@ -164,9 +158,9 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
     } else {
         return mrb_nil_value();
     }
-    hash  = ngx_hash_strlow(low, key.data, key.len);
-    cmcf  = ngx_http_get_module_main_conf(r, ngx_http_core_module);
-    v     = ngx_hash_find(&cmcf->variables_hash, hash, key.data, key.len);
+    hash = ngx_hash_strlow(low, key.data, key.len);
+    cmcf = ngx_http_get_module_main_conf(r, ngx_http_core_module);
+    v    = ngx_hash_find(&cmcf->variables_hash, hash, key.data, key.len);
     if (v) {
         if (!(v->flags & NGX_HTTP_VAR_CHANGEABLE)) {
             ngx_log_error(NGX_LOG_ERR
@@ -193,11 +187,11 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
                 );
                 return mrb_nil_value();
             }
-            vv->valid = 1;
-            vv->not_found = 0;
+            vv->valid        = 1;
+            vv->not_found    = 0;
             vv->no_cacheable = 0;
-            vv->data = val;
-            vv->len = (size_t)strlen((char *)val);
+            vv->data         = val;
+            vv->len          = (size_t)strlen((char *)val);
 
             v->set_handler(r, vv, v->data);
 
@@ -206,11 +200,11 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
         if (v->flags & NGX_HTTP_VAR_INDEXED) {
             vv = &r->variables[v->index];
 
-            vv->valid = 1;
-            vv->not_found = 0;
+            vv->valid        = 1;
+            vv->not_found    = 0;
             vv->no_cacheable = 0;
-            vv->data = val;
-            vv->len = (size_t)strlen((char *)val);
+            vv->data         = val;
+            vv->len          = (size_t)strlen((char *)val);
 
             return mrb_str_new_cstr(mrb, (char *)val);
         }

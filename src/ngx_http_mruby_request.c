@@ -229,21 +229,17 @@ static mrb_value ngx_mrb_set_request_headers_out(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-// using from ngx_http_mruby_connection.c and ngx_http_mruby_server.c
 mrb_value ngx_mrb_get_request_var(mrb_state *mrb, mrb_value self)
 {
-    const char               *iv_var_str         = "@iv_var";
-    mrb_value                iv_var;
-    struct RClass            *class_var, *ngx_class;
+    const char    *iv_var_str = "@iv_var";
+    mrb_value     iv_var;
+    struct RClass *class_var, *ngx_class;
 
     iv_var = mrb_iv_get(mrb, self, mrb_intern(mrb, iv_var_str));
     if (mrb_nil_p(iv_var)) {
-        // get class from Nginx::Var
         ngx_class = mrb_class_get(mrb, "Nginx");
         class_var = (struct RClass*)mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(ngx_class), mrb_intern_cstr(mrb, "Var")));
-        // initialize a Var instance
-        iv_var = mrb_class_new_instance(mrb, 0, 0, class_var);
-        // save Var, avoid multi initialize
+        iv_var    = mrb_class_new_instance(mrb, 0, 0, class_var);
         mrb_iv_set(mrb, self, mrb_intern(mrb, iv_var_str), iv_var);
     }
 
