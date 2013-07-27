@@ -34,7 +34,7 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
 
     ngx_name.len  = strlen(c_name);
     ngx_name.data = (u_char *)c_name;
-    len                     = ngx_name.len;
+    len           = ngx_name.len;
 
     if (len) {
         low = ngx_pnalloc(r->pool, len);
@@ -48,10 +48,11 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
     key = ngx_hash_strlow(low, ngx_name.data, len);
     var = ngx_http_get_variable(r, &ngx_name, key);
 
-    if (!var->not_found)
-        return mrb_str_new(mrb, (char *)var->data, var->len);
-    else
-        return mrb_nil_value();
+    if (var->not_found) {
+        return self;
+    }
+
+    return mrb_str_new(mrb, (char *)var->data, var->len);
 }
 
 static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self)
@@ -106,7 +107,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
             ngx_log_error(NGX_LOG_ERR
                 , r->connection->log
                 , 0
-                , "%s ERROR :%d: %s not changeable"
+                , "%s ERROR %s:%d: %s not changeable"
                 , MODULE_NAME
                 , __func__
                 , __LINE__
@@ -151,7 +152,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
         ngx_log_error(NGX_LOG_ERR
             , r->connection->log
             , 0
-            , "%s ERROR :%d: %s is not assinged"
+            , "%s ERROR %s:%d: %s is not assinged"
             , MODULE_NAME
             , __func__
             , __LINE__
@@ -163,7 +164,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
     ngx_log_error(NGX_LOG_ERR
         , r->connection->log
         , 0
-        , "%s ERROR :%d: %s is not found"
+        , "%s ERROR %s:%d: %s is not found"
         , MODULE_NAME
         , __func__
         , __LINE__
