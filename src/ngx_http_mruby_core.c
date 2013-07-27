@@ -177,6 +177,9 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     if (ngx_http_get_module_ctx(r, ngx_http_mruby_module) != NULL) {
         chain = ctx->rputs_chain;
         if (chain == NULL) {
+            if (state->mrb->exc) {
+                return NGX_ERROR;
+            }
             return NGX_OK;
         }
         if (r->headers_out.status == NGX_HTTP_OK || !(*chain->last)->buf->last_buf) {
