@@ -37,11 +37,15 @@ typedef struct ngx_mrb_rputs_chain_list_t {
     ngx_chain_t *out;
 } ngx_mrb_rputs_chain_list_t;
 
-typedef struct ngx_http_mruby_ctx_t {
-    ngx_mrb_rputs_chain_list_t *rputs_chain;
+typedef struct ngx_http_mruby_filter_ctx_t {
     u_char *body;
     u_char *last;
     size_t body_length;
+} ngx_http_mruby_filter_ctx_t;
+
+typedef struct ngx_http_mruby_ctx_t {
+    ngx_mrb_rputs_chain_list_t *rputs_chain;
+    ngx_http_mruby_filter_ctx_t filter_ctx;
 } ngx_http_mruby_ctx_t;
 
 void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class);

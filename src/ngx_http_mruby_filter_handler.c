@@ -41,7 +41,7 @@ ngx_int_t ngx_http_mruby_header_filter_handler(ngx_http_request_t *r)
     ngx_int_t rc;
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-    ctx->body_length = r->headers_out.content_length_n;
+    ctx->filter_ctx.body_length = r->headers_out.content_length_n;
  
     NGX_MRUBY_STATE_REINIT_IF_NOT_CACHED(
         mlcf->cached,
@@ -65,8 +65,8 @@ ngx_int_t ngx_http_mruby_header_filter_inline_handler(ngx_http_request_t *r)
     ngx_http_mruby_ctx_t *ctx;
     ngx_int_t rc;
 
-    ctx              = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-    ctx->body_length = r->headers_out.content_length_n;
+    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
+    ctx->filter_ctx.body_length = r->headers_out.content_length_n;
 
     rc = ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_inline_code, 1, ctx);
     if (rc == NGX_DECLINED || rc == NGX_ERROR) {
@@ -114,8 +114,8 @@ ngx_int_t ngx_http_mruby_body_filter_handler(ngx_http_request_t *r, ngx_chain_t 
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
         return NGX_ERROR;
     }
-    b->pos      = ctx->body;
-    b->last     = ctx->body + ctx->body_length;
+    b->pos      = ctx->filter_ctx.body;
+    b->last     = ctx->filter_ctx.body + ctx->filter_ctx.body_length;
     b->memory   = 1;
     b->last_buf = 1;
 
@@ -161,8 +161,8 @@ ngx_int_t ngx_http_mruby_body_filter_inline_handler(ngx_http_request_t *r, ngx_c
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
         return NGX_ERROR;
     }
-    b->pos      = ctx->body;
-    b->last     = ctx->body + ctx->body_length;
+    b->pos      = ctx->filter_ctx.body;
+    b->last     = ctx->filter_ctx.body + ctx->filter_ctx.body_length;
     b->memory   = 1;
     b->last_buf = 1;
 
@@ -270,31 +270,31 @@ static ngx_int_t ngx_http_mruby_read_body(ngx_http_request_t *r, ngx_chain_t *in
     ngx_buf_t   *b;
     ngx_chain_t *cl;
 
-    if (ctx->body == NULL) {
-        ctx->body = ngx_pcalloc(r->pool, ctx->body_length);
-        if (ctx->body == NULL) {
+    if (ctx->filter_ctx.body == NULL) {
+        ctx->filter_ctx.body = ngx_pcalloc(r->pool, ctx->filter_ctx.body_length);
+        if (ctx->filter_ctx.body == NULL) {
             return NGX_ERROR;
         }
 
-        ctx->last = ctx->body;
+        ctx->filter_ctx.last = ctx->filter_ctx.body;
     }
 
-    p = ctx->last;
+    p = ctx->filter_ctx.last;
 
     for (cl=in;cl!=NULL;cl=cl->next) {
         b       = cl->buf;
         size    = b->last - b->pos;
-        rest    = ctx->body + ctx->body_length - p;
+        rest    = ctx->filter_ctx.body + ctx->filter_ctx.body_length - p;
         size    = (rest < size) ? rest : size;
         p       = ngx_cpymem(p, b->pos, size);
         b->pos += size;
         if (b->last_buf) {
-            ctx->last = p;
+            ctx->filter_ctx.last = p;
             return NGX_OK;
         }
     }
 
-    ctx->last = p;
+    ctx->filter_ctx.last = p;
     r->connection->buffered |= 0x08;
 
     return NGX_AGAIN;

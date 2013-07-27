@@ -108,7 +108,7 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
 
     ARGV = mrb_ary_new_capa(state->mrb, 1);
 
-    mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)ctx->body, ctx->body_length));
+    mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)ctx->filter_ctx.body, ctx->filter_ctx.body_length));
     mrb_define_global_const(state->mrb, "ARGV", ARGV);
 
     ngx_mrb_push_request(r);
@@ -130,8 +130,8 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
         mrb_result = mrb_funcall(state->mrb, mrb_result, "to_s", 0, NULL);
     }
 
-    ctx->body        = (u_char *)RSTRING_PTR(mrb_result);
-    ctx->body_length = ngx_strlen(ctx->body);
+    ctx->filter_ctx.body        = (u_char *)RSTRING_PTR(mrb_result);
+    ctx->filter_ctx.body_length = ngx_strlen(ctx->filter_ctx.body);
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     if (!cached) {
