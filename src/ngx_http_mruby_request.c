@@ -229,23 +229,6 @@ static mrb_value ngx_mrb_set_request_headers_out(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-mrb_value ngx_mrb_get_request_var(mrb_state *mrb, mrb_value self)
-{
-    const char    *iv_var_str = "@iv_var";
-    mrb_value     iv_var;
-    struct RClass *class_var, *ngx_class;
-
-    iv_var = mrb_iv_get(mrb, self, mrb_intern(mrb, iv_var_str));
-    if (mrb_nil_p(iv_var)) {
-        ngx_class = mrb_class_get(mrb, "Nginx");
-        class_var = (struct RClass*)mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(ngx_class), mrb_intern_cstr(mrb, "Var")));
-        iv_var    = mrb_class_new_instance(mrb, 0, 0, class_var);
-        mrb_iv_set(mrb, self, mrb_intern(mrb, iv_var_str), iv_var);
-    }
-
-    return iv_var;
-}
-
 static mrb_value ngx_mrb_get_request_var_hostname(mrb_state *mrb, mrb_value self)
 {
     mrb_value v = ngx_mrb_get_request_var(mrb, self);
@@ -262,6 +245,23 @@ static mrb_value ngx_mrb_get_request_var_user(mrb_state *mrb, mrb_value self)
 {
     mrb_value v = ngx_mrb_get_request_var(mrb, self);
     return mrb_funcall(mrb, v, "remote_user", 0, NULL);
+}
+
+mrb_value ngx_mrb_get_request_var(mrb_state *mrb, mrb_value self)
+{
+    const char    *iv_var_str = "@iv_var";
+    mrb_value     iv_var;
+    struct RClass *class_var, *ngx_class;
+
+    iv_var = mrb_iv_get(mrb, self, mrb_intern(mrb, iv_var_str));
+    if (mrb_nil_p(iv_var)) {
+        ngx_class = mrb_class_get(mrb, "Nginx");
+        class_var = (struct RClass*)mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(ngx_class), mrb_intern_cstr(mrb, "Var")));
+        iv_var    = mrb_class_new_instance(mrb, 0, 0, class_var);
+        mrb_iv_set(mrb, self, mrb_intern(mrb, iv_var_str), iv_var);
+    }
+
+    return iv_var;
 }
 
 void ngx_mrb_request_class_init(mrb_state *mrb, struct RClass *class)
