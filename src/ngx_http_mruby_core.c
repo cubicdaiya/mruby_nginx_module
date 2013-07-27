@@ -438,21 +438,19 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
     ngx_http_request_t *r = ngx_mrb_get_request();
     argc = mrb_get_args(mrb, "o|oo", &uri, &code);
 
-    // get status code from args
     if (argc == 2) {
         rc = mrb_fixnum(code);
     } else {
         rc = NGX_HTTP_MOVED_TEMPORARILY;
     }
 
-    // get redirect uri from args
     if (mrb_type(uri) != MRB_TT_STRING) {
         uri = mrb_funcall(mrb, uri, "to_s", 0, NULL);
     }
 
     // save location uri to ns
-    ns.data     = (u_char *)RSTRING_PTR(uri);
-    ns.len      = ngx_strlen(ns.data);
+    ns.data = (u_char *)RSTRING_PTR(uri);
+    ns.len  = ngx_strlen(ns.data);
     if (ns.len == 0) {
         return mrb_nil_value();
     }
@@ -483,7 +481,6 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
             chain->last = &(*chain->last)->next;
         }
 
-        // allocate space for body
         b = ngx_calloc_buf(r->pool);
         (*chain->last)->buf = b;
         (*chain->last)->next = NULL;
@@ -503,16 +500,16 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
         }
 
         // build redirect location
-        location = ngx_list_push(&r->headers_out.headers);
-        location->hash = 1;
+        location              = ngx_list_push(&r->headers_out.headers);
+        location->hash        = 1;
         ngx_str_set(&location->key, "Location");
-        location->value = ns;
+        location->value       = ns;
         location->lowcase_key = ngx_pnalloc(r->pool, location->value.len);
         ngx_strlow(location->lowcase_key, location->value.data, location->value.len);
 
         // set location and response code for hreaders
         r->headers_out.location = location;
-        r->headers_out.status = rc;
+        r->headers_out.status   = rc;
 
         ngx_http_send_header(r);
         ngx_http_output_filter(r, chain->out);
