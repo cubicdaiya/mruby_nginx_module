@@ -141,8 +141,9 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
 
 ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
 {
-    ngx_http_mruby_ctx_t *ctx;
+    ngx_http_mruby_ctx_t       *ctx;
     ngx_mrb_rputs_chain_list_t *chain;
+
     if (state == NGX_CONF_UNSET_PTR || code == NGX_CONF_UNSET_PTR) {
         return NGX_DECLINED;
     }
@@ -273,11 +274,15 @@ static void ngx_mrb_raise_file_conf_error(mrb_state *mrb, mrb_value obj, ngx_con
 static mrb_value ngx_mrb_send_header(mrb_state *mrb, mrb_value self)
 {
     ngx_mrb_rputs_chain_list_t *chain;
-    ngx_http_mruby_ctx_t *ctx;
+    ngx_http_mruby_ctx_t       *ctx;
+    ngx_http_request_t         *r;
+    mrb_int                     status;
 
-    ngx_http_request_t *r = ngx_mrb_get_request();
-    mrb_int status = NGX_HTTP_OK;
+    r      = ngx_mrb_get_request();
+    status = NGX_HTTP_OK;
+
     mrb_get_args(mrb, "i", &status);
+
     r->headers_out.status = status;
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
@@ -303,14 +308,16 @@ static mrb_value ngx_mrb_send_header(mrb_state *mrb, mrb_value self)
 
 static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
 {
-    mrb_value argv;
-    ngx_buf_t *b;
+    mrb_value                   argv;
+    ngx_buf_t                  *b;
     ngx_mrb_rputs_chain_list_t *chain;
-    u_char *str;
-    ngx_str_t ns;
+    u_char                     *str;
+    ngx_str_t                   ns;
+    ngx_http_request_t         *r;
+    ngx_http_mruby_ctx_t       *ctx;
 
-    ngx_http_request_t *r = ngx_mrb_get_request();
-    ngx_http_mruby_ctx_t *ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
+    r   = ngx_mrb_get_request();
+    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
     mrb_get_args(mrb, "o", &argv);
 
@@ -356,11 +363,13 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
 
 static mrb_value ngx_mrb_errlogger(mrb_state *mrb, mrb_value self)
 {   
-    mrb_value *argv;
-    mrb_value msg;
-    mrb_int argc;
-    mrb_int log_level;
-    ngx_http_request_t *r = ngx_mrb_get_request();
+    mrb_value          *argv;
+    mrb_value           msg;
+    mrb_int             argc;
+    mrb_int             log_level;
+    ngx_http_request_t *r;
+
+    r = ngx_mrb_get_request();
 
     mrb_get_args(mrb, "*", &argv, &argc);
     if (argc != 2) {
@@ -425,17 +434,18 @@ static mrb_value ngx_mrb_server_name(mrb_state *mrb, mrb_value self)
 // => internal redirection in nginx
 static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
 {
-    int                     argc;
-    u_char                  *str;
-    ngx_buf_t               *b;
-    ngx_int_t               rc;
-    mrb_value               uri, code;
-    ngx_str_t               ns;
-    ngx_http_mruby_ctx_t         *ctx;
-    ngx_table_elt_t         *location;
-    ngx_mrb_rputs_chain_list_t      *chain;
+    int                         argc;
+    u_char                     *str;
+    ngx_buf_t                  *b;
+    ngx_int_t                   rc;
+    mrb_value                   uri, code;
+    ngx_str_t                   ns;
+    ngx_http_mruby_ctx_t       *ctx;
+    ngx_table_elt_t            *location;
+    ngx_mrb_rputs_chain_list_t *chain;
+    ngx_http_request_t         *r;
 
-    ngx_http_request_t *r = ngx_mrb_get_request();
+    r = ngx_mrb_get_request();
     argc = mrb_get_args(mrb, "o|oo", &uri, &code);
 
     if (argc == 2) {
