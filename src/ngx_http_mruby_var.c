@@ -49,7 +49,7 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
     var = ngx_http_get_variable(r, &ngx_name, key);
 
     if (var->not_found) {
-        return self;
+        return mrb_nil_value();
     }
 
     return mrb_str_new(mrb, (char *)var->data, var->len);
