@@ -7,15 +7,13 @@
  *
  */
 
-#ifndef NGX_HTTP_MRUBY_CONNECTION_H
-#define NGX_HTTP_MRUBY_CONNECTION_H
-
-#include <ngx_http.h>
+#ifndef NGX_HTTP_MRUBY_CONTEXT_H
+#define NGX_HTTP_MRUBY_CONTEXT_H
 
 #include <mruby.h>
 #include <mruby/hash.h>
 #include <mruby/variable.h>
 
-void ngx_mrb_conn_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_mrb_context_class_init(mrb_state *mrb, struct RClass *calss);
 
-#endif // NGX_HTTP_MRUBY_CONNECTION_H
+#endif // NGX_HTTP_MRUBY_CONTEXT_H

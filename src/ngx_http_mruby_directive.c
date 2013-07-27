@@ -392,7 +392,7 @@ static char *ngx_http_mruby_set_inner(ngx_conf_t *cf, ngx_command_t *cmd, void *
         return NGX_CONF_ERROR;
     }
 
-    filter_data->state = mmcf->state;
+    filter_data->state  = mmcf->state;
     filter_data->size   = filter.size;
     filter_data->script = value[2];
     if (type == NGX_MRB_CODE_TYPE_FILE) {
