@@ -204,7 +204,7 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
             if (state->mrb->exc) {
                 return NGX_HTTP_INTERNAL_SERVER_ERROR;
             }
-            return NGX_OK;
+            return NGX_DECLINED;
         }
         if (r->headers_out.status == NGX_HTTP_OK || !(*chain->last)->buf->last_buf) {
             r->headers_out.status = NGX_HTTP_OK;
