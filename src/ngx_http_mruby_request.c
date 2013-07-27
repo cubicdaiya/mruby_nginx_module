@@ -119,11 +119,11 @@ NGX_MRUBY_DEFINE_METHOD_NGX_SET_REQUEST_MEMBER_STR(content_type, r->headers_out.
 
 static mrb_value ngx_mrb_get_request_header(mrb_state *mrb, ngx_list_t *headers)
 {
-    mrb_value           mrb_key;
-    u_char             *key;
-    ngx_uint_t          i;
-    ngx_list_part_t    *part;
-    ngx_table_elt_t    *header;
+    mrb_value        mrb_key;
+    u_char          *key;
+    ngx_uint_t       i;
+    ngx_list_part_t *part;
+    ngx_table_elt_t *header;
 
     mrb_get_args(mrb, "o", &mrb_key);
 
