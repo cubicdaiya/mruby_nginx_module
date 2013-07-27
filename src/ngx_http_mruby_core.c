@@ -179,7 +179,7 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
         chain = ctx->rputs_chain;
         if (chain == NULL) {
             if (state->mrb->exc) {
-                return NGX_ERROR;
+                return NGX_HTTP_INTERNAL_SERVER_ERROR;
             }
             return NGX_OK;
         }
