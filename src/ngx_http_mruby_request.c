@@ -37,7 +37,7 @@ static mrb_value ngx_mrb_set_##method_suffix(mrb_state *mrb, mrb_value self)    
     }                                                                   \
     str = (u_char *)RSTRING_PTR(arg);                                   \
     r   = ngx_mrb_get_request();                                        \
-    member.len = ngx_strlen(str) + 1;                                   \
+    member.len = ngx_strlen(str);                                       \
     member.data = (u_char *)str;                                        \
     return self;                                                        \
 }
