@@ -109,7 +109,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
                 , 0
                 , "%s ERROR %s:%d: %s not changeable"
                 , MODULE_NAME
-                , __func__
+                , __FUNCTION__
                 , __LINE__
                 , key.data
             );
@@ -123,7 +123,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
                     , 0
                     , "%s ERROR :%d: memory allocate failed"
                     , MODULE_NAME
-                    , __func__
+                    , __FUNCTION__
                     , __LINE__
                 );
                 return mrb_nil_value();
@@ -154,7 +154,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
             , 0
             , "%s ERROR %s:%d: %s is not assinged"
             , MODULE_NAME
-            , __func__
+            , __FUNCTION__
             , __LINE__
             , key.data
         );
@@ -166,7 +166,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
         , 0
         , "%s ERROR %s:%d: %s is not found"
         , MODULE_NAME
-        , __func__
+        , __FUNCTION__
         , __LINE__
         , key.data
     );

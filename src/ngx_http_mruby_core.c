@@ -369,7 +369,7 @@ static mrb_value ngx_mrb_errlogger(mrb_state *mrb, mrb_value self)
             , 0
             , "%s ERROR %s: argument is not 2"
             , MODULE_NAME
-            , __func__
+            , __FUNCTION__
         );
         return self;
     }
@@ -379,7 +379,7 @@ static mrb_value ngx_mrb_errlogger(mrb_state *mrb, mrb_value self)
             , 0
             , "%s ERROR %s: argv[0] is not integer"
             , MODULE_NAME
-            , __func__
+            , __FUNCTION__
         );
         return self;
     }
@@ -390,7 +390,7 @@ static mrb_value ngx_mrb_errlogger(mrb_state *mrb, mrb_value self)
             , 0
             , "%s ERROR %s: log level is not positive number"
             , MODULE_NAME
-            , __func__
+            , __FUNCTION__
         );
         return self;
     }
