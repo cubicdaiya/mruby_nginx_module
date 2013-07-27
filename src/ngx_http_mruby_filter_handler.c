@@ -50,7 +50,7 @@ ngx_int_t ngx_http_mruby_header_filter_handler(ngx_http_request_t *r)
         ngx_http_mruby_state_reinit_from_file
     );
 
-    rc = ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_code, mlcf->cached, ctx);
+    rc = ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_code, mlcf->cached);
     if (rc == NGX_DECLINED || rc == NGX_ERROR) {
         return NGX_ERROR;
     }
@@ -68,7 +68,7 @@ ngx_int_t ngx_http_mruby_header_filter_inline_handler(ngx_http_request_t *r)
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     ctx->filter_ctx.body_length = r->headers_out.content_length_n;
 
-    rc = ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_inline_code, 1, ctx);
+    rc = ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_inline_code, 1);
     if (rc == NGX_DECLINED || rc == NGX_ERROR) {
         return NGX_ERROR;
     }
@@ -104,7 +104,7 @@ ngx_int_t ngx_http_mruby_body_filter_handler(ngx_http_request_t *r, ngx_chain_t 
         ngx_http_mruby_state_reinit_from_file
     );
 
-    rc = ngx_mrb_run_body_filter(r, mmcf->state, mlcf->body_filter_code, mlcf->cached, ctx);
+    rc = ngx_mrb_run_body_filter(r, mmcf->state, mlcf->body_filter_code, mlcf->cached);
     if (rc == NGX_ERROR) {
         return NGX_ERROR;
     }
@@ -151,7 +151,7 @@ ngx_int_t ngx_http_mruby_body_filter_inline_handler(ngx_http_request_t *r, ngx_c
 
     r->connection->buffered &= ~0x08;
 
-    rc = ngx_mrb_run_body_filter(r, mmcf->state, mlcf->body_filter_inline_code, 1, ctx);
+    rc = ngx_mrb_run_body_filter(r, mmcf->state, mlcf->body_filter_inline_code, 1);
     if (rc == NGX_ERROR) {
         return NGX_ERROR;
     }
@@ -195,17 +195,13 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
     }
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-    if (ctx) {
-        ngx_http_set_ctx(r, NULL, ngx_http_mruby_module);
-        return ngx_http_next_header_filter(r);
-    }
 
-    if ((ctx = ngx_pcalloc(r->pool, sizeof(*ctx))) == NULL) {
+    if (ctx == NULL && (ctx = ngx_pcalloc(r->pool, sizeof(*ctx))) == NULL) {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
         return NGX_ERROR;
     }
 
-    ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);
+    ctx->phase = NGX_HTTP_MRUBY_PHASE_HEADER_FILTER;
 
     cln = ngx_pool_cleanup_add(r->pool, 0);
     if (cln == NULL) {
@@ -220,6 +216,11 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
         return NGX_ERROR;
     }
 
+    ngx_http_mruby_main_conf_t *mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
+    if (!mmcf->enabled_body_filter) {
+        return ngx_http_next_header_filter(r);
+    }
+
     return NGX_OK;
 }
 
@@ -229,7 +230,7 @@ static ngx_int_t ngx_http_mruby_body_filter(ngx_http_request_t *r, ngx_chain_t *
     ngx_http_mruby_ctx_t     *ctx;
     ngx_pool_cleanup_t *cln;
     ngx_int_t rc;
-  
+
     mlcf = ngx_http_get_module_loc_conf(r, ngx_http_mruby_module);
 
     if (mlcf->body_filter_handler == NULL) {
@@ -240,6 +241,8 @@ static ngx_int_t ngx_http_mruby_body_filter(ngx_http_request_t *r, ngx_chain_t *
     if (ctx == NULL) {
         return ngx_http_next_body_filter(r, in);
     }
+
+    ctx->phase = NGX_HTTP_MRUBY_PHASE_BODY_FILTER;
 
     cln = ngx_pool_cleanup_add(r->pool, 0);
     if (cln == NULL) {

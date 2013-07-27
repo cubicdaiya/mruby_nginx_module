@@ -102,10 +102,12 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached, ngx_http_mruby_ctx_t *ctx)
+ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
 {
+    ngx_http_mruby_ctx_t *ctx;
     mrb_value ARGV, mrb_result;
 
+    ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     ARGV = mrb_ary_new_capa(state->mrb, 1);
 
     mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)ctx->filter_ctx.body, ctx->filter_ctx.body_length));
@@ -140,7 +142,7 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached, ngx_http_mruby_ctx_t *ctx)
+ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
 {
     if (!cached) {
         state->ai = mrb_gc_arena_save(state->mrb);
@@ -174,23 +176,17 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     if (state == NGX_CONF_UNSET_PTR || code == NGX_CONF_UNSET_PTR) {
         return NGX_DECLINED;
     }
+
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-    if (ctx == NULL && (ctx = ngx_pcalloc(r->pool, sizeof(*ctx))) == NULL) {
-        ngx_log_error(NGX_LOG_ERR
-            , r->connection->log
-            , 0
-            , "failed to allocate memory from r->pool %s:%d"
-            , __FUNCTION__
-            , __LINE__
-        );
-        return NGX_ERROR;
-    }
-    ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);
+
     ngx_mrb_push_request(r);
+
     if (!cached) {
         state->ai = mrb_gc_arena_save(state->mrb);
     }
+
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+
     if (state->mrb->exc) {
         if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
             ngx_mrb_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
@@ -215,7 +211,6 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
             (*chain->last)->buf->last_buf = 1;
             ngx_http_send_header(r);
             ngx_http_output_filter(r, chain->out);
-            ngx_http_set_ctx(r, NULL, ngx_http_mruby_module);
             return NGX_OK;
         } else {
             return r->headers_out.status;
@@ -312,21 +307,13 @@ static mrb_value ngx_mrb_send_header(mrb_state *mrb, mrb_value self)
 
     r->headers_out.status = status;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-    if (ctx == NULL) {
-        ngx_log_error(NGX_LOG_ERR
-            , r->connection->log
-            , 0
-            , "get mruby context failed."
-        );
-    }
+    ctx   = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     chain = ctx->rputs_chain;
     (*chain->last)->buf->last_buf = 1;
 
     if (r->headers_out.status == NGX_HTTP_OK) {
         ngx_http_send_header(r);
         ngx_http_output_filter(r, chain->out);
-        ngx_http_set_ctx(r, NULL, ngx_http_mruby_module);
     }
 
     return self;
@@ -377,7 +364,6 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
     (*chain->last)->buf->last   = str + ns.len;
     (*chain->last)->buf->memory = 1;
     ctx->rputs_chain = chain;
-    ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);
 
     if (r->headers_out.content_length_n == -1) {
         r->headers_out.content_length_n += ns.len + 1;
@@ -500,14 +486,6 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
         || ngx_strncmp(ns.data, "https://", sizeof("https://") - 1) == 0 
         || ngx_strncmp(ns.data, "$scheme", sizeof("$scheme") - 1) == 0) {    
         ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-        if (ctx == NULL) {
-            ngx_log_error(NGX_LOG_ERR
-                , r->connection->log
-                , 0
-                , "get mruby context failed."
-            );
-        }
-
         if (ctx->rputs_chain == NULL) {
             chain       = ngx_pcalloc(r->pool, sizeof(ngx_mrb_rputs_chain_list_t));
             chain->out  = ngx_alloc_chain_link(r->pool);
@@ -528,7 +506,6 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
         (*chain->last)->buf->last   = str+ns.len;
         (*chain->last)->buf->memory = 1;
         ctx->rputs_chain = chain;
-        ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);
 
         if (r->headers_out.content_length_n == -1) {
             r->headers_out.content_length_n += ns.len + 1;

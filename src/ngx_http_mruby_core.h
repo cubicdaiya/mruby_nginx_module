@@ -43,9 +43,23 @@ typedef struct ngx_http_mruby_filter_ctx_t {
     size_t body_length;
 } ngx_http_mruby_filter_ctx_t;
 
+typedef enum ngx_http_mruby_phase_t {
+    NGX_HTTP_MRUBY_PHASE_SET,
+    NGX_HTTP_MRUBY_PHASE_POST_READ,
+    NGX_HTTP_MRUBY_PHASE_SERVER_REWRITE,
+    NGX_HTTP_MRUBY_PHASE_REWRITE,
+    NGX_HTTP_MRUBY_PHASE_ACCESS,
+    NGX_HTTP_MRUBY_PHASE_CONTENT,
+    NGX_HTTP_MRUBY_PHASE_LOG,
+    NGX_HTTP_MRUBY_PHASE_HEADER_FILTER,
+    NGX_HTTP_MRUBY_PHASE_BODY_FILTER,
+    NGX_HTTP_MRUBY_PHASE_MAX
+} ngx_http_mruby_phase_t;
+
 typedef struct ngx_http_mruby_ctx_t {
     ngx_mrb_rputs_chain_list_t *rputs_chain;
     ngx_http_mruby_filter_ctx_t filter_ctx;
+    ngx_http_mruby_phase_t phase;
 } ngx_http_mruby_ctx_t;
 
 void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class);
@@ -53,7 +67,7 @@ ngx_int_t ngx_mrb_run_conf(ngx_conf_t *cf, ngx_mrb_state_t *state, ngx_mrb_code_
 ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached);
 ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, 
                            ngx_flag_t cached, ngx_http_variable_value_t *args, size_t nargs, ngx_str_t *result);
-ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached, ngx_http_mruby_ctx_t *ctx);
-ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached, ngx_http_mruby_ctx_t *ctx);
+ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached);
+ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached);
 
 #endif // NGX_HTTP_MRUBY_CORE_H
