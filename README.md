@@ -20,7 +20,7 @@ mruby_nginx_module is based [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby
     make
     make install
 
-If you want to use 'mruby_set' and 'mruby_set_code', 
+If you want to use **mruby_set** and **mruby_set_code**, 
 you may embed [ngx_devel_kit](https://github.com/simpl/ngx_devel_kit) when executing configure.
 
 ```zsh
@@ -29,4 +29,4 @@ you may embed [ngx_devel_kit](https://github.com/simpl/ngx_devel_kit) when execu
 
 ## How to
 
-Comming soon...
+Please See [Wiki](https://github.com/cubicdaiya/mruby_nginx_module/wiki).
