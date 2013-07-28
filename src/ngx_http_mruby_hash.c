@@ -23,12 +23,10 @@
 #include <openssl/hmac.h>
 #endif
 
+#include <ngx_md5.h>
+
 #if NGX_HAVE_SHA1
 #include <ngx_sha1.h>
-#endif
-
-#if NGX_HAVE_MD5
-#include <ngx_md5.h>
 #endif
 
 #ifndef SHA_DIGEST_LENGTH
@@ -37,8 +35,12 @@
 
 
 static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self);
+#if (NGX_HAVE_SHA1)
 static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self);
+#endif
+#if (NGX_OPENSSL)
 static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self);
+#endif
 static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self);
 
 static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self)
@@ -64,6 +66,7 @@ static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)md5_buf, sizeof(md5_buf));
 }
 
+#if (NGX_HAVE_SHA1)
 static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self)
 {
     mrb_value  mrb_src;
@@ -86,7 +89,9 @@ static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self)
 
     return mrb_str_new(mrb, (char *)sha_buf, sizeof(sha_buf));
 }
+#endif
 
+#if (NGX_OPENSSL)
 static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_key, mrb_val;
@@ -115,6 +120,7 @@ static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self)
 
     return mrb_str_new(mrb, (char *)md, md_len);
 }
+#endif
 
 static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self)
 {
@@ -157,7 +163,11 @@ void ngx_mrb_hash_class_init(mrb_state *mrb, struct RClass *class)
     class_hash = mrb_define_class_under(mrb, class, "Hash", mrb->object_class);
 
     mrb_define_class_method(mrb, class_hash, "md5",       ngx_mrb_md5,       ARGS_ANY());
+#if NGX_HAVE_SHA1
     mrb_define_class_method(mrb, class_hash, "sha1",      ngx_mrb_sha1,      ARGS_ANY());
+#endif
+#if (NGX_OPENSSL)
     mrb_define_class_method(mrb, class_hash, "hmac_sha1", ngx_mrb_hmac_sha1, ARGS_ANY());
+#endif
     mrb_define_class_method(mrb, class_hash, "hexdigest", ngx_mrb_hexdigest, ARGS_ANY());
 }
