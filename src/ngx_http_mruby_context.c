@@ -31,7 +31,7 @@ static mrb_value ngx_mrb_get_request_context_entry(mrb_state *mrb, mrb_value sel
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
     mrb_get_args(mrb, "o", &key);
-
+ 
     return mrb_hash_get(mrb, ctx->table, key);
 }
 
