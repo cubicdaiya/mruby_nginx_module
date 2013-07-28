@@ -12,7 +12,7 @@
 #include "ngx_http_mruby_module.h"
 
 #if defined(NDK) && NDK
-static char *ngx_http_mruby_set_inner(ngx_conf_t *cf, ngx_command_t *cmd, void *conf, code_type_t type);
+static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, void *conf, code_type_t type);
 #endif
 
 char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
@@ -372,7 +372,7 @@ char *ngx_http_mruby_body_filter_inline(ngx_conf_t *cf, ngx_command_t *cmd, void
 
 #if defined(NDK) && NDK
 
-static char *ngx_http_mruby_set_inner(ngx_conf_t *cf, ngx_command_t *cmd, void *conf, code_type_t type)
+static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, void *conf, code_type_t type)
 {
     ngx_str_t  target;
     ngx_str_t *value;
@@ -418,11 +418,11 @@ static char *ngx_http_mruby_set_inner(ngx_conf_t *cf, ngx_command_t *cmd, void *
 
 char *ngx_http_mruby_set(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-    return ngx_http_mruby_set_inner(cf, cmd, conf, NGX_MRB_CODE_TYPE_FILE);
+    return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_MRB_CODE_TYPE_FILE);
 }
 
 char *ngx_http_mruby_set_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-    return ngx_http_mruby_set_inner(cf, cmd, conf, NGX_MRB_CODE_TYPE_STRING);
+    return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_MRB_CODE_TYPE_STRING);
 }
 #endif
