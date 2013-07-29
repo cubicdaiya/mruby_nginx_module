@@ -202,7 +202,12 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
+
     if (ngx_http_get_module_ctx(r, ngx_http_mruby_module) != NULL) {
+        if (ctx->exited) {
+            mrb_gc_arena_restore(state->mrb, state->ai);
+            return ctx->exit_code;
+        }
         chain = ctx->rputs_chain;
         if (chain == NULL) {
             if (state->mrb->exc) {
@@ -457,18 +462,16 @@ static mrb_value ngx_mrb_server_name(mrb_state *mrb, mrb_value self)
 // => internal redirection in nginx
 static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
 {
-    int                         argc;
-    u_char                     *str;
-    ngx_buf_t                  *b;
-    ngx_int_t                   rc;
-    mrb_value                   uri, code;
-    ngx_str_t                   ns;
-    ngx_http_mruby_ctx_t       *ctx;
-    ngx_table_elt_t            *location;
-    ngx_mrb_rputs_chain_list_t *chain;
-    ngx_http_request_t         *r;
+    int                   argc;
+    u_char               *str;
+    ngx_int_t             rc;
+    mrb_value             uri, code;
+    ngx_str_t             ns;
+    ngx_http_request_t   *r;
+    ngx_http_mruby_ctx_t *ctx;
 
-    r = ngx_mrb_get_request();
+    r    = ngx_mrb_get_request();
+    ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     argc = mrb_get_args(mrb, "o|oo", &uri, &code);
 
     if (argc == 2) {
@@ -492,23 +495,9 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
     // return 3xx for redirect
     // else generate a internal redirection and response to raw request
     // request.path is not changed
-    if (ngx_strncmp(ns.data, "http://", sizeof("http://") - 1) == 0 
+    if (ngx_strncmp(ns.data,    "http://",  sizeof("http://") - 1) == 0 
         || ngx_strncmp(ns.data, "https://", sizeof("https://") - 1) == 0 
-        || ngx_strncmp(ns.data, "$scheme", sizeof("$scheme") - 1) == 0) {    
-        ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-        if (ctx->rputs_chain == NULL) {
-            chain       = ngx_pcalloc(r->pool, sizeof(ngx_mrb_rputs_chain_list_t));
-            chain->out  = ngx_alloc_chain_link(r->pool);
-            chain->last = &chain->out;
-        } else {
-            chain = ctx->rputs_chain;
-            (*chain->last)->next = ngx_alloc_chain_link(r->pool);
-            chain->last = &(*chain->last)->next;
-        }
-
-        b = ngx_calloc_buf(r->pool);
-        (*chain->last)->buf = b;
-        (*chain->last)->next = NULL;
+        || ngx_strncmp(ns.data, "$scheme",  sizeof("$scheme") - 1) == 0) {    
 
         if ((str = ngx_pnalloc(r->pool, ns.len + 1)) == NULL) {
             return self;
@@ -516,31 +505,23 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
         ngx_memcpy(str, ns.data, ns.len);
         str[ns.len] = '\0';
 
-        (*chain->last)->buf->pos    = str;
-        (*chain->last)->buf->last   = str + ns.len;
-        (*chain->last)->buf->memory = 1;
-        ctx->rputs_chain = chain;
-
-        if (r->headers_out.content_length_n == -1) {
-            r->headers_out.content_length_n += ns.len + 1;
-        } else {
-            r->headers_out.content_length_n += ns.len;
+        // build redirect location
+        r->headers_out.location = ngx_list_push(&r->headers_out.headers);
+        if (r->headers_out.location == NULL) {
+            return self;
         }
 
-        // build redirect location
-        location              = ngx_list_push(&r->headers_out.headers);
-        location->hash        = 1;
-        ngx_str_set(&location->key, "Location");
-        location->value       = ns;
-        location->lowcase_key = ngx_pnalloc(r->pool, location->value.len);
-        ngx_strlow(location->lowcase_key, location->value.data, location->value.len);
+        r->headers_out.location->hash =
+                ngx_hash(ngx_hash(ngx_hash(ngx_hash(ngx_hash(ngx_hash(
+                         ngx_hash('l', 'o'), 'c'), 'a'), 't'), 'i'), 'o'), 'n');
 
-        // set location and response code for hreaders
-        r->headers_out.location = location;
-        r->headers_out.status   = rc;
+        r->headers_out.location->value.data = ns.data;
+        r->headers_out.location->value.len  = ns.len;
+        ngx_str_set(&r->headers_out.location->key, "Location");
+        r->headers_out.status = rc;
 
-        ngx_http_send_header(r);
-        ngx_http_output_filter(r, chain->out);
+        ctx->exited    = 1;
+        ctx->exit_code = rc;
     } else {
         ngx_http_internal_redirect(r, &ns, &r->args);
     }

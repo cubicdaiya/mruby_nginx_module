@@ -207,7 +207,8 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
             return NGX_ERROR;
         }
-        ctx->table = mrb_hash_new(mmcf->state->mrb);
+        ctx->table  = mrb_hash_new(mmcf->state->mrb);
+        ctx->exited = 0;
     }
 
     ctx->phase = NGX_HTTP_MRUBY_PHASE_HEADER_FILTER;

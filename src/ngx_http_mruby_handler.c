@@ -36,7 +36,8 @@ ngx_int_t ngx_http_mruby_##handler_name##_handler(ngx_http_request_t *r)        
             );                                                                                  \
             return NGX_ERROR;                                                                   \
         }                                                                                       \
-        ctx->table = mrb_hash_new(mmcf->state->mrb);                                            \
+        ctx->table  = mrb_hash_new(mmcf->state->mrb);                                           \
+        ctx->exited = 0;                                                                        \
     }                                                                                           \
     ctx->phase = context_phase;                                                                 \
     ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);                                            \
@@ -59,7 +60,8 @@ ngx_int_t ngx_http_mruby_##handler_name##_inline_handler(ngx_http_request_t *r) 
             );                                                                                  \
             return NGX_ERROR;                                                                   \
         }                                                                                       \
-        ctx->table = mrb_hash_new(mmcf->state->mrb);                                            \
+        ctx->table  = mrb_hash_new(mmcf->state->mrb);                                            \
+        ctx->exited = 0;                                                                        \
     }                                                                                           \
     ctx->phase = context_phase;                                                                 \
     ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);                                            \

@@ -61,6 +61,8 @@ typedef struct ngx_http_mruby_ctx_t {
     ngx_http_mruby_filter_ctx_t filter_ctx;
     ngx_http_mruby_phase_t phase;
     mrb_value table;
+    ngx_int_t exited;
+    ngx_int_t exit_code;
 } ngx_http_mruby_ctx_t;
 
 void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class);
