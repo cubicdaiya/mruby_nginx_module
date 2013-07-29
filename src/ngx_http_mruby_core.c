@@ -346,8 +346,8 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
         argv = mrb_funcall(mrb, argv, "to_s", 0, NULL);
     }
 
-    ns.data     = (u_char *)RSTRING_PTR(argv);
-    ns.len      = ngx_strlen(ns.data);
+    ns.data = (u_char *)RSTRING_PTR(argv);
+    ns.len  = ngx_strlen(ns.data);
     if (ns.len == 0) {
         return self;
     }
