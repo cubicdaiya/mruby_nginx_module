@@ -365,7 +365,10 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
     (*chain->last)->buf = b;
     (*chain->last)->next = NULL;
 
-    str         = ngx_pstrdup(r->pool, &ns);
+    if ((str = ngx_pnalloc(r->pool, ns.len + 1)) == NULL) {
+        return self;
+    }
+    ngx_memcpy(str, ns.data, ns.len);
     str[ns.len] = '\0';
     (*chain->last)->buf->pos    = str;
     (*chain->last)->buf->last   = str + ns.len;
@@ -507,10 +510,14 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
         (*chain->last)->buf = b;
         (*chain->last)->next = NULL;
 
-        str         = ngx_pstrdup(r->pool, &ns);
+        if ((str = ngx_pnalloc(r->pool, ns.len + 1)) == NULL) {
+            return self;
+        }
+        ngx_memcpy(str, ns.data, ns.len);
         str[ns.len] = '\0';
+
         (*chain->last)->buf->pos    = str;
-        (*chain->last)->buf->last   = str+ns.len;
+        (*chain->last)->buf->last   = str + ns.len;
         (*chain->last)->buf->memory = 1;
         ctx->rputs_chain = chain;
 
