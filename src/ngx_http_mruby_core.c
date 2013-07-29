@@ -534,6 +534,7 @@ void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
 {
     mrb_define_method(mrb, mrb->kernel_module, "server_name", ngx_mrb_server_name, ARGS_NONE());
 
+    // status
     mrb_define_const(mrb, class, "NGX_OK",                            mrb_fixnum_value(NGX_OK));
     mrb_define_const(mrb, class, "NGX_ERROR",                         mrb_fixnum_value(NGX_ERROR));
     mrb_define_const(mrb, class, "NGX_AGAIN",                         mrb_fixnum_value(NGX_AGAIN));
@@ -541,6 +542,8 @@ void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
     mrb_define_const(mrb, class, "NGX_DONE",                          mrb_fixnum_value(NGX_DONE));
     mrb_define_const(mrb, class, "NGX_DECLINED",                      mrb_fixnum_value(NGX_DECLINED));
     mrb_define_const(mrb, class, "NGX_ABORT",                         mrb_fixnum_value(NGX_ABORT));
+
+    // http status
     mrb_define_const(mrb, class, "NGX_HTTP_OK",                       mrb_fixnum_value(NGX_HTTP_OK));
     mrb_define_const(mrb, class, "NGX_HTTP_CREATED",                  mrb_fixnum_value(NGX_HTTP_CREATED));
     mrb_define_const(mrb, class, "NGX_HTTP_ACCEPTED",                 mrb_fixnum_value(NGX_HTTP_ACCEPTED));
@@ -577,6 +580,23 @@ void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
     mrb_define_const(mrb, class, "NGX_HTTP_SERVICE_UNAVAILABLE",      mrb_fixnum_value(NGX_HTTP_SERVICE_UNAVAILABLE));
     mrb_define_const(mrb, class, "NGX_HTTP_GATEWAY_TIME_OUT",         mrb_fixnum_value(NGX_HTTP_GATEWAY_TIME_OUT));
     mrb_define_const(mrb, class, "NGX_HTTP_INSUFFICIENT_STORAGE",     mrb_fixnum_value(NGX_HTTP_INSUFFICIENT_STORAGE));
+
+    // method
+    mrb_define_const(mrb, class, "NGX_HTTP_UNKNOWN",   mrb_fixnum_value(NGX_HTTP_UNKNOWN));
+    mrb_define_const(mrb, class, "NGX_HTTP_GET",       mrb_fixnum_value(NGX_HTTP_GET));
+    mrb_define_const(mrb, class, "NGX_HTTP_HEAD",      mrb_fixnum_value(NGX_HTTP_HEAD));
+    mrb_define_const(mrb, class, "NGX_HTTP_PUT",       mrb_fixnum_value(NGX_HTTP_PUT));
+    mrb_define_const(mrb, class, "NGX_HTTP_DELETE",    mrb_fixnum_value(NGX_HTTP_DELETE));
+    mrb_define_const(mrb, class, "NGX_HTTP_MKCOL",     mrb_fixnum_value(NGX_HTTP_MKCOL));
+    mrb_define_const(mrb, class, "NGX_HTTP_COPY",      mrb_fixnum_value(NGX_HTTP_COPY));
+    mrb_define_const(mrb, class, "NGX_HTTP_MOVE",      mrb_fixnum_value(NGX_HTTP_MOVE));
+    mrb_define_const(mrb, class, "NGX_HTTP_OPTIONS",   mrb_fixnum_value(NGX_HTTP_OPTIONS));
+    mrb_define_const(mrb, class, "NGX_HTTP_PROPFIND",  mrb_fixnum_value(NGX_HTTP_PROPFIND));
+    mrb_define_const(mrb, class, "NGX_HTTP_PROPPATCH", mrb_fixnum_value(NGX_HTTP_PROPPATCH));
+    mrb_define_const(mrb, class, "NGX_HTTP_LOCK",      mrb_fixnum_value(NGX_HTTP_LOCK));
+    mrb_define_const(mrb, class, "NGX_HTTP_UNLOCK",    mrb_fixnum_value(NGX_HTTP_UNLOCK));
+    mrb_define_const(mrb, class, "NGX_HTTP_PATCH",     mrb_fixnum_value(NGX_HTTP_PATCH));
+    mrb_define_const(mrb, class, "NGX_HTTP_TRACE",     mrb_fixnum_value(NGX_HTTP_TRACE));
 
     // error log priority
     mrb_define_const(mrb, class, "NGX_LOG_STDERR", mrb_fixnum_value(NGX_LOG_STDERR));
