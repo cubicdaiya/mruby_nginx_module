@@ -97,26 +97,26 @@ static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self)
 #if (NGX_OPENSSL)
 static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self)
 {
-    mrb_value mrb_key, mrb_val;
-    ngx_str_t key, text;
+    mrb_value mrb_key, mrb_text;
+    ngx_str_t text, key;
     u_char md[EVP_MAX_MD_SIZE];
     unsigned int md_len;
     const EVP_MD *evp_md;
 
-    mrb_get_args(mrb, "oo", &mrb_key, &mrb_val);
+    mrb_get_args(mrb, "oo", &mrb_text, &mrb_key);
+
+    if (mrb_type(mrb_text) != MRB_TT_STRING) {
+        mrb_text = mrb_funcall(mrb, mrb_text, "to_s", 0, NULL);
+    }
 
     if (mrb_type(mrb_key) != MRB_TT_STRING) {
         mrb_key = mrb_funcall(mrb, mrb_key, "to_s", 0, NULL);
     }
 
-    if (mrb_type(mrb_val) != MRB_TT_STRING) {
-        mrb_val = mrb_funcall(mrb, mrb_val, "to_s", 0, NULL);
-    }
-
+    text.data = (u_char *)RSTRING_PTR(mrb_text);
+    text.len  = RSTRING_LEN(mrb_text);
     key.data  = (u_char *)RSTRING_PTR(mrb_key);
     key.len   = RSTRING_LEN(mrb_key);
-    text.data = (u_char *)RSTRING_PTR(mrb_val);
-    text.len  = RSTRING_LEN(mrb_val);
 
     evp_md = EVP_sha1();
     HMAC(evp_md, key.data, key.len, text.data, text.len, md, &md_len);
