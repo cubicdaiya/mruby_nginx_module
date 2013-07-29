@@ -8,6 +8,7 @@
  */
 
 #include "ngx_http_mruby_hash.h"
+#include "ngx_http_mruby_request.h"
 
 #include <nginx.h>
 #include <ngx_config.h>
@@ -42,6 +43,8 @@ static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self);
 #endif
 static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_mrb_base64_encode(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_mrb_base64_decode(mrb_state *mrb, mrb_value self);
 
 static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self)
 {
@@ -156,6 +159,62 @@ static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self)
     return mrb_hexdigest;
 }
 
+static mrb_value ngx_mrb_base64_encode(mrb_state *mrb, mrb_value self)
+{
+    ngx_http_request_t *r;
+    mrb_value mrb_src;
+    ngx_str_t src, dst;
+
+    r = ngx_mrb_get_request();
+
+    mrb_get_args(mrb, "o", &mrb_src);
+
+    if (mrb_type(mrb_src) != MRB_TT_STRING) {
+        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
+    }
+
+    src.data = (u_char *)RSTRING_PTR(mrb_src);
+    src.len  = RSTRING_LEN(mrb_src);
+
+    dst.len = ngx_base64_encoded_length(src.len);
+    if ((dst.data = ngx_pnalloc(r->pool, dst.len + 1)) == NULL) {
+        return mrb_nil_value();
+    }
+
+    ngx_encode_base64(&dst, &src);
+
+    return mrb_str_new(mrb, (char *)dst.data, dst.len);
+}
+
+static mrb_value ngx_mrb_base64_decode(mrb_state *mrb, mrb_value self)
+{
+    ngx_http_request_t *r;
+    mrb_value mrb_src;
+    ngx_str_t src, dst;
+
+    r = ngx_mrb_get_request();
+
+    mrb_get_args(mrb, "o", &mrb_src);
+
+    if (mrb_type(mrb_src) != MRB_TT_STRING) {
+        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
+    }
+
+    src.data = (u_char *)RSTRING_PTR(mrb_src);
+    src.len  = RSTRING_LEN(mrb_src);
+
+    dst.len = ngx_base64_decoded_length(src.len);
+    if ((dst.data = ngx_pnalloc(r->pool, dst.len + 1)) == NULL) {
+        return mrb_nil_value();
+    }
+
+    if (ngx_decode_base64(&dst, &src) == NGX_ERROR) {
+        return mrb_nil_value();
+    }
+
+    return mrb_str_new(mrb, (char *)dst.data, dst.len);
+}
+
 void ngx_mrb_hash_class_init(mrb_state *mrb, struct RClass *class)
 {
     struct RClass *class_hash;
@@ -170,4 +229,7 @@ void ngx_mrb_hash_class_init(mrb_state *mrb, struct RClass *class)
     mrb_define_class_method(mrb, class_hash, "hmac_sha1", ngx_mrb_hmac_sha1, ARGS_ANY());
 #endif
     mrb_define_class_method(mrb, class_hash, "hexdigest", ngx_mrb_hexdigest, ARGS_ANY());
+
+    mrb_define_class_method(mrb, class_hash, "b64encode", ngx_mrb_base64_encode, ARGS_ANY());
+    mrb_define_class_method(mrb, class_hash, "b64decode", ngx_mrb_base64_decode, ARGS_ANY());
 }
