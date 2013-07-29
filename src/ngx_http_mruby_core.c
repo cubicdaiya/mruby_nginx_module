@@ -211,7 +211,12 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
         chain = ctx->rputs_chain;
         if (chain == NULL) {
             if (state->mrb->exc) {
+                mrb_gc_arena_restore(state->mrb, state->ai);
                 return NGX_HTTP_INTERNAL_SERVER_ERROR;
+            }
+            if (r->headers_out.status >= NGX_HTTP_CONTINUE) {
+                mrb_gc_arena_restore(state->mrb, state->ai);
+                return r->headers_out.status;
             }
             return NGX_DECLINED;
         }
@@ -222,9 +227,8 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
             ngx_http_send_header(r);
             ngx_http_output_filter(r, chain->out);
             return NGX_OK;
-        } else {
-            return r->headers_out.status;
         }
+        return r->headers_out.status;
     }
     mrb_gc_arena_restore(state->mrb, state->ai);
 
