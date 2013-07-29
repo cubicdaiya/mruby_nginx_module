@@ -321,7 +321,9 @@ static mrb_value ngx_mrb_send_header(mrb_state *mrb, mrb_value self)
 
     ctx   = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     chain = ctx->rputs_chain;
-    (*chain->last)->buf->last_buf = 1;
+    if (chain != NULL) {
+        (*chain->last)->buf->last_buf = 1;
+    }
 
     if (r->headers_out.status == NGX_HTTP_OK) {
         ngx_http_send_header(r);
