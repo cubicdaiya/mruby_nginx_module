@@ -523,7 +523,8 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
         ctx->exited    = 1;
         ctx->exit_code = rc;
     } else {
-        ngx_http_internal_redirect(r, &ns, &r->args);
+        ctx->exited    = 1;
+        ctx->exit_code = ngx_http_internal_redirect(r, &ns, &r->args);
     }
 
     return self;
