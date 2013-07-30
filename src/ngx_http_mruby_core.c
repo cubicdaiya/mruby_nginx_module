@@ -177,11 +177,14 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     ngx_http_mruby_ctx_t       *ctx;
     ngx_mrb_rputs_chain_list_t *chain;
 
+    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
+
     if (state == NGX_CONF_UNSET_PTR || code == NGX_CONF_UNSET_PTR) {
+        if (ctx->phase == NGX_HTTP_MRUBY_PHASE_LOG) {
+            mrb_gc_arena_restore(state->mrb, state->ai);
+        }
         return NGX_DECLINED;
     }
-
-    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
     ngx_mrb_push_request(r);
 
@@ -214,9 +217,12 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
                 mrb_gc_arena_restore(state->mrb, state->ai);
                 return NGX_HTTP_INTERNAL_SERVER_ERROR;
             }
-            if (r->headers_out.status >= NGX_HTTP_CONTINUE) {
+            if (r->headers_out.status >= NGX_HTTP_OK) {
                 mrb_gc_arena_restore(state->mrb, state->ai);
-                return r->headers_out.status;
+                if (ctx->phase < NGX_HTTP_MRUBY_PHASE_LOG) {
+                    return r->headers_out.status;
+                }
+                return NGX_OK;
             }
             return NGX_DECLINED;
         }
