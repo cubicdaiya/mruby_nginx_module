@@ -273,7 +273,7 @@ static void *ngx_http_mruby_create_loc_conf(ngx_conf_t *cf)
     conf->rewrite_code        = NGX_CONF_UNSET_PTR;
     conf->access_code         = NGX_CONF_UNSET_PTR;
     conf->content_code        = NGX_CONF_UNSET_PTR;
-    conf->log_code    = NGX_CONF_UNSET_PTR;
+    conf->log_code            = NGX_CONF_UNSET_PTR;
 
     conf->post_read_inline_code      = NGX_CONF_UNSET_PTR;
     conf->server_rewrite_inline_code = NGX_CONF_UNSET_PTR;
