@@ -32,7 +32,7 @@ static void ngx_mrb_raise_file_error(mrb_state *mrb, mrb_value obj, ngx_http_req
 static void ngx_mrb_raise_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf);
 static void ngx_mrb_raise_file_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf, char *code_file);
 
-static mrb_value ngx_mrb_send_header(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self);
 
@@ -315,7 +315,7 @@ static void ngx_mrb_raise_file_conf_error(mrb_state *mrb, mrb_value obj, ngx_con
     }
 }
 
-static mrb_value ngx_mrb_send_header(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self)
 {
     ngx_mrb_rputs_chain_list_t *chain;
     ngx_http_mruby_ctx_t       *ctx;
@@ -336,8 +336,12 @@ static mrb_value ngx_mrb_send_header(mrb_state *mrb, mrb_value self)
     }
 
     if (r->headers_out.status == NGX_HTTP_OK) {
-        ngx_http_send_header(r);
-        ngx_http_output_filter(r, chain->out);
+        if (chain == NULL) {
+            r->headers_out.status = NGX_HTTP_INTERNAL_SERVER_ERROR;
+        } else {
+            ngx_http_send_header(r);
+            ngx_http_output_filter(r, chain->out);
+        }
     }
 
     return self;
@@ -622,8 +626,7 @@ void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
     mrb_define_const(mrb, class, "NGX_LOG_DEBUG",  mrb_fixnum_value(NGX_LOG_DEBUG));
 
     mrb_define_class_method(mrb, class, "rputs",             ngx_mrb_rputs,                 ARGS_ANY());
-    mrb_define_class_method(mrb, class, "send_header",       ngx_mrb_send_header,           ARGS_ANY());
-    mrb_define_class_method(mrb, class, "return",            ngx_mrb_send_header,           ARGS_ANY());
+    mrb_define_class_method(mrb, class, "return",            ngx_mrb_return,                ARGS_ANY());
     mrb_define_class_method(mrb, class, "errlogger",         ngx_mrb_errlogger,             ARGS_ANY());
     mrb_define_class_method(mrb, class, "ngx_mruby_version", ngx_mrb_get_ngx_mruby_version, ARGS_NONE());
     mrb_define_class_method(mrb, class, "nginx_version",     ngx_mrb_get_nginx_version,     ARGS_NONE());
