@@ -7,7 +7,7 @@
  *
  */
 
-#include "ngx_http_mruby_hash.h"
+#include "ngx_http_mruby_digest.h"
 #include "ngx_http_mruby_request.h"
 
 #include <nginx.h>
@@ -215,21 +215,21 @@ static mrb_value ngx_mrb_base64_decode(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)dst.data, dst.len);
 }
 
-void ngx_mrb_hash_class_init(mrb_state *mrb, struct RClass *class)
+void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *class)
 {
-    struct RClass *class_hash;
+    struct RClass *class_digest;
 
-    class_hash = mrb_define_class_under(mrb, class, "Hash", mrb->object_class);
+    class_digest = mrb_define_class_under(mrb, class, "Digest", mrb->object_class);
 
-    mrb_define_class_method(mrb, class_hash, "md5",       ngx_mrb_md5,       ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "md5",       ngx_mrb_md5,       ARGS_ANY());
 #if NGX_HAVE_SHA1
-    mrb_define_class_method(mrb, class_hash, "sha1",      ngx_mrb_sha1,      ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "sha1",      ngx_mrb_sha1,      ARGS_ANY());
 #endif
 #if (NGX_OPENSSL)
-    mrb_define_class_method(mrb, class_hash, "hmac_sha1", ngx_mrb_hmac_sha1, ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "hmac_sha1", ngx_mrb_hmac_sha1, ARGS_ANY());
 #endif
-    mrb_define_class_method(mrb, class_hash, "hexdigest", ngx_mrb_hexdigest, ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "hexdigest", ngx_mrb_hexdigest, ARGS_ANY());
 
-    mrb_define_class_method(mrb, class_hash, "b64encode", ngx_mrb_base64_encode, ARGS_ANY());
-    mrb_define_class_method(mrb, class_hash, "b64decode", ngx_mrb_base64_decode, ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "b64encode", ngx_mrb_base64_encode, ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "b64decode", ngx_mrb_base64_decode, ARGS_ANY());
 }

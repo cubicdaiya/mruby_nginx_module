@@ -7,11 +7,11 @@
  *
  */
 
-#ifndef NGX_HTTP_MRUBY_HASH_H
-#define NGX_HTTP_MRUBY_HASH_H
+#ifndef NGX_HTTP_MRUBY_DIGEST_H
+#define NGX_HTTP_MRUBY_DIGEST_H
 
 #include <mruby.h>
 
-void ngx_mrb_hash_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *calss);
 
-#endif // NGX_HTTP_MRUBY_HASH_H
+#endif // NGX_HTTP_MRUBY_DIGEST_H
