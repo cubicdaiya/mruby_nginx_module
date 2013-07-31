@@ -18,6 +18,7 @@
 #include "ngx_http_mruby_context.h"
 #include "ngx_http_mruby_digest.h"
 #include "ngx_http_mruby_time.h"
+#include "ngx_http_mruby_base64.h"
 
 #include <mruby.h>
 #include <mruby/compile.h>
@@ -38,6 +39,7 @@ ngx_int_t ngx_mrb_class_init(mrb_state *mrb)
     ngx_mrb_context_class_init(mrb, class); GC_ARENA_RESTORE;
     ngx_mrb_digest_class_init(mrb, class);  GC_ARENA_RESTORE;
     ngx_mrb_time_class_init(mrb, class);    GC_ARENA_RESTORE;
+    ngx_mrb_base64_class_init(mrb, class);  GC_ARENA_RESTORE;
 
     return NGX_OK;
 }
