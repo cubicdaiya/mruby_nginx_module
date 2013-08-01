@@ -43,6 +43,8 @@ static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self);
 #endif
 static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_mrb_crc32_long(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_mrb_crc32_short(mrb_state *mrb, mrb_value self);
 
 static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self)
 {
@@ -157,6 +159,46 @@ static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self)
     return mrb_hexdigest;
 }
 
+static mrb_value ngx_mrb_crc32_long(mrb_state *mrb, mrb_value self)
+{
+    mrb_value mrb_src;
+    ngx_str_t src;
+    uint32_t  crc32;
+
+    mrb_get_args(mrb, "o", &mrb_src);
+
+    if (mrb_type(mrb_src) != MRB_TT_STRING) {
+        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
+    }
+
+    src.data = (u_char *)RSTRING_PTR(mrb_src);
+    src.len  = RSTRING_LEN(mrb_src);
+
+    crc32 = ngx_crc32_long(src.data, src.len);
+
+    return mrb_fixnum_value(crc32);
+}
+
+static mrb_value ngx_mrb_crc32_short(mrb_state *mrb, mrb_value self)
+{
+    mrb_value mrb_src;
+    ngx_str_t src;
+    uint32_t  crc32;
+
+    mrb_get_args(mrb, "o", &mrb_src);
+
+    if (mrb_type(mrb_src) != MRB_TT_STRING) {
+        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
+    }
+
+    src.data = (u_char *)RSTRING_PTR(mrb_src);
+    src.len  = RSTRING_LEN(mrb_src);
+
+    crc32 = ngx_crc32_short(src.data, src.len);
+
+    return mrb_fixnum_value(crc32);
+}
+
 void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *class)
 {
     struct RClass *class_digest;
@@ -171,4 +213,7 @@ void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *class)
     mrb_define_class_method(mrb, class_digest, "hmac_sha1", ngx_mrb_hmac_sha1, ARGS_ANY());
 #endif
     mrb_define_class_method(mrb, class_digest, "hexdigest", ngx_mrb_hexdigest, ARGS_ANY());
+
+    mrb_define_class_method(mrb, class_digest, "crc32_long",  ngx_mrb_crc32_long,  ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "crc32_short", ngx_mrb_crc32_short, ARGS_ANY());
 }
