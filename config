@@ -35,7 +35,7 @@ sed -i "s/^\(MRUBY_LDFLAGS_BEFORE_LIBS\) = \(.*\)$/\\1=\"\\2\"/" $ngx_addon_dir/
 sed -i "s/^\(MRUBY_LIBS\) = \(.*\)$/\\1=\"\\2\"/"                $ngx_addon_dir/libmruby.flags.mak
 
 # drop the option for optimization in mruby(use nginx's)
-sed -i "s/-O.//" $ngx_addon_dir/libmruby.flags.mak
+sed -i "s/-O[0-9]\? //" $ngx_addon_dir/libmruby.flags.mak
 
 . $ngx_addon_dir/libmruby.flags.mak
 CORE_LIBS="$CORE_LIBS $MRUBY_LIBS"
