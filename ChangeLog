@@ -1,0 +1,25 @@
+2011-08-03 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+	* add class Nginx::Time
+
+	* add class Nginx::Digest(md5, sha1, hmac_sha1, crc32_long, crc32_short, hexdigest)
+
+	* add class Nginx::Context
+
+	* fix bug(internal redirect was broken)
+
+	* fix bug(Nginx.redirect was broken)
+
+	* fix bug(no chain cause stall)
+
+	* fix bug( fitler hander fails when mruby_cache is off)
+
+	* fix bug(Content-Type's length moves over 1 by set request member method)
+
+	* bumped version to 0.0.2
+
+2011-07-27 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+	* forked ngx_mruby to mruby_nginx_module
+
+	* bumped version to 0.0.1
