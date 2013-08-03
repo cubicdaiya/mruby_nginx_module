@@ -15,12 +15,19 @@
 #include <mruby/numeric.h>
 #include <mruby/string.h>
 
+static mrb_value ngx_mrb_update(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_time(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_http_time(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_cookie_time(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_utc_time(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_local_time(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_parse_http_time(mrb_state *mrb, mrb_value self);
+
+static mrb_value ngx_mrb_update(mrb_state *mrb, mrb_value self)
+{
+    ngx_time_update();
+    return self;
+}
 
 static mrb_value ngx_mrb_time(mrb_state *mrb, mrb_value self)
 {
@@ -118,6 +125,7 @@ void ngx_mrb_time_class_init(mrb_state *mrb, struct RClass *class)
 
     class_time = mrb_define_class_under(mrb, class, "Time", mrb->object_class);
 
+    mrb_define_class_method(mrb, class_time, "update",          ngx_mrb_update,          ARGS_ANY());
     mrb_define_class_method(mrb, class_time, "time",            ngx_mrb_time,            ARGS_ANY());
     mrb_define_class_method(mrb, class_time, "http_time",       ngx_mrb_http_time,       ARGS_ANY());
     mrb_define_class_method(mrb, class_time, "cookie_time",     ngx_mrb_cookie_time,     ARGS_ANY());
