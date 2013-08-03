@@ -23,11 +23,23 @@ NGX_ADDON_SRCS="$NGX_ADDON_SRCS \
                 $ngx_addon_dir/src/ngx_http_mruby_base64.c \
                 "
 
-CORE_LIBS="$CORE_LIBS $mruby_root/build/host/mrblib/mrblib.o $mruby_root/build/host/lib/libmruby.a -lm"
+CORE_LIBS="$CORE_LIBS $mruby_root/build/host/mrblib/mrblib.o $mruby_root/build/host/lib/libmruby.a"
 CORE_INCS="$CORE_INCS $mruby_root/src $mruby_root/include"
 
-if [ -f $ngx_addon_dir/mrbgems_config ]; then
-    . $ngx_addon_dir/mrbgems_config
-fi
+cp $mruby_root/build/host/lib/libmruby.flags.mak $ngx_addon_dir/libmruby.flags.mak
 
+# original libmruby.flags.mak can not included
+sed -i "s/^\(MRUBY_CFLAGS\) = \(.*\)$/\\1=\"\\2\"/"              $ngx_addon_dir/libmruby.flags.mak
+sed -i "s/^\(MRUBY_LDFLAGS\) = \(.*\)$/\\1=\"\\2\"/"             $ngx_addon_dir/libmruby.flags.mak
+sed -i "s/^\(MRUBY_LDFLAGS_BEFORE_LIBS\) = \(.*\)$/\\1=\"\\2\"/" $ngx_addon_dir/libmruby.flags.mak
+sed -i "s/^\(MRUBY_LIBS\) = \(.*\)$/\\1=\"\\2\"/"                $ngx_addon_dir/libmruby.flags.mak
+
+# drop the option for optimization in mruby(use nginx's)
+sed -i "s/-O.//" $ngx_addon_dir/libmruby.flags.mak
+
+. $ngx_addon_dir/libmruby.flags.mak
+CORE_LIBS="$CORE_LIBS $MRUBY_LIBS"
+CFLAGS="$CFLAGS $MRUBY_CFLAGS "
+
+# ngx_devel_kit
 have=NDK_SET_VAR . auto/have
