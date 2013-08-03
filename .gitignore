@@ -10,3 +10,5 @@ mruby/*
 tags
 *.swp
 libmruby.flags.mak
+t/ngx_base/scgi_temp
+t/ngx_base/uwsgi_temp
