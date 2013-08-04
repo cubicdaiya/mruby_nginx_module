@@ -316,7 +316,8 @@ static char *ngx_http_mruby_merge_loc_conf(ngx_conf_t *cf, void *parent, void *c
     NGX_MRUBY_MERGE_CODE(prev->header_filter_inline_code, conf->header_filter_inline_code);
     NGX_MRUBY_MERGE_CODE(prev->body_filter_inline_code,   conf->body_filter_inline_code);
 
-    ngx_conf_merge_value(conf->cached, prev->cached, 0);
+    // mruby_cache is on by default
+    ngx_conf_merge_value(conf->cached, prev->cached, 1);
 
     return NGX_CONF_OK;
 }
