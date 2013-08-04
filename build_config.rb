@@ -20,14 +20,7 @@ MRuby::Build.new do |conf|
 
   conf.gem :git => 'git://github.com/matsumoto-r/mruby-redis.git'
   conf.gem :git => 'git://github.com/matsumoto-r/mruby-userdata.git'
-
-  # use markdown on mod_mruby
-  #conf.gem :git => 'git://github.com/matsumoto-r/mruby-discount.git'
-
-  # Linux only for mod_mruby
-  #conf.gem :git => 'git://github.com/matsumoto-r/mruby-capability.git'
-  #conf.gem :git => 'git://github.com/matsumoto-r/mruby-cgroup.git'
-
+  conf.gem :git => 'git://github.com/mattn/mruby-require.git'
 
   # C compiler settings
   # conf.cc do |cc|
