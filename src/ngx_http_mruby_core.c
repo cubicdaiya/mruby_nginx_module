@@ -215,6 +215,13 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
         if (chain == NULL) {
             if (state->mrb->exc) {
                 mrb_gc_arena_restore(state->mrb, state->ai);
+                ngx_log_error(NGX_LOG_ERR
+                              , r->connection->log
+                              , 0
+                              , "%s ERROR %s: Failed to mrb_run"
+                              , MODULE_NAME
+                              , __FUNCTION__
+                              );
                 return NGX_HTTP_INTERNAL_SERVER_ERROR;
             }
             if (r->headers_out.status >= NGX_HTTP_OK) {
@@ -337,7 +344,14 @@ static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self)
 
     if (r->headers_out.status == NGX_HTTP_OK) {
         if (chain == NULL) {
-            r->headers_out.status = NGX_HTTP_INTERNAL_SERVER_ERROR;
+            ngx_log_error(NGX_LOG_ERR
+                          , r->connection->log
+                          , 0
+                          , "%s ERROR %s: Nginx.rputs is required in advance of Nginx.return(200)"
+                          , MODULE_NAME
+                          , __FUNCTION__
+                          );
+             r->headers_out.status = NGX_HTTP_INTERNAL_SERVER_ERROR;
         } else {
             ngx_http_send_header(r);
             ngx_http_output_filter(r, chain->out);
