@@ -76,7 +76,7 @@ class MrubyNginxModuleTest < Test::Unit::TestCase
     end
 
 # following tests are not pass through yet.
-=begin
+
     def test_filter2
       url = URI.parse('http://localhost:8000')
       res = Net::HTTP.start(url.host, url.port) {|http|
@@ -90,8 +90,11 @@ class MrubyNginxModuleTest < Test::Unit::TestCase
       res = Net::HTTP.start(url.host, url.port) {|http|
         http.get('/filter3.html')
       }
+      string = IO.read("#{@dir}/ngx_base/www/filter3.html")
+      assert_equal(res["content-type"], "text/html")
+      assert_equal(res.body, "<!DOCTYPE html>\n" + string)
     end
-=end
+
     def teardown
       `sudo pkill nginx`
     end
