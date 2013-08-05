@@ -15,7 +15,7 @@ MRuby::Build.new do |conf|
   conf.gembox 'default'
 
   #
-  # Recommended for mruby_ngix_module
+  # Recommended for mruby_nginx_module
   #
 
   conf.gem :git => 'git://github.com/matsumoto-r/mruby-redis.git'
