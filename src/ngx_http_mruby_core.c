@@ -27,9 +27,12 @@
 
 ngx_module_t  ngx_http_mruby_module;
 
-static void ngx_mrb_raise_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r);
+static void ngx_mrb_raise_error(ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_http_request_t *r);
+static void ngx_mrb_raise_inline_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r);
 static void ngx_mrb_raise_file_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r, char *code_file);
-static void ngx_mrb_raise_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf);
+
+static void ngx_mrb_raise_conf_error(ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_conf_t *cf);
+static void ngx_mrb_raise_inline_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf);
 static void ngx_mrb_raise_file_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf, char *code_file);
 
 static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self);
@@ -47,11 +50,7 @@ ngx_int_t ngx_mrb_run_conf(ngx_conf_t *cf, ngx_mrb_state_t *state, ngx_mrb_code_
 {
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     if (state->mrb->exc) {
-        if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
-            ngx_mrb_raise_file_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf, code->code.file);
-        } else {
-            ngx_mrb_raise_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf);
-        }
+        ngx_mrb_raise_conf_error(state, code, cf);
         mrb_gc_arena_restore(state->mrb, state->ai);
         return NGX_ERROR;
     }
@@ -76,11 +75,7 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     ngx_mrb_push_request(r);
     mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     if (state->mrb->exc) {
-        if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
-            ngx_mrb_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
-        } else {
-            ngx_mrb_raise_error(state->mrb, mrb_obj_value(state->mrb->exc), r);
-        }
+        ngx_mrb_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
         if (!cached) {
             ngx_mrb_irep_clean(state, code);
@@ -116,11 +111,7 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
     ngx_mrb_push_request(r);
     mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     if (state->mrb->exc) {
-        if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
-            ngx_mrb_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
-        } else {
-            ngx_mrb_raise_error(state->mrb, mrb_obj_value(state->mrb->exc), r);
-        }
+        ngx_mrb_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
         if (!cached) {
             ngx_mrb_irep_clean(state, code);
@@ -152,11 +143,7 @@ ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *stat
     ngx_mrb_push_request(r);
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     if (state->mrb->exc) {
-        if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
-            ngx_mrb_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
-        } else {
-            ngx_mrb_raise_error(state->mrb, mrb_obj_value(state->mrb->exc), r);
-        }
+        ngx_mrb_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
         if (!cached) {
             ngx_mrb_irep_clean(state, code);
@@ -195,11 +182,7 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
 
     if (state->mrb->exc) {
-        if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
-            ngx_mrb_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
-        } else {
-            ngx_mrb_raise_error(state->mrb, mrb_obj_value(state->mrb->exc), r);
-        }
+        ngx_mrb_raise_error(state, code, r);
     }
 
     if (!cached) {
@@ -241,7 +224,16 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     return NGX_OK;
 }
 
-static void ngx_mrb_raise_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r)
+static void ngx_mrb_raise_error(ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_http_request_t *r)
+{
+    if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
+        ngx_mrb_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
+    } else {
+        ngx_mrb_raise_inline_error(state->mrb, mrb_obj_value(state->mrb->exc), r);
+    }
+}
+
+static void ngx_mrb_raise_inline_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r)
 {  
     struct RString *str;
     char *err_out;
@@ -252,24 +244,6 @@ static void ngx_mrb_raise_error(mrb_state *mrb, mrb_value obj, ngx_http_request_
         err_out = str->ptr;
         ngx_log_error(NGX_LOG_ERR
             , r->connection->log
-            , 0
-            , "mrb_run failed. error: %s"
-            , err_out
-        );
-    }
-}
-
-static void ngx_mrb_raise_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf)
-{  
-    struct RString *str;
-    char *err_out;
-    
-    obj = mrb_funcall(mrb, obj, "inspect", 0);
-    if (mrb_type(obj) == MRB_TT_STRING) {
-        str = mrb_str_ptr(obj);
-        err_out = str->ptr;
-        ngx_conf_log_error(NGX_LOG_ERR
-            , cf
             , 0
             , "mrb_run failed. error: %s"
             , err_out
@@ -291,6 +265,33 @@ static void ngx_mrb_raise_file_error(mrb_state *mrb, mrb_value obj, ngx_http_req
             , 0
             , "mrb_run failed. file: %s error: %s"
             , code_file
+            , err_out
+        );
+    }
+}
+
+static void ngx_mrb_raise_conf_error(ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_conf_t *cf)
+{
+    if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
+        ngx_mrb_raise_file_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf, code->code.file);
+    } else {
+        ngx_mrb_raise_inline_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf);
+    }
+}
+
+static void ngx_mrb_raise_inline_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf)
+{  
+    struct RString *str;
+    char *err_out;
+    
+    obj = mrb_funcall(mrb, obj, "inspect", 0);
+    if (mrb_type(obj) == MRB_TT_STRING) {
+        str = mrb_str_ptr(obj);
+        err_out = str->ptr;
+        ngx_conf_log_error(NGX_LOG_ERR
+            , cf
+            , 0
+            , "mrb_run failed. error: %s"
             , err_out
         );
     }
