@@ -475,11 +475,6 @@ static mrb_value ngx_mrb_get_nginx_version(mrb_state *mrb, mrb_value self)
     return mrb_str_new_cstr(mrb, NGINX_VERSION);
 }
 
-static mrb_value ngx_mrb_server_name(mrb_state *mrb, mrb_value self)
-{
-    return mrb_str_new_cstr(mrb, NGINX_VAR);
-}
-
 // like Nginx rewrite keywords
 // used like this:
 // => http code 3xx location in browser
@@ -556,8 +551,6 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
 
 void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
 {
-    mrb_define_method(mrb, mrb->kernel_module, "server_name", ngx_mrb_server_name, ARGS_NONE());
-
     // status
     mrb_define_const(mrb, class, "OK",                            mrb_fixnum_value(NGX_OK));
     mrb_define_const(mrb, class, "ERROR",                         mrb_fixnum_value(NGX_ERROR));
