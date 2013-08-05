@@ -413,7 +413,7 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-static mrb_value ngx_mrb_errlogger(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
 {   
     mrb_value          *argv;
     mrb_value           msg;
@@ -635,8 +635,8 @@ void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
 
     mrb_define_class_method(mrb, class, "rputs",             ngx_mrb_rputs,                 ARGS_ANY());
     mrb_define_class_method(mrb, class, "return",            ngx_mrb_return,                ARGS_ANY());
-    mrb_define_class_method(mrb, class, "errlogger",         ngx_mrb_errlogger,             ARGS_ANY());
-    mrb_define_class_method(mrb, class, "ngx_mruby_version", ngx_mrb_get_ngx_mruby_version, ARGS_NONE());
-    mrb_define_class_method(mrb, class, "nginx_version",     ngx_mrb_get_nginx_version,     ARGS_NONE());
+    mrb_define_class_method(mrb, class, "log",               ngx_mrb_log,                   ARGS_ANY());
+    mrb_define_class_method(mrb, class, "module_version",    ngx_mrb_get_ngx_mruby_version, ARGS_NONE());
+    mrb_define_class_method(mrb, class, "version",           ngx_mrb_get_nginx_version,     ARGS_NONE());
     mrb_define_class_method(mrb, class, "redirect",          ngx_mrb_redirect,              ARGS_ANY());
 }
