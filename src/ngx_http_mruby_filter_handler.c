@@ -46,11 +46,11 @@ ngx_int_t ngx_http_mruby_header_filter_handler(ngx_http_request_t *r)
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     ctx->filter_ctx.body_length = r->headers_out.content_length_n;
- 
+
     NGX_MRUBY_STATE_REINIT_IF_NOT_CACHED(
         mlcf->cached,
         mmcf->state,
-        mlcf->header_filter_inline_code,
+        mlcf->header_filter_code,
         ngx_http_mruby_state_reinit_from_file
     );
 
@@ -188,7 +188,7 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
     ngx_http_mruby_ctx_t       *ctx;
     ngx_pool_cleanup_t         *cln;
     ngx_int_t                   rc;
-  
+
     mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
     mlcf = ngx_http_get_module_loc_conf(r, ngx_http_mruby_module);
 
@@ -207,8 +207,15 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
             return NGX_ERROR;
         }
+        if (!mlcf->cached) {
+            mmcf->state->ai = mrb_gc_arena_save(mmcf->state->mrb);
+        }
         ctx->table  = mrb_hash_new(mmcf->state->mrb);
+        if (!mlcf->cached) {
+            mrb_gc_arena_restore(mmcf->state->mrb, mmcf->state->ai);
+        }
         ctx->exited = 0;
+        ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);
     }
 
     ctx->phase = NGX_HTTP_MRUBY_PHASE_HEADER_FILTER;
