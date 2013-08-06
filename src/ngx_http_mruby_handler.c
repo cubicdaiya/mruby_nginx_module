@@ -36,13 +36,6 @@ ngx_int_t ngx_http_mruby_##handler_name##_handler(ngx_http_request_t *r)        
             );                                                                                  \
             return NGX_ERROR;                                                                   \
         }                                                                                       \
-        if (!mlcf->cached) {                                                                    \
-            mmcf->state->ai = mrb_gc_arena_save(mmcf->state->mrb);                              \
-        }                                                                                       \
-        ctx->table  = mrb_hash_new(mmcf->state->mrb);                                           \
-        if (!mlcf->cached) {                                                                    \
-            mrb_gc_arena_restore(mmcf->state->mrb, mmcf->state->ai);                            \
-        }                                                                                       \
         ctx->exited = 0;                                                                        \
     }                                                                                           \
     ctx->phase = context_phase;                                                                 \
@@ -65,13 +58,6 @@ ngx_int_t ngx_http_mruby_##handler_name##_inline_handler(ngx_http_request_t *r) 
                 , __LINE__                                                                      \
             );                                                                                  \
             return NGX_ERROR;                                                                   \
-        }                                                                                       \
-        if (!mlcf->cached) {                                                                    \
-            mmcf->state->ai = mrb_gc_arena_save(mmcf->state->mrb);                              \
-        }                                                                                       \
-        ctx->table  = mrb_hash_new(mmcf->state->mrb);                                            \
-        if (!mlcf->cached) {                                                                    \
-            mrb_gc_arena_restore(mmcf->state->mrb, mmcf->state->ai);                            \
         }                                                                                       \
         ctx->exited = 0;                                                                        \
     }                                                                                           \

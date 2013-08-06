@@ -30,6 +30,10 @@ static mrb_value ngx_mrb_get_request_context_entry(mrb_state *mrb, mrb_value sel
     r   = ngx_mrb_get_request();
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
+    if (mrb_nil_p(ctx->table)) {
+        ctx->table = mrb_hash_new(mrb);
+    }
+
     mrb_get_args(mrb, "o", &key);
  
     return mrb_hash_get(mrb, ctx->table, key);
@@ -44,6 +48,10 @@ static mrb_value ngx_mrb_set_request_context_entry(mrb_state *mrb, mrb_value sel
     r   = ngx_mrb_get_request();
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
+    if (mrb_nil_p(ctx->table)) {
+        ctx->table = mrb_hash_new(mrb);
+    }
+
     mrb_get_args(mrb, "oo", &key, &val);
     mrb_hash_set(mrb, ctx->table, key, val);
 
@@ -57,6 +65,10 @@ static mrb_value ngx_mrb_get_request_context(mrb_state *mrb, mrb_value self)
 
     r   = ngx_mrb_get_request();
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
+
+    if (mrb_nil_p(ctx->table)) {
+        ctx->table = mrb_hash_new(mrb);
+    }
 
     return ctx->table;
 }
