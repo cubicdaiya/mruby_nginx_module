@@ -92,7 +92,7 @@ ngx_int_t ngx_http_mruby_body_filter_handler(ngx_http_request_t *r, ngx_chain_t 
 
     if((rc = ngx_http_mruby_read_body(r, in, ctx)) != NGX_OK) {
         if (rc == NGX_AGAIN) {
-            return NGX_OK;
+            return NGX_AGAIN;
         }
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to read body %s:%d", __FUNCTION__, __LINE__);
         return NGX_ERROR;
@@ -146,7 +146,7 @@ ngx_int_t ngx_http_mruby_body_filter_inline_handler(ngx_http_request_t *r, ngx_c
 
     if((rc = ngx_http_mruby_read_body(r, in, ctx)) != NGX_OK) {
         if (rc == NGX_AGAIN) {
-            return NGX_OK;
+            return NGX_AGAIN;
         }
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to read body %s:%d", __FUNCTION__, __LINE__);
         return NGX_ERROR;
@@ -248,6 +248,9 @@ static ngx_int_t ngx_http_mruby_body_filter(ngx_http_request_t *r, ngx_chain_t *
     ctx->phase = NGX_HTTP_MRUBY_PHASE_BODY_FILTER;
 
     rc = mlcf->body_filter_handler(r, in);
+    if (rc == NGX_AGAIN) {
+        return NGX_AGAIN;
+    }
     if (rc != NGX_OK) {
         return NGX_ERROR;
     }
