@@ -15,6 +15,7 @@ NGX_ADDON_SRCS="$NGX_ADDON_SRCS \
                 $ngx_addon_dir/src/ngx_http_mruby_state.c \
                 $ngx_addon_dir/src/ngx_http_mruby_directive.c \
                 $ngx_addon_dir/src/ngx_http_mruby_var.c \
+                $ngx_addon_dir/src/ngx_http_mruby_error.c \
                 $ngx_addon_dir/src/ngx_http_mruby_connection.c \
                 $ngx_addon_dir/src/ngx_http_mruby_server.c \
                 $ngx_addon_dir/src/ngx_http_mruby_context.c \
