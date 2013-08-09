@@ -101,73 +101,6 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
-{
-    ngx_http_mruby_ctx_t *ctx;
-    mrb_value ARGV, mrb_result;
-
-    ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-
-    if (!cached) {
-        state->ai = mrb_gc_arena_save(state->mrb);
-    }
-
-    ARGV = mrb_ary_new_capa(state->mrb, 1);
-
-    mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)ctx->filter_ctx.body, ctx->filter_ctx.body_length));
-    mrb_define_global_const(state->mrb, "ARGV", ARGV);
-
-    ngx_mrb_push_request(r);
-    mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
-    if (state->mrb->exc) {
-        ngx_mrb_raise_error(state, code, r);
-        mrb_gc_arena_restore(state->mrb, state->ai);
-        if (!cached) {
-            ngx_mrb_irep_clean(state, code);
-        }
-        return NGX_ERROR;
-    }
-    
-    if (mrb_type(mrb_result) != MRB_TT_STRING) {
-        mrb_result = mrb_funcall(state->mrb, mrb_result, "to_s", 0, NULL);
-    }
-
-    ctx->filter_ctx.body        = (u_char *)RSTRING_PTR(mrb_result);
-    ctx->filter_ctx.body_length = ngx_strlen(ctx->filter_ctx.body);
-
-    mrb_gc_arena_restore(state->mrb, state->ai);
-    if (!cached) {
-        ngx_mrb_irep_clean(state, code);
-    }
-    return NGX_OK;
-}
-
-ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
-{
-    ngx_http_mruby_main_conf_t *mmcf;
-    mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
-    if (!cached) {
-        state->ai = mrb_gc_arena_save(state->mrb);
-    }
-    ngx_mrb_push_request(r);
-    mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
-    if (state->mrb->exc) {
-        ngx_mrb_raise_error(state, code, r);
-        mrb_gc_arena_restore(state->mrb, state->ai);
-        if (!cached) {
-            ngx_mrb_irep_clean(state, code);
-        }
-        return NGX_ERROR;
-    }
-
-    mrb_gc_arena_restore(state->mrb, state->ai);
-
-    if (!cached) {
-        ngx_mrb_irep_clean(state, code);
-    }
-    return NGX_OK;
-}
-
 ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
 {
     ngx_http_mruby_ctx_t       *ctx;
@@ -225,6 +158,73 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
         return r->headers_out.status;
     }
 
+    return NGX_OK;
+}
+
+ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
+{
+    ngx_http_mruby_main_conf_t *mmcf;
+    mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
+    if (!cached) {
+        state->ai = mrb_gc_arena_save(state->mrb);
+    }
+    ngx_mrb_push_request(r);
+    mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+    if (state->mrb->exc) {
+        ngx_mrb_raise_error(state, code, r);
+        mrb_gc_arena_restore(state->mrb, state->ai);
+        if (!cached) {
+            ngx_mrb_irep_clean(state, code);
+        }
+        return NGX_ERROR;
+    }
+
+    mrb_gc_arena_restore(state->mrb, state->ai);
+
+    if (!cached) {
+        ngx_mrb_irep_clean(state, code);
+    }
+    return NGX_OK;
+}
+
+ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
+{
+    ngx_http_mruby_ctx_t *ctx;
+    mrb_value ARGV, mrb_result;
+
+    ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
+
+    if (!cached) {
+        state->ai = mrb_gc_arena_save(state->mrb);
+    }
+
+    ARGV = mrb_ary_new_capa(state->mrb, 1);
+
+    mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)ctx->filter_ctx.body, ctx->filter_ctx.body_length));
+    mrb_define_global_const(state->mrb, "ARGV", ARGV);
+
+    ngx_mrb_push_request(r);
+    mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+    if (state->mrb->exc) {
+        ngx_mrb_raise_error(state, code, r);
+        mrb_gc_arena_restore(state->mrb, state->ai);
+        if (!cached) {
+            ngx_mrb_irep_clean(state, code);
+        }
+        return NGX_ERROR;
+    }
+    
+    if (mrb_type(mrb_result) != MRB_TT_STRING) {
+        mrb_result = mrb_funcall(state->mrb, mrb_result, "to_s", 0, NULL);
+    }
+
+    ctx->filter_ctx.body        = (u_char *)RSTRING_PTR(mrb_result);
+    ctx->filter_ctx.body_length = ngx_strlen(ctx->filter_ctx.body);
+
+    mrb_gc_arena_restore(state->mrb, state->ai);
+    if (!cached) {
+        ngx_mrb_irep_clean(state, code);
+    }
     return NGX_OK;
 }
 
