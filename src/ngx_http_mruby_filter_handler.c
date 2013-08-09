@@ -23,7 +23,6 @@ static ngx_http_output_body_filter_pt   ngx_http_next_body_filter;
 
 static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r);
 static ngx_int_t ngx_http_mruby_body_filter(ngx_http_request_t *r, ngx_chain_t *in);
-static void ngx_http_mruby_filter_cleanup(void *data);
 static ngx_int_t ngx_http_mruby_read_body(ngx_http_request_t *r, ngx_chain_t *in, ngx_http_mruby_ctx_t *ctx);
 
 void ngx_http_mruby_header_filter_init(void)
@@ -186,7 +185,6 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
     ngx_http_mruby_main_conf_t *mmcf;
     ngx_http_mruby_loc_conf_t  *mlcf;
     ngx_http_mruby_ctx_t       *ctx;
-    ngx_pool_cleanup_t         *cln;
     ngx_int_t                   rc;
 
     mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
@@ -207,26 +205,11 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
             ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
             return NGX_ERROR;
         }
-        if (!mlcf->cached) {
-            mmcf->state->ai = mrb_gc_arena_save(mmcf->state->mrb);
-        }
-        ctx->table  = mrb_hash_new(mmcf->state->mrb);
-        if (!mlcf->cached) {
-            mrb_gc_arena_restore(mmcf->state->mrb, mmcf->state->ai);
-        }
         ctx->exited = 0;
         ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);
     }
 
     ctx->phase = NGX_HTTP_MRUBY_PHASE_HEADER_FILTER;
-
-    cln = ngx_pool_cleanup_add(r->pool, 0);
-    if (cln == NULL) {
-        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
-        return NGX_ERROR;
-    }
-    cln->handler = ngx_http_mruby_filter_cleanup;
-    cln->data    = ctx;
 
     if (mlcf->header_filter_handler == NULL) {
         ctx->filter_ctx.body_length = r->headers_out.content_length_n;
@@ -249,7 +232,6 @@ static ngx_int_t ngx_http_mruby_body_filter(ngx_http_request_t *r, ngx_chain_t *
 {
     ngx_http_mruby_loc_conf_t *mlcf;
     ngx_http_mruby_ctx_t     *ctx;
-    ngx_pool_cleanup_t *cln;
     ngx_int_t rc;
 
     mlcf = ngx_http_get_module_loc_conf(r, ngx_http_mruby_module);
@@ -265,26 +247,11 @@ static ngx_int_t ngx_http_mruby_body_filter(ngx_http_request_t *r, ngx_chain_t *
 
     ctx->phase = NGX_HTTP_MRUBY_PHASE_BODY_FILTER;
 
-    cln = ngx_pool_cleanup_add(r->pool, 0);
-    if (cln == NULL) {
-        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "failed to allocate memory from r->pool %s:%d", __FUNCTION__, __LINE__);
-        return NGX_ERROR;
-    }
-    cln->handler = ngx_http_mruby_filter_cleanup;
-    cln->data    = ctx;
-
     rc = mlcf->body_filter_handler(r, in);
     if (rc != NGX_OK) {
         return NGX_ERROR;
     }
     return NGX_OK;
-}
-
-static void ngx_http_mruby_filter_cleanup(void *data)
-{
-    ngx_http_mruby_ctx_t *ctx;
-    ctx = (ngx_http_mruby_ctx_t *)data;
-    ngx_memzero(ctx, sizeof(ngx_http_mruby_ctx_t));
 }
 
 static ngx_int_t ngx_http_mruby_read_body(ngx_http_request_t *r, ngx_chain_t *in, ngx_http_mruby_ctx_t *ctx)

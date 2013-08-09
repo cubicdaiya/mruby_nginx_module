@@ -65,6 +65,10 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     ngx_uint_t i;
     mrb_value ARGV, mrb_result;
 
+    if (!cached) {
+        state->ai = mrb_gc_arena_save(state->mrb);
+    }
+
     ARGV = mrb_ary_new_capa(state->mrb, nargs);
 
     for (i = 0; i < nargs; i++) {
@@ -188,23 +192,22 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
         ngx_mrb_raise_error(state, code, r);
     }
 
+    mrb_gc_arena_restore(state->mrb, state->ai);
+
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
 
     if (ngx_http_get_module_ctx(r, ngx_http_mruby_module) != NULL) {
         if (ctx->exited) {
-            mrb_gc_arena_restore(state->mrb, state->ai);
             return ctx->exit_code;
         }
         chain = ctx->rputs_chain;
         if (chain == NULL) {
             if (state->mrb->exc) {
-                mrb_gc_arena_restore(state->mrb, state->ai);
                 return NGX_HTTP_INTERNAL_SERVER_ERROR;
             }
             if (r->headers_out.status >= NGX_HTTP_OK) {
-                mrb_gc_arena_restore(state->mrb, state->ai);
                 if (ctx->phase < NGX_HTTP_MRUBY_PHASE_LOG) {
                     return r->headers_out.status;
                 }
@@ -212,7 +215,6 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
             }
             return NGX_DECLINED;
         }
-        mrb_gc_arena_restore(state->mrb, state->ai);
         if (r->headers_out.status == NGX_HTTP_OK || !(*chain->last)->buf->last_buf) {
             r->headers_out.status = NGX_HTTP_OK;
             (*chain->last)->buf->last_buf = 1;
@@ -222,7 +224,6 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
         }
         return r->headers_out.status;
     }
-    mrb_gc_arena_restore(state->mrb, state->ai);
 
     return NGX_OK;
 }
