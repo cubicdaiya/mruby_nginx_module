@@ -156,8 +156,6 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
 
 ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
 {
-    ngx_http_mruby_main_conf_t *mmcf;
-    mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
     if (!cached) {
         state->ai = mrb_gc_arena_save(state->mrb);
     }

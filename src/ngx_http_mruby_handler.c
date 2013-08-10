@@ -86,7 +86,6 @@ ngx_int_t ngx_http_mruby_set_handler(ngx_http_request_t *r, ngx_str_t *val,
 {
     ngx_http_mruby_loc_conf_t     *mlcf = ngx_http_get_module_loc_conf(r, ngx_http_mruby_module);
     ngx_http_mruby_ctx_t          *ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-    ngx_http_mruby_main_conf_t    *mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
     ngx_http_mruby_set_var_data_t *filter_data;
     if (ctx == NULL) {
         if ((ctx = ngx_pcalloc(r->pool, sizeof(*ctx))) == NULL) {
@@ -117,7 +116,6 @@ ngx_int_t ngx_http_mruby_set_inline_handler(ngx_http_request_t *r, ngx_str_t *va
                                             ngx_http_variable_value_t *v, void *data)
 {
     ngx_http_mruby_set_var_data_t *filter_data;
-    ngx_http_mruby_main_conf_t    *mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
     ngx_http_mruby_ctx_t          *ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     if (ctx == NULL) {
         if ((ctx = ngx_pcalloc(r->pool, sizeof(*ctx))) == NULL) {
