@@ -4,9 +4,7 @@ require "net/http"
 
 class MrubyNginxModuleTest < Test::Unit::TestCase
     def setup
-      @dir = `pwd`
-      @dir = @dir.chop
-
+      @dir = File.dirname(File.expand_path(__FILE__))
       nginx_bin     = ENV['NGINX_BIN']
       nginx_options = " -p #{@dir}/ngx_base/ -c #{@dir}/ngx_base/etc/nginx.conf"
       `sudo #{nginx_bin} #{nginx_options}`
