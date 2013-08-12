@@ -3,6 +3,7 @@ GRTAGS
 GTAGS
 GSYMS
 mrbgems_config
+Gemfile.lock
 Makefile
 config.status
 config.log
