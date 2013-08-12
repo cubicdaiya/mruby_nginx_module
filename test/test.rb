@@ -1,8 +1,8 @@
-require "test/unit"
+require "minitest/autorun"
 require "net/empty_port"
 require "net/http"
 
-class MrubyNginxModuleTest < Test::Unit::TestCase
+class TestMrubyNginxModule < MiniTest::Test
     def setup
       @dir = File.dirname(File.expand_path(__FILE__))
       nginx_bin     = ENV['NGINX_BIN']
