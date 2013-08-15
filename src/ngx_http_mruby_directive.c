@@ -15,14 +15,92 @@
 static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, void *conf, code_type_t type);
 #endif
 
+#define NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(phase_name, phase_code, phase_handler, phase_enabled) \
+char *ngx_http_mruby_##phase_name##_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)               \
+{                                                                                                       \
+    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);   \
+    ngx_http_mruby_loc_conf_t  *mlcf;                                                                   \
+    ngx_str_t *value;                                                                                   \
+    ngx_mrb_code_t *code;                                                                               \
+    if (cmd->post == NULL) {                                                                            \
+        return NGX_CONF_ERROR;                                                                          \
+    }                                                                                                   \
+    mlcf  = conf;                                                                                       \
+    if (phase_handler != NULL) {                                                                        \
+        return "is duplicated";                                                                         \
+    }                                                                                                   \
+    value = cf->args->elts;                                                                             \
+    code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);                                     \
+    if (code == NGX_CONF_UNSET_PTR) {                                                                   \
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);            \
+        return NGX_CONF_ERROR;                                                                          \
+    }                                                                                                   \
+    phase_code    = code;                                                                               \
+    phase_handler = cmd->post;                                                                          \
+    phase_enabled = 1;                                                                                  \
+    ngx_http_mruby_shared_state_compile(mmcf->state, code);                                             \
+                                                                                                        \
+    return NGX_CONF_OK;                                                                                 \
+}
+
+#define NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(phase_name, phase_code, phase_handler, phase_enabled) \
+char *ngx_http_mruby_##phase_name##_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)               \
+{                                                                                                              \
+    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);          \
+    ngx_http_mruby_loc_conf_t  *mlcf;                                                                          \
+    ngx_str_t *value;                                                                                          \
+    ngx_mrb_code_t *code;                                                                                      \
+    if (cmd->post == NULL) {                                                                                   \
+        return NGX_CONF_ERROR;                                                                                 \
+    }                                                                                                          \
+    mlcf  = conf;                                                                                              \
+    if (phase_handler != NULL) {                                                                               \
+        return "is duplicated";                                                                                \
+    }                                                                                                          \
+    value = cf->args->elts;                                                                                    \
+    code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);                                          \
+    if (code == NGX_CONF_UNSET_PTR) {                                                                          \
+        return NGX_CONF_ERROR;                                                                                 \
+    }                                                                                                          \
+    phase_code    = code;                                                                                      \
+    phase_handler = cmd->post;                                                                                 \
+    phase_enabled = 1;                                                                                         \
+    ngx_http_mruby_shared_state_compile(mmcf->state, code);                                                    \
+    return NGX_CONF_OK;                                                                                        \
+}
+
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(post_read,      mlcf->post_read_code,      mlcf->post_read_handler,      mmcf->enabled_post_read_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(server_rewrite, mlcf->server_rewrite_code, mlcf->server_rewrite_handler, mmcf->enabled_server_rewrite_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(rewrite,        mlcf->rewrite_code,        mlcf->rewrite_handler,        mmcf->enabled_rewrite_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(access,         mlcf->access_code,         mlcf->access_handler,         mmcf->enabled_access_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(content,        mlcf->content_code,        mlcf->content_handler,        mmcf->enabled_content_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(log,            mlcf->log_code,            mlcf->log_handler,            mmcf->enabled_log_handler);
+
+NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(post_read, mlcf->post_read_inline_code,
+                                                 mlcf->post_read_handler, mmcf->enabled_post_read_handler);
+NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(server_rewrite, mlcf->server_rewrite_inline_code,
+                                                 mlcf->server_rewrite_handler, mmcf->enabled_server_rewrite_handler);
+NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(rewrite, mlcf->rewrite_inline_code,
+                                                 mlcf->rewrite_handler, mmcf->enabled_rewrite_handler);
+NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(access, mlcf->access_inline_code,
+                                                 mlcf->access_handler, mmcf->enabled_access_handler);
+NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(content, mlcf->content_inline_code,
+                                                 mlcf->content_handler, mmcf->enabled_content_handler);
+NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(log, mlcf->log_inline_code,
+                                                 mlcf->log_handler, mmcf->enabled_log_handler);
+
 char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 { 
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
     ngx_mrb_code_t *code;
 
+    if (cmd->post == NULL) {
+        return NGX_CONF_ERROR;
+    }
+
     if (mmcf->init_code != NULL) {
-        return "[Use either 'mruby_init' or 'mruby_init_inline']";
+        return "is duplicated";
     }
 
     value = cf->args->elts;
@@ -32,18 +110,22 @@ char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
         return NGX_CONF_ERROR;
     }
-    mmcf->init_code = code;
+    mmcf->init_code    = code;
     mmcf->init_handler = cmd->post;
     ngx_http_mruby_shared_state_compile(mmcf->state, code);
 
     return NGX_CONF_OK;
 }
 
-char *ngx_http_mruby_init_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+char *ngx_http_mruby_init_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 { 
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
     ngx_mrb_code_t *code;
+
+    if (cmd->post == NULL) {
+        return NGX_CONF_ERROR;
+    }
 
     if (mmcf->init_code != NULL) {
         return "is duplicated";
@@ -55,234 +137,8 @@ char *ngx_http_mruby_init_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     if (code == NGX_CONF_UNSET_PTR) {
         return NGX_CONF_ERROR;
     }
-    mmcf->init_code = code;
+    mmcf->init_code    = code;
     mmcf->init_handler = cmd->post;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_post_read_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{ 
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_http_mruby_loc_conf_t *mlcf;
-    ngx_str_t *value;
-    ngx_mrb_code_t *code;
-
-    mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
-        return NGX_CONF_ERROR;
-    }
-    mlcf->post_read_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_server_rewrite_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{ 
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_http_mruby_loc_conf_t *mlcf;
-    ngx_mrb_code_t *code;
-
-    mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
-        return NGX_CONF_ERROR;
-    }
-    mlcf->server_rewrite_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_rewrite_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{ 
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-    ngx_mrb_code_t *code;
- 
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
-        return NGX_CONF_ERROR;
-    }
-    mlcf->rewrite_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_access_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{ 
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-    ngx_mrb_code_t *code;
- 
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
-        return NGX_CONF_ERROR;
-    }
-    mlcf->access_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_content_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-    ngx_mrb_code_t *code;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
-        return NGX_CONF_ERROR;
-    }
-    mlcf->content_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_log_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-    ngx_mrb_code_t *code;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
-        return NGX_CONF_ERROR;
-    }
-    mlcf->log_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_post_read_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_mrb_code_t *code;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        return NGX_CONF_ERROR;
-    }
-    mlcf->post_read_inline_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_server_rewrite_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_mrb_code_t *code;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        return NGX_CONF_ERROR;
-    }
-    mlcf->server_rewrite_inline_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_rewrite_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_mrb_code_t *code;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        return NGX_CONF_ERROR;
-    }
-    mlcf->rewrite_inline_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_access_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_mrb_code_t *code;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        return NGX_CONF_ERROR;
-    }
-    mlcf->access_inline_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_content_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_mrb_code_t *code;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        return NGX_CONF_ERROR;
-    }
-    mlcf->content_inline_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
-
-    return NGX_CONF_OK;
-}
-
-char *ngx_http_mruby_log_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
-{
-    ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
-    ngx_str_t *value;
-    ngx_mrb_code_t *code;
-    ngx_http_mruby_loc_conf_t *mlcf = conf;
-
-    value = cf->args->elts;
-    code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
-    if (code == NGX_CONF_UNSET_PTR) {
-        return NGX_CONF_ERROR;
-    }
-    mlcf->log_inline_code = code;
     ngx_http_mruby_shared_state_compile(mmcf->state, code);
 
     return NGX_CONF_OK;
@@ -294,6 +150,14 @@ char *ngx_http_mruby_header_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, voi
     ngx_str_t *value;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
     ngx_mrb_code_t *code;
+
+    if (cmd->post == NULL) {
+        return NGX_CONF_ERROR;
+    }
+
+    if (mlcf->header_filter_handler != NULL) {
+        return "is duplicated";
+    }
 
     value = cf->args->elts;
     code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
@@ -316,6 +180,14 @@ char *ngx_http_mruby_body_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, void 
     ngx_http_mruby_loc_conf_t *mlcf = conf;
     ngx_mrb_code_t *code;
 
+    if (cmd->post == NULL) {
+        return NGX_CONF_ERROR;
+    }
+
+    if (mlcf->body_filter_handler != NULL) {
+        return "is duplicated";
+    }
+
     value = cf->args->elts;
     code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &value[1]);
     if (code == NGX_CONF_UNSET_PTR) {
@@ -331,12 +203,20 @@ char *ngx_http_mruby_body_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, void 
     return NGX_CONF_OK;
 }
 
-char *ngx_http_mruby_header_filter_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+char *ngx_http_mruby_header_filter_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
     ngx_mrb_code_t *code;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
+
+    if (cmd->post == NULL) {
+        return NGX_CONF_ERROR;
+    }
+
+    if (mlcf->header_filter_handler != NULL) {
+        return "is duplicated";
+    }
 
     value = cf->args->elts;
     code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
@@ -351,12 +231,20 @@ char *ngx_http_mruby_header_filter_inline(ngx_conf_t *cf, ngx_command_t *cmd, vo
     return NGX_CONF_OK;
 }
 
-char *ngx_http_mruby_body_filter_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+char *ngx_http_mruby_body_filter_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
     ngx_mrb_code_t *code;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
+
+    if (cmd->post == NULL) {
+        return NGX_CONF_ERROR;
+    }
+
+    if (mlcf->body_filter_handler != NULL) {
+        return "is duplicated";
+    }
 
     value = cf->args->elts;
     code  = ngx_http_mruby_mrb_code_from_string(cf->pool, &value[1]);
@@ -418,12 +306,12 @@ static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, voi
     return ndk_set_var_multi_value_core(cf, &target, &value[3], &filter);
 }
 
-char *ngx_http_mruby_set(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+char *ngx_http_mruby_set_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_MRB_CODE_TYPE_FILE);
 }
 
-char *ngx_http_mruby_set_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+char *ngx_http_mruby_set_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_MRB_CODE_TYPE_STRING);
 }

@@ -33,7 +33,7 @@ static char *ngx_http_mruby_merge_loc_conf(ngx_conf_t *cf, void *parent, void *c
 // set init function
 static ngx_int_t ngx_http_mruby_preinit(ngx_conf_t *cf);
 static ngx_int_t ngx_http_mruby_init(ngx_conf_t *cf);
-static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf);
+static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf, ngx_http_mruby_main_conf_t *mmcf);
 
 static ngx_command_t ngx_http_mruby_commands[] = {
 
@@ -47,7 +47,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
 
     { ngx_string("mruby_init_code"),
       NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
-      ngx_http_mruby_init_inline,
+      ngx_http_mruby_init_inline_phase,
       NGX_HTTP_MAIN_CONF_OFFSET,
       0,
       ngx_http_mruby_init_handler
@@ -67,7 +67,8 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_post_read_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_post_read_file_handler
+    },
 
     { ngx_string("mruby_server_rewrite_handler"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
@@ -75,7 +76,8 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_server_rewrite_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_server_rewrite_file_handler
+    },
 
     { ngx_string("mruby_rewrite_handler"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
@@ -83,7 +85,8 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_rewrite_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_rewrite_file_handler
+    },
  
     { ngx_string("mruby_access_handler"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
@@ -91,7 +94,8 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_access_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_access_file_handler
+    },
  
     { ngx_string("mruby_content_handler"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
@@ -99,7 +103,8 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_content_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_content_file_handler
+    },
  
     { ngx_string("mruby_log_handler"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
@@ -107,12 +112,13 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_log_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_log_file_handler
+    },
  
     { ngx_string("mruby_post_read_handler_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_post_read_inline,
+      ngx_http_mruby_post_read_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_post_read_inline_handler },
@@ -120,7 +126,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_server_rewrite_handler_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_server_rewrite_inline,
+      ngx_http_mruby_server_rewrite_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_server_rewrite_inline_handler },
@@ -128,7 +134,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_rewrite_handler_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_rewrite_inline,
+      ngx_http_mruby_rewrite_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_rewrite_inline_handler },
@@ -136,7 +142,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_access_handler_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_access_inline,
+      ngx_http_mruby_access_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_access_inline_handler },
@@ -144,7 +150,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_content_handler_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_content_inline,
+      ngx_http_mruby_content_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_content_inline_handler },
@@ -152,7 +158,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_log_handler_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_log_inline,
+      ngx_http_mruby_log_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_log_inline_handler },
@@ -161,7 +167,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_set"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_2MORE,
-      ngx_http_mruby_set,
+      ngx_http_mruby_set_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_set_handler },
@@ -169,7 +175,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_set_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_2MORE,
-      ngx_http_mruby_set_inline,
+      ngx_http_mruby_set_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_set_inline_handler },
@@ -186,7 +192,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_header_filter_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_header_filter_inline,
+      ngx_http_mruby_header_filter_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_header_filter_inline_handler },
@@ -202,7 +208,7 @@ static ngx_command_t ngx_http_mruby_commands[] = {
     { ngx_string("mruby_body_filter_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
-      ngx_http_mruby_body_filter_inline,
+      ngx_http_mruby_body_filter_inline_phase,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
       ngx_http_mruby_body_filter_inline_handler },
@@ -345,7 +351,7 @@ static ngx_int_t ngx_http_mruby_init(ngx_conf_t *cf)
 
     ngx_mruby_request = NULL;
 
-    if (ngx_http_mruby_handler_init(cmcf) != NGX_OK) {
+    if (ngx_http_mruby_handler_init(cmcf, mmcf) != NGX_OK) {
         return NGX_ERROR;
     }
 
@@ -363,7 +369,7 @@ static ngx_int_t ngx_http_mruby_init(ngx_conf_t *cf)
     return NGX_OK;
 }
 
-static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf)
+static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf, ngx_http_mruby_main_conf_t *mmcf)
 {
     ngx_int_t i;
     ngx_http_handler_pt *h;
@@ -386,58 +392,60 @@ static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf)
     phases_c = sizeof(phases) / sizeof(ngx_http_phases);
     for (i=0;i<phases_c;i++) {
         phase = phases[i];
-        h = ngx_array_push(&cmcf->phases[phase].handlers);
-        if (h == NULL) {
-            return NGX_ERROR;
-        }
         switch (phase) {
         case NGX_HTTP_POST_READ_PHASE:
-            *h = ngx_http_mruby_post_read_handler;
-            h = ngx_array_push(&cmcf->phases[phase].handlers);
-            if (h == NULL) {
-                return NGX_ERROR;
+            if (mmcf->enabled_post_read_handler) {
+                h = ngx_array_push(&cmcf->phases[phase].handlers);
+                if (h == NULL) {
+                    return NGX_ERROR;
+                }
+                *h = ngx_http_mruby_post_read_handler;
             }
-            *h = ngx_http_mruby_post_read_inline_handler;
             break;
         case NGX_HTTP_SERVER_REWRITE_PHASE:
-            *h = ngx_http_mruby_server_rewrite_handler;
-            h = ngx_array_push(&cmcf->phases[phase].handlers);
-            if (h == NULL) {
-                return NGX_ERROR;
+            if (mmcf->enabled_server_rewrite_handler) {
+                h = ngx_array_push(&cmcf->phases[phase].handlers);
+                if (h == NULL) {
+                    return NGX_ERROR;
+                }
+                *h = ngx_http_mruby_server_rewrite_handler;
             }
-            *h = ngx_http_mruby_server_rewrite_inline_handler;
             break;
         case NGX_HTTP_REWRITE_PHASE:
-            *h = ngx_http_mruby_rewrite_handler;
-            h = ngx_array_push(&cmcf->phases[phase].handlers);
-            if (h == NULL) {
-                return NGX_ERROR;
+            if (mmcf->enabled_rewrite_handler) {
+                h = ngx_array_push(&cmcf->phases[phase].handlers);
+                if (h == NULL) {
+                    return NGX_ERROR;
+                }
+                *h = ngx_http_mruby_rewrite_handler;
             }
-            *h = ngx_http_mruby_rewrite_inline_handler;
             break;
         case NGX_HTTP_ACCESS_PHASE:
-            *h = ngx_http_mruby_access_handler;
-            h = ngx_array_push(&cmcf->phases[phase].handlers);
-            if (h == NULL) {
-                return NGX_ERROR;
+            if (mmcf->enabled_access_handler) {
+                h = ngx_array_push(&cmcf->phases[phase].handlers);
+                if (h == NULL) {
+                    return NGX_ERROR;
+                }
+                *h = ngx_http_mruby_access_handler;
             }
-            *h = ngx_http_mruby_access_inline_handler;
             break;
         case NGX_HTTP_CONTENT_PHASE:
-            *h = ngx_http_mruby_content_handler;
-            h = ngx_array_push(&cmcf->phases[phase].handlers);
-            if (h == NULL) {
-                return NGX_ERROR;
+            if (mmcf->enabled_content_handler) {
+                h = ngx_array_push(&cmcf->phases[phase].handlers);
+                if (h == NULL) {
+                    return NGX_ERROR;
+                }
+                *h = ngx_http_mruby_content_handler;
             }
-            *h = ngx_http_mruby_content_inline_handler;
             break;
         case NGX_HTTP_LOG_PHASE:
-            *h = ngx_http_mruby_log_handler;
-            h = ngx_array_push(&cmcf->phases[phase].handlers);
-            if (h == NULL) {
-                return NGX_ERROR;
+            if (mmcf->enabled_log_handler) {
+                h = ngx_array_push(&cmcf->phases[phase].handlers);
+                if (h == NULL) {
+                    return NGX_ERROR;
+                }
+                *h = ngx_http_mruby_log_handler;
             }
-            *h = ngx_http_mruby_log_inline_handler;
             break;
         default:
             // not through
