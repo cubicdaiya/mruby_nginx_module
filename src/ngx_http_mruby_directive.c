@@ -33,6 +33,7 @@ char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
     mmcf->init_code = code;
+    mmcf->init_handler = cmd->post;
     ngx_http_mruby_shared_state_compile(mmcf->state, code);
 
     return NGX_CONF_OK;
@@ -55,6 +56,7 @@ char *ngx_http_mruby_init_inline(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
     mmcf->init_code = code;
+    mmcf->init_handler = cmd->post;
     ngx_http_mruby_shared_state_compile(mmcf->state, code);
 
     return NGX_CONF_OK;

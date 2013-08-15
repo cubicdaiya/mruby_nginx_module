@@ -14,6 +14,12 @@
 #include "ngx_http_mruby_handler.h"
 #include "ngx_http_mruby_state.h"
 
+// this function is called only when initializing
+ngx_int_t ngx_http_mruby_init_handler(ngx_conf_t *cf, ngx_http_mruby_main_conf_t *mmcf)
+{
+    return ngx_mrb_run_conf(cf, mmcf->state, mmcf->init_code);
+}
+
 #define NGX_MRUBY_DEFINE_METHOD_NGX_HANDLER(handler_name, code, context_phase)                  \
 ngx_int_t ngx_http_mruby_##handler_name##_handler(ngx_http_request_t *r)                        \
 {                                                                                               \

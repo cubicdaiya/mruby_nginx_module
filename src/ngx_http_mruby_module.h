@@ -37,6 +37,7 @@ typedef struct ngx_http_mruby_main_conf_t {
     ngx_mrb_code_t  *init_code;
     ngx_int_t        enabled_header_filter;
     ngx_int_t        enabled_body_filter;
+    ngx_int_t        (*init_handler)(ngx_conf_t *conf, struct ngx_http_mruby_main_conf_t *mmcf);
 } ngx_http_mruby_main_conf_t;
 
 typedef struct ngx_http_mruby_loc_conf_t {

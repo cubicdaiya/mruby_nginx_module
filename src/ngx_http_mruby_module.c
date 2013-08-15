@@ -42,14 +42,16 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_init_inline,
       NGX_HTTP_MAIN_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_init_handler
+    },
 
     { ngx_string("mruby_init"),
       NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_http_mruby_init_phase,
       NGX_HTTP_MAIN_CONF_OFFSET,
       0,
-      NULL },
+      ngx_http_mruby_init_handler
+    },
 
     { ngx_string("mruby_cache"),
       NGX_HTTP_LOC_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG,
@@ -353,8 +355,8 @@ static ngx_int_t ngx_http_mruby_init(ngx_conf_t *cf)
         ngx_http_mruby_body_filter_init();
     }
 
-    if (mmcf->init_code != NULL) {
-        return ngx_mrb_run_conf(cf, mmcf->state, mmcf->init_code);
+    if (mmcf->init_handler) {
+        return mmcf->init_handler(cf, mmcf);
     }
 
     return NGX_OK;

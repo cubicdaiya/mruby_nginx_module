@@ -49,6 +49,7 @@ ngx_int_t ngx_mrb_run_conf(ngx_conf_t *cf, ngx_mrb_state_t *state, ngx_mrb_code_
     }
     
     mrb_gc_arena_restore(state->mrb, state->ai);
+
     return NGX_OK;
 }
 
