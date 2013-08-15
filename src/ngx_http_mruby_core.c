@@ -102,11 +102,6 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
-    if (state == NGX_CONF_UNSET_PTR || code == NGX_CONF_UNSET_PTR) {
-        mrb_gc_arena_restore(state->mrb, state->ai);
-        return NGX_DECLINED;
-    }
-
     ngx_mrb_push_request(r);
 
     if (!cached) {
