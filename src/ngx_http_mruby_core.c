@@ -56,8 +56,11 @@ ngx_int_t ngx_mrb_run_conf(ngx_conf_t *cf, ngx_mrb_state_t *state, ngx_mrb_code_
 ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached,
                            ngx_http_variable_value_t *args, size_t nargs, ngx_str_t *result)
 {
+    ngx_http_mruby_ctx_t *ctx;
     ngx_uint_t i;
     mrb_value ARGV, mrb_result;
+
+    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
     if (!cached) {
         state->ai = mrb_gc_arena_save(state->mrb);
@@ -88,6 +91,7 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     result->data = (u_char *)RSTRING_PTR(mrb_result);
     result->len  = ngx_strlen(result->data);
     mrb_gc_arena_restore(state->mrb, state->ai);
+    mrb_gc_protect(state->mrb, ctx->table);
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
@@ -115,7 +119,8 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     }
 
     mrb_gc_arena_restore(state->mrb, state->ai);
-
+    mrb_gc_protect(state->mrb, ctx->table);
+  
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
@@ -152,6 +157,8 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
 
 ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
 {
+    ngx_http_mruby_ctx_t *ctx;
+    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     if (!cached) {
         state->ai = mrb_gc_arena_save(state->mrb);
     }
@@ -167,6 +174,7 @@ ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *stat
     }
 
     mrb_gc_arena_restore(state->mrb, state->ai);
+    mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
@@ -209,6 +217,7 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
     ctx->filter_ctx.body_length = ngx_strlen(ctx->filter_ctx.body);
 
     mrb_gc_arena_restore(state->mrb, state->ai);
+    mrb_gc_protect(state->mrb, ctx->table);
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
