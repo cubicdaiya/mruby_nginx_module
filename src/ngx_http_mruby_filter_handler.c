@@ -41,7 +41,6 @@ ngx_int_t ngx_http_mruby_header_filter_handler(ngx_http_request_t *r)
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
     ngx_http_mruby_loc_conf_t  *mlcf = ngx_http_get_module_loc_conf(r,  ngx_http_mruby_module);
     ngx_http_mruby_ctx_t *ctx;
-    ngx_int_t rc;
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     ctx->filter_ctx.body_length = r->headers_out.content_length_n;
@@ -53,12 +52,7 @@ ngx_int_t ngx_http_mruby_header_filter_handler(ngx_http_request_t *r)
         ngx_http_mruby_state_reinit_from_file
     );
 
-    rc = ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_code, mlcf->cached);
-    if (rc == NGX_DECLINED || rc == NGX_ERROR) {
-        return NGX_ERROR;
-    }
-
-    return NGX_OK;
+    return ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_code, mlcf->cached);
 }
 
 ngx_int_t ngx_http_mruby_header_filter_inline_handler(ngx_http_request_t *r)
@@ -66,17 +60,11 @@ ngx_int_t ngx_http_mruby_header_filter_inline_handler(ngx_http_request_t *r)
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_get_module_main_conf(r, ngx_http_mruby_module);
     ngx_http_mruby_loc_conf_t  *mlcf = ngx_http_get_module_loc_conf(r,  ngx_http_mruby_module);
     ngx_http_mruby_ctx_t *ctx;
-    ngx_int_t rc;
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     ctx->filter_ctx.body_length = r->headers_out.content_length_n;
 
-    rc = ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_inline_code, 1);
-    if (rc == NGX_DECLINED || rc == NGX_ERROR) {
-        return NGX_ERROR;
-    }
- 
-    return NGX_OK;
+    return ngx_mrb_run_header_filter(r, mmcf->state, mlcf->header_filter_inline_code, 1);
 }
 
 ngx_int_t ngx_http_mruby_body_filter_handler(ngx_http_request_t *r, ngx_chain_t *in)
@@ -108,8 +96,8 @@ ngx_int_t ngx_http_mruby_body_filter_handler(ngx_http_request_t *r, ngx_chain_t 
     );
 
     rc = ngx_mrb_run_body_filter(r, mmcf->state, mlcf->body_filter_code, mlcf->cached);
-    if (rc == NGX_ERROR) {
-        return NGX_ERROR;
+    if (rc != NGX_OK) {
+        return rc;
     }
 
     b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));
@@ -155,8 +143,8 @@ ngx_int_t ngx_http_mruby_body_filter_inline_handler(ngx_http_request_t *r, ngx_c
     r->connection->buffered &= ~0x08;
 
     rc = ngx_mrb_run_body_filter(r, mmcf->state, mlcf->body_filter_inline_code, 1);
-    if (rc == NGX_ERROR) {
-        return NGX_ERROR;
+    if (rc != NGX_OK) {
+        return rc;
     }
 
     b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));
@@ -219,7 +207,7 @@ static ngx_int_t ngx_http_mruby_header_filter(ngx_http_request_t *r)
 
     rc = mlcf->header_filter_handler(r);
     if (rc != NGX_OK) {
-        return NGX_ERROR;
+        return rc;
     }
 
     if (!mmcf->enabled_body_filter || mlcf->body_filter_handler == NULL) {
@@ -253,7 +241,7 @@ static ngx_int_t ngx_http_mruby_body_filter(ngx_http_request_t *r, ngx_chain_t *
         return NGX_AGAIN;
     }
     if (rc != NGX_OK) {
-        return NGX_ERROR;
+        return rc;
     }
     return NGX_OK;
 }
