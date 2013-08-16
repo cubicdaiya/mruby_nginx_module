@@ -1,3 +1,23 @@
+2011-08-17 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+	* fix bug(Nginx.Context is collected as garbage by mruby's gc)
+
+	* fix bug(header and body filters stall or fail in some configuration)
+
+	* call only required handlers -> f8e4a48
+
+	* remove (post_read|server_rewrite)_handlers.(These handler is not required)
+
+	* rename and deletes members and functions of Nginx class
+
+	* change default behavior of mruby_cache(mruby_cache is on by default)
+
+	* add test suites
+
+	* add functions(time, http_time, cookie_time, etc) to Nginx::Time
+
+	* bumped version to 0.1.0
+
 2011-08-03 Tatsuhiko Kubo <cubicdaiya@gmail.com>
 
 	* add class Nginx::Time
