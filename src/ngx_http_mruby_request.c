@@ -81,10 +81,9 @@ static mrb_value ngx_mrb_get_request_headers_out(mrb_state *mrb, mrb_value self)
 static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers);
 static mrb_value ngx_mrb_set_request_headers_out(mrb_state *mrb, mrb_value self);
 
-ngx_int_t ngx_mrb_push_request(ngx_http_request_t *r)
+void ngx_mrb_push_request(ngx_http_request_t *r)
 {
     ngx_mruby_request = r;
-    return NGX_OK;
 }
 
 ngx_http_request_t *ngx_mrb_get_request(void)
