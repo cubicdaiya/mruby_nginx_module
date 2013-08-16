@@ -31,8 +31,6 @@ ngx_int_t ngx_http_mruby_##phase_name##_handler(ngx_http_request_t *r) \
     return handler(r);                                                 \
 }
 
-NGX_MRUBY_DEFINE_METHOD_NGX_HANDLER(post_read,      mlcf->post_read_handler);
-NGX_MRUBY_DEFINE_METHOD_NGX_HANDLER(server_rewrite, mlcf->server_rewrite_handler);
 NGX_MRUBY_DEFINE_METHOD_NGX_HANDLER(rewrite,        mlcf->rewrite_handler);
 NGX_MRUBY_DEFINE_METHOD_NGX_HANDLER(access,         mlcf->access_handler);
 NGX_MRUBY_DEFINE_METHOD_NGX_HANDLER(content,        mlcf->content_handler);
@@ -92,15 +90,11 @@ ngx_int_t ngx_http_mruby_##handler_name##_inline_handler(ngx_http_request_t *r) 
     return ngx_mrb_run(r, mmcf->state, code, 1);                                                \
 }
 
-NGX_MRUBY_DEFINE_METHOD_NGX_FILE_HANDLER(post_read,      mlcf->post_read_code,      NGX_HTTP_MRUBY_PHASE_POST_READ)
-NGX_MRUBY_DEFINE_METHOD_NGX_FILE_HANDLER(server_rewrite, mlcf->server_rewrite_code, NGX_HTTP_MRUBY_PHASE_SERVER_REWRITE)
 NGX_MRUBY_DEFINE_METHOD_NGX_FILE_HANDLER(rewrite,        mlcf->rewrite_code,        NGX_HTTP_MRUBY_PHASE_REWRITE)
 NGX_MRUBY_DEFINE_METHOD_NGX_FILE_HANDLER(access,         mlcf->access_code,         NGX_HTTP_MRUBY_PHASE_ACCESS)
 NGX_MRUBY_DEFINE_METHOD_NGX_FILE_HANDLER(content,        mlcf->content_code,        NGX_HTTP_MRUBY_PHASE_CONTENT)
 NGX_MRUBY_DEFINE_METHOD_NGX_FILE_HANDLER(log,            mlcf->log_code,            NGX_HTTP_MRUBY_PHASE_LOG)
 
-NGX_MRUBY_DEFINE_METHOD_NGX_INLINE_HANDLER(post_read,      mlcf->post_read_inline_code,      NGX_HTTP_MRUBY_PHASE_POST_READ)
-NGX_MRUBY_DEFINE_METHOD_NGX_INLINE_HANDLER(server_rewrite, mlcf->server_rewrite_inline_code, NGX_HTTP_MRUBY_PHASE_SERVER_REWRITE)
 NGX_MRUBY_DEFINE_METHOD_NGX_INLINE_HANDLER(rewrite,        mlcf->rewrite_inline_code,        NGX_HTTP_MRUBY_PHASE_REWRITE)
 NGX_MRUBY_DEFINE_METHOD_NGX_INLINE_HANDLER(access,         mlcf->access_inline_code,         NGX_HTTP_MRUBY_PHASE_ACCESS)
 NGX_MRUBY_DEFINE_METHOD_NGX_INLINE_HANDLER(content,        mlcf->content_inline_code,        NGX_HTTP_MRUBY_PHASE_CONTENT)

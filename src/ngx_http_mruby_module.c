@@ -61,24 +61,6 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_init_handler
     },
 
-    { ngx_string("mruby_post_read_handler"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_mruby_post_read_phase,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      ngx_http_mruby_post_read_file_handler
-    },
-
-    { ngx_string("mruby_server_rewrite_handler"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_mruby_server_rewrite_phase,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      ngx_http_mruby_server_rewrite_file_handler
-    },
-
     { ngx_string("mruby_rewrite_handler"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
@@ -115,22 +97,6 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       ngx_http_mruby_log_file_handler
     },
  
-    { ngx_string("mruby_post_read_handler_code"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_mruby_post_read_inline_phase,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      ngx_http_mruby_post_read_inline_handler },
-
-    { ngx_string("mruby_server_rewrite_handler_code"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_mruby_server_rewrite_inline_phase,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      ngx_http_mruby_server_rewrite_inline_handler },
-
     { ngx_string("mruby_rewrite_handler_code"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
                         |NGX_CONF_TAKE1,
@@ -277,15 +243,11 @@ static void *ngx_http_mruby_create_loc_conf(ngx_conf_t *cf)
         return NULL;
     }
 
-    conf->post_read_code      = NGX_CONF_UNSET_PTR;
-    conf->server_rewrite_code = NGX_CONF_UNSET_PTR;
     conf->rewrite_code        = NGX_CONF_UNSET_PTR;
     conf->access_code         = NGX_CONF_UNSET_PTR;
     conf->content_code        = NGX_CONF_UNSET_PTR;
     conf->log_code            = NGX_CONF_UNSET_PTR;
 
-    conf->post_read_inline_code      = NGX_CONF_UNSET_PTR;
-    conf->server_rewrite_inline_code = NGX_CONF_UNSET_PTR;
     conf->rewrite_inline_code        = NGX_CONF_UNSET_PTR;
     conf->access_inline_code         = NGX_CONF_UNSET_PTR;
     conf->content_inline_code        = NGX_CONF_UNSET_PTR;
@@ -306,15 +268,11 @@ static char *ngx_http_mruby_merge_loc_conf(ngx_conf_t *cf, void *parent, void *c
     ngx_http_mruby_loc_conf_t *prev = parent;
     ngx_http_mruby_loc_conf_t *conf = child;
 
-    NGX_MRUBY_MERGE_CODE(prev->post_read_code,      conf->post_read_code);
-    NGX_MRUBY_MERGE_CODE(prev->server_rewrite_code, conf->server_rewrite_code);
     NGX_MRUBY_MERGE_CODE(prev->rewrite_code,        conf->rewrite_code);
     NGX_MRUBY_MERGE_CODE(prev->access_code,         conf->access_code);
     NGX_MRUBY_MERGE_CODE(prev->content_code,        conf->content_code);
     NGX_MRUBY_MERGE_CODE(prev->log_code,            conf->log_code);
 
-    NGX_MRUBY_MERGE_CODE(prev->post_read_inline_code,      conf->post_read_inline_code);
-    NGX_MRUBY_MERGE_CODE(prev->server_rewrite_inline_code, conf->server_rewrite_inline_code);
     NGX_MRUBY_MERGE_CODE(prev->rewrite_inline_code,        conf->rewrite_inline_code);
     NGX_MRUBY_MERGE_CODE(prev->access_inline_code,         conf->access_inline_code);
     NGX_MRUBY_MERGE_CODE(prev->content_inline_code,        conf->content_inline_code);
@@ -375,15 +333,8 @@ static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf, ng
     ngx_http_handler_pt *h;
     ngx_http_phases phase;
     ngx_http_phases phases[] = {
-        NGX_HTTP_POST_READ_PHASE,
-        //NGX_HTTP_FIND_CONFIG_PHASE,
-        NGX_HTTP_SERVER_REWRITE_PHASE,
         NGX_HTTP_REWRITE_PHASE,
-        //NGX_HTTP_POST_REWRITE_PHASE,
-        //NGX_HTTP_PREACCESS_PHASE,
         NGX_HTTP_ACCESS_PHASE,
-        //NGX_HTTP_POST_ACCESS_PHASE,
-        //NGX_HTTP_TRY_FILES_PHASE,
         NGX_HTTP_CONTENT_PHASE,
         NGX_HTTP_LOG_PHASE,
     };
@@ -393,24 +344,6 @@ static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf, ng
     for (i=0;i<phases_c;i++) {
         phase = phases[i];
         switch (phase) {
-        case NGX_HTTP_POST_READ_PHASE:
-            if (mmcf->enabled_post_read_handler) {
-                h = ngx_array_push(&cmcf->phases[phase].handlers);
-                if (h == NULL) {
-                    return NGX_ERROR;
-                }
-                *h = ngx_http_mruby_post_read_handler;
-            }
-            break;
-        case NGX_HTTP_SERVER_REWRITE_PHASE:
-            if (mmcf->enabled_server_rewrite_handler) {
-                h = ngx_array_push(&cmcf->phases[phase].handlers);
-                if (h == NULL) {
-                    return NGX_ERROR;
-                }
-                *h = ngx_http_mruby_server_rewrite_handler;
-            }
-            break;
         case NGX_HTTP_REWRITE_PHASE:
             if (mmcf->enabled_rewrite_handler) {
                 h = ngx_array_push(&cmcf->phases[phase].handlers);

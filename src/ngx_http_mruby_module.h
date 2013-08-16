@@ -36,8 +36,6 @@ typedef struct ngx_http_mruby_main_conf_t {
     ngx_mrb_state_t *state;
     ngx_mrb_code_t  *init_code;
     ngx_int_t        (*init_handler)(ngx_conf_t *conf, struct ngx_http_mruby_main_conf_t *mmcf);
-    unsigned         enabled_post_read_handler:1;
-    unsigned         enabled_server_rewrite_handler:1;
     unsigned         enabled_rewrite_handler:1;
     unsigned         enabled_access_handler:1;
     unsigned         enabled_content_handler:1;
@@ -47,15 +45,10 @@ typedef struct ngx_http_mruby_main_conf_t {
 } ngx_http_mruby_main_conf_t;
 
 typedef struct ngx_http_mruby_loc_conf_t {
-    // 
-    ngx_mrb_code_t *post_read_code;
-    ngx_mrb_code_t *server_rewrite_code;
     ngx_mrb_code_t *rewrite_code;
     ngx_mrb_code_t *access_code;
     ngx_mrb_code_t *content_code;
     ngx_mrb_code_t *log_code;
-    ngx_mrb_code_t *post_read_inline_code;
-    ngx_mrb_code_t *server_rewrite_inline_code;
     ngx_mrb_code_t *rewrite_inline_code;
     ngx_mrb_code_t *access_inline_code;
     ngx_mrb_code_t *content_inline_code;
@@ -67,8 +60,6 @@ typedef struct ngx_http_mruby_loc_conf_t {
     ngx_flag_t      cached;
 
     ngx_int_t (*init_handler)(ngx_conf_t *conf, struct ngx_http_mruby_main_conf_t *mmcf);
-    ngx_int_t (*post_read_handler)(ngx_http_request_t *r);
-    ngx_int_t (*server_rewrite_handler)(ngx_http_request_t *r);
     ngx_int_t (*rewrite_handler)(ngx_http_request_t *r);
     ngx_int_t (*access_handler)(ngx_http_request_t *r);
     ngx_int_t (*content_handler)(ngx_http_request_t *r);

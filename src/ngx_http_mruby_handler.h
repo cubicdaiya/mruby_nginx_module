@@ -19,22 +19,16 @@
 
 ngx_int_t ngx_http_mruby_init_handler(ngx_conf_t *cf, ngx_http_mruby_main_conf_t *mmcf);
 
-ngx_int_t ngx_http_mruby_post_read_handler(ngx_http_request_t *r);
-ngx_int_t ngx_http_mruby_server_rewrite_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_rewrite_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_access_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_content_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_log_handler(ngx_http_request_t *r);
 
-ngx_int_t ngx_http_mruby_post_read_file_handler(ngx_http_request_t *r);
-ngx_int_t ngx_http_mruby_server_rewrite_file_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_rewrite_file_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_access_file_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_content_file_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_log_file_handler(ngx_http_request_t *r);
 
-ngx_int_t ngx_http_mruby_post_read_inline_handler(ngx_http_request_t *r);
-ngx_int_t ngx_http_mruby_server_rewrite_inline_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_rewrite_inline_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_access_inline_handler(ngx_http_request_t *r);
 ngx_int_t ngx_http_mruby_content_inline_handler(ngx_http_request_t *r);
