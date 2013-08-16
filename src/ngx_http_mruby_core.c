@@ -90,8 +90,10 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
 
     result->data = (u_char *)RSTRING_PTR(mrb_result);
     result->len  = ngx_strlen(result->data);
+
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
+
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
@@ -156,10 +158,13 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
 ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
 {
     ngx_http_mruby_ctx_t *ctx;
+
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
+
     if (!cached) {
         state->ai = mrb_gc_arena_save(state->mrb);
     }
+
     ngx_mrb_push_request(r);
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     if (state->mrb->exc) {
@@ -177,6 +182,7 @@ ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *stat
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
+
     return NGX_OK;
 }
 
@@ -216,9 +222,11 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
+
     if (!cached) {
         ngx_mrb_irep_clean(state, code);
     }
+
     return NGX_OK;
 }
 
@@ -238,6 +246,7 @@ static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self)
 
     ctx   = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     chain = ctx->rputs_chain;
+
     if (chain != NULL) {
         (*chain->last)->buf->last_buf = 1;
     }
@@ -283,6 +292,7 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
 
     ns.data = (u_char *)RSTRING_PTR(argv);
     ns.len  = ngx_strlen(ns.data);
+
     if (ns.len == 0) {
         return self;
     }
@@ -296,6 +306,7 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
         (*chain->last)->next = ngx_alloc_chain_link(r->pool);
         chain->last = &(*chain->last)->next;
     }
+
     b = ngx_calloc_buf(r->pool);
     (*chain->last)->buf = b;
     (*chain->last)->next = NULL;
@@ -303,6 +314,7 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
     if ((str = ngx_pnalloc(r->pool, ns.len + 1)) == NULL) {
         return self;
     }
+
     ngx_memcpy(str, ns.data, ns.len);
     str[ns.len] = '\0';
     (*chain->last)->buf->pos    = str;
@@ -330,6 +342,7 @@ static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
     r = ngx_mrb_get_request();
 
     mrb_get_args(mrb, "*", &argv, &argc);
+
     if (argc != 2) {
         ngx_log_error(NGX_LOG_ERR
             , r->connection->log
@@ -340,6 +353,7 @@ static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
         );
         return self;
     }
+
     if (mrb_type(argv[0]) != MRB_TT_FIXNUM) {
         ngx_log_error(NGX_LOG_ERR
             , r->connection->log
@@ -350,7 +364,9 @@ static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
         );
         return self;
     }
+
     log_level = mrb_fixnum(argv[0]);
+
     if (log_level < 0) {
         ngx_log_error(NGX_LOG_ERR
             , r->connection->log
@@ -361,11 +377,13 @@ static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
         );
         return self;
     }
+
     if (mrb_type(argv[1]) != MRB_TT_STRING) {
         msg = mrb_funcall(mrb, argv[1], "to_s", 0, NULL);
     } else {
         msg = mrb_str_dup(mrb, argv[1]);
     }
+
     ngx_log_error((ngx_uint_t)log_level, r->connection->log, 0, "%s", RSTRING_PTR(msg));
 
     return self;
@@ -412,6 +430,7 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
     // save location uri to ns
     ns.data = (u_char *)RSTRING_PTR(uri);
     ns.len  = ngx_strlen(ns.data);
+
     if (ns.len == 0) {
         return mrb_nil_value();
     }
@@ -427,11 +446,13 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
         if ((str = ngx_pnalloc(r->pool, ns.len + 1)) == NULL) {
             return self;
         }
+
         ngx_memcpy(str, ns.data, ns.len);
         str[ns.len] = '\0';
 
         // build redirect location
         r->headers_out.location = ngx_list_push(&r->headers_out.headers);
+
         if (r->headers_out.location == NULL) {
             return self;
         }
