@@ -69,10 +69,10 @@ char *ngx_http_mruby_##phase_name##_inline_phase(ngx_conf_t *cf, ngx_command_t *
     return NGX_CONF_OK;                                                                                        \
 }
 
-NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(rewrite,        mlcf->rewrite_code,        mlcf->rewrite_handler,        mmcf->enabled_rewrite_handler);
-NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(access,         mlcf->access_code,         mlcf->access_handler,         mmcf->enabled_access_handler);
-NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(content,        mlcf->content_code,        mlcf->content_handler,        mmcf->enabled_content_handler);
-NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(log,            mlcf->log_code,            mlcf->log_handler,            mmcf->enabled_log_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(rewrite, mlcf->rewrite_code, mlcf->rewrite_handler, mmcf->enabled_rewrite_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(access,  mlcf->access_code,  mlcf->access_handler,  mmcf->enabled_access_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(content, mlcf->content_code, mlcf->content_handler, mmcf->enabled_content_handler);
+NGX_MRUBY_DEFINE_METHOD_HANDLER_DIRECTIVE(log,     mlcf->log_code,     mlcf->log_handler,     mmcf->enabled_log_handler);
 
 NGX_MRUBY_DEFINE_METHOD_INLINE_HANDLER_DIRECTIVE(rewrite, mlcf->rewrite_inline_code,
                                                  mlcf->rewrite_handler, mmcf->enabled_rewrite_handler);
