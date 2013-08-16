@@ -22,13 +22,12 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
 
 static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_name)
 {
-    ngx_http_request_t *r;
+    ngx_http_request_t        *r;
     ngx_http_variable_value_t *var;
-    ngx_str_t ngx_name;
-
-    u_char *low;
-    size_t len;
-    ngx_uint_t key;
+    ngx_str_t                  ngx_name;
+    u_char                    *low;
+    size_t                     len;
+    ngx_uint_t                 key;
 
     r = ngx_mrb_get_request();
 
@@ -57,10 +56,10 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
 
 static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self)
 {
-    mrb_value name, a;
-    int alen;
-    mrb_value s_name;
-    char *c_name;
+    mrb_value  name, a;
+    int        alen;
+    mrb_value  s_name;
+    char      *c_name;
 
     mrb_get_args(mrb, "n*", &name, &a, &alen);
 
@@ -72,15 +71,15 @@ static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self)
 
 static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
 {
-    ngx_http_request_t *r;
-    ngx_http_variable_t *v;
+    ngx_http_request_t        *r;
+    ngx_http_variable_t       *v;
     ngx_http_variable_value_t *vv;
     ngx_http_core_main_conf_t *cmcf;
-    ngx_str_t key;
-    ngx_uint_t hash;
-    u_char *val, *low;
-    char *k;
-    mrb_value o;
+    ngx_str_t                  key;
+    ngx_uint_t                 hash;
+    u_char                    *val, *low;
+    char                      *k;
+    mrb_value                  o;
 
     r = ngx_mrb_get_request();
 

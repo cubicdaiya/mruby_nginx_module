@@ -205,14 +205,14 @@ void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *class)
 
     class_digest = mrb_define_class_under(mrb, class, "Digest", mrb->object_class);
 
-    mrb_define_class_method(mrb, class_digest, "md5",       ngx_mrb_md5,       ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "md5",         ngx_mrb_md5,         ARGS_ANY());
 #if NGX_HAVE_SHA1
-    mrb_define_class_method(mrb, class_digest, "sha1",      ngx_mrb_sha1,      ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "sha1",        ngx_mrb_sha1,        ARGS_ANY());
 #endif
 #if (NGX_OPENSSL)
-    mrb_define_class_method(mrb, class_digest, "hmac_sha1", ngx_mrb_hmac_sha1, ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "hmac_sha1",   ngx_mrb_hmac_sha1,   ARGS_ANY());
 #endif
-    mrb_define_class_method(mrb, class_digest, "hexdigest", ngx_mrb_hexdigest, ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "hexdigest",   ngx_mrb_hexdigest,   ARGS_ANY());
 
     mrb_define_class_method(mrb, class_digest, "crc32_long",  ngx_mrb_crc32_long,  ARGS_ANY());
     mrb_define_class_method(mrb, class_digest, "crc32_short", ngx_mrb_crc32_short, ARGS_ANY());
