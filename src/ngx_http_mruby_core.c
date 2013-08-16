@@ -125,34 +125,32 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
         ngx_mrb_irep_clean(state, code);
     }
 
-    if (ngx_http_get_module_ctx(r, ngx_http_mruby_module) != NULL) {
-        if (ctx->exited) {
-            return ctx->exit_code;
-        }
-        chain = ctx->rputs_chain;
-        if (chain == NULL) {
-            if (state->mrb->exc) {
-                return NGX_HTTP_INTERNAL_SERVER_ERROR;
-            }
-            if (r->headers_out.status >= NGX_HTTP_OK) {
-                if (ctx->phase < NGX_HTTP_MRUBY_PHASE_LOG) {
-                    return r->headers_out.status;
-                }
-                return NGX_OK;
-            }
-            return NGX_DECLINED;
-        }
-        if (r->headers_out.status == NGX_HTTP_OK || !(*chain->last)->buf->last_buf) {
-            r->headers_out.status = NGX_HTTP_OK;
-            (*chain->last)->buf->last_buf = 1;
-            ngx_http_send_header(r);
-            ngx_http_output_filter(r, chain->out);
-            return NGX_OK;
-        }
-        return r->headers_out.status;
+    if (ctx->exited) {
+        return ctx->exit_code;
     }
 
-    return NGX_OK;
+    chain = ctx->rputs_chain;
+
+    if (chain == NULL) {
+        if (state->mrb->exc) {
+            return NGX_HTTP_INTERNAL_SERVER_ERROR;
+        }
+        if (r->headers_out.status >= NGX_HTTP_OK) {
+            if (ctx->phase < NGX_HTTP_MRUBY_PHASE_LOG) {
+                return r->headers_out.status;
+            }
+            return NGX_OK;
+        }
+        return NGX_DECLINED;
+    }
+    if (r->headers_out.status == NGX_HTTP_OK || !(*chain->last)->buf->last_buf) {
+        r->headers_out.status = NGX_HTTP_OK;
+        (*chain->last)->buf->last_buf = 1;
+        ngx_http_send_header(r);
+        ngx_http_output_filter(r, chain->out);
+        return NGX_OK;
+    }
+    return r->headers_out.status;
 }
 
 ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
