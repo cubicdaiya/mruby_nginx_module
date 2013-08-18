@@ -35,7 +35,7 @@ Please See [Wiki](https://github.com/cubicdaiya/mruby_nginx_module/wiki).
 
 ## How to test
 
-Execute the following command. Note that (echo-nginx-module)[https://github.com/agentzh/echo-nginx-module] is requierd.
+Execute the following command. Note that [echo-nginx-module](https://github.com/agentzh/echo-nginx-module) is requierd.
 
 ```sh
 rake NGINX_BIN=#{nginx_bin}
