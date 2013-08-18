@@ -91,6 +91,14 @@ class TestMrubyNginxModule < MiniTest::Test
       assert_equal(res.body, "<!DOCTYPE html>\n" + string)
     end
 
+    def test_set
+      url = URI.parse('http://localhost:8000')
+      res = Net::HTTP.start(url.host, url.port) {|http|
+        http.get('/set')
+      }
+      assert_equal(res.body, "cubicdaiya\n")
+    end
+
     def teardown
       `sudo pkill nginx`
     end
