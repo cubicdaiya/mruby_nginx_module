@@ -73,8 +73,6 @@ class TestMrubyNginxModule < MiniTest::Test
       assert_equal(res.body, "<!DOCTYPE html>\n" + string)
     end
 
-# following tests are not pass through yet.
-
     def test_filter2
       url = URI.parse('http://localhost:8000')
       res = Net::HTTP.start(url.host, url.port) {|http|
