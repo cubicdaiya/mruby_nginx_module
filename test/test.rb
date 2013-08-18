@@ -63,30 +63,30 @@ class TestMrubyNginxModule < MiniTest::Test
       assert_equal(res.code, "403")
     end
 
-    def test_filter1
+    def test_header_and_body_filter
       url = URI.parse('http://localhost:8000')
       res = Net::HTTP.start(url.host, url.port) {|http|
-        http.get('/filter1.html')
+        http.get('/header_and_body_filter.html')
       }
-      string = IO.read("#{@dir}/ngx_base/www/filter1.html")
+      string = IO.read("#{@dir}/ngx_base/www/header_and_body_filter.html")
       assert_equal(res["content-type"], "text/plain")
       assert_equal(res.body, "<!DOCTYPE html>\n" + string)
     end
 
-    def test_filter2
+    def test_header_filter_only
       url = URI.parse('http://localhost:8000')
       res = Net::HTTP.start(url.host, url.port) {|http|
-        http.get('/filter2.html')
+        http.get('/header_filter_only.html')
       }
       assert_equal(res["content-type"], "text/plain")
     end
 
-    def test_filter3
+    def test_body_filter_only
       url = URI.parse('http://localhost:8000')
       res = Net::HTTP.start(url.host, url.port) {|http|
-        http.get('/filter3.html')
+        http.get('/body_filter_only.html')
       }
-      string = IO.read("#{@dir}/ngx_base/www/filter3.html")
+      string = IO.read("#{@dir}/ngx_base/www/body_filter_only.html")
       assert_equal(res["content-type"], "text/html")
       assert_equal(res.body, "<!DOCTYPE html>\n" + string)
     end
