@@ -17,8 +17,9 @@
 // See nginx/src/http/ngx_http_variables.c about nginx's variables
 // 
 
-static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_name);
+static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self);
 
 static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_name)
 {
