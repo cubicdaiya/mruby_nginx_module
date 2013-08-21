@@ -12,5 +12,6 @@ tags
 *.swp
 libmruby.flags.mak
 libmruby.flags.mak.bak
+test/.bundle
 test/ngx_base/scgi_temp
 test/ngx_base/uwsgi_temp
