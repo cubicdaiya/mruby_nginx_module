@@ -22,6 +22,7 @@ char *ngx_http_mruby_##phase_name##_phase(ngx_conf_t *cf, ngx_command_t *cmd, vo
     ngx_http_mruby_loc_conf_t  *mlcf;                                                                   \
     ngx_str_t *value;                                                                                   \
     ngx_mrb_code_t *code;                                                                               \
+    ngx_int_t rc;                                                                                       \
     if (cmd->post == NULL) {                                                                            \
         return NGX_CONF_ERROR;                                                                          \
     }                                                                                                   \
@@ -38,8 +39,11 @@ char *ngx_http_mruby_##phase_name##_phase(ngx_conf_t *cf, ngx_command_t *cmd, vo
     phase_code    = code;                                                                               \
     phase_handler = cmd->post;                                                                          \
     phase_enabled = 1;                                                                                  \
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);                                             \
-                                                                                                        \
+    rc = ngx_http_mruby_shared_state_compile(mmcf->state, code);                                        \
+    if (rc != NGX_OK) {                                                                                 \
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);            \
+        return NGX_CONF_ERROR;                                                                          \
+    }                                                                                                   \
     return NGX_CONF_OK;                                                                                 \
 }
 
@@ -88,6 +92,7 @@ char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
     ngx_mrb_code_t *code;
+    ngx_int_t rc;
 
     if (cmd->post == NULL) {
         return NGX_CONF_ERROR;
@@ -106,7 +111,11 @@ char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     }
     mmcf->init_code    = code;
     mmcf->init_handler = cmd->post;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
+    rc = ngx_http_mruby_shared_state_compile(mmcf->state, code);
+    if (rc != NGX_OK) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
+        return NGX_CONF_ERROR;
+    }
 
     return NGX_CONF_OK;
 }
@@ -144,6 +153,7 @@ char *ngx_http_mruby_header_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, voi
     ngx_str_t *value;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
     ngx_mrb_code_t *code;
+    ngx_int_t rc;
 
     if (cmd->post == NULL) {
         return NGX_CONF_ERROR;
@@ -159,9 +169,13 @@ char *ngx_http_mruby_header_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, voi
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
         return NGX_CONF_ERROR;
     }
-    mlcf->header_filter_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
+    rc = ngx_http_mruby_shared_state_compile(mmcf->state, code);
+    if (rc != NGX_OK) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
+        return NGX_CONF_ERROR;
+    }
     mmcf->enabled_header_filter = 1;
+    mlcf->header_filter_code    = code;
     mlcf->header_filter_handler = cmd->post;
 
     return NGX_CONF_OK;
@@ -173,6 +187,7 @@ char *ngx_http_mruby_body_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, void 
     ngx_str_t *value;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
     ngx_mrb_code_t *code;
+    ngx_int_t rc;
 
     if (cmd->post == NULL) {
         return NGX_CONF_ERROR;
@@ -188,10 +203,14 @@ char *ngx_http_mruby_body_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, void 
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
         return NGX_CONF_ERROR;
     }
-    mlcf->body_filter_code = code;
-    ngx_http_mruby_shared_state_compile(mmcf->state, code);
+    rc = ngx_http_mruby_shared_state_compile(mmcf->state, code);
+    if (rc != NGX_OK) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", value[1].data);
+        return NGX_CONF_ERROR;
+    }
     mmcf->enabled_header_filter = 1;
     mmcf->enabled_body_filter   = 1;
+    mlcf->body_filter_code      = code;
     mlcf->body_filter_handler   = cmd->post;
 
     return NGX_CONF_OK;
@@ -263,6 +282,7 @@ static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, voi
     ndk_set_var_t filter;
     ngx_http_mruby_set_var_data_t *filter_data;
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
+    ngx_int_t rc;
 
     value  = cf->args->elts;
     target = value[1];
@@ -281,7 +301,11 @@ static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, voi
     filter_data->script = value[2];
     if (type == NGX_MRB_CODE_TYPE_FILE) {
         filter_data->code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &filter_data->script);
-        ngx_http_mruby_shared_state_compile(filter_data->state, filter_data->code);
+        rc = ngx_http_mruby_shared_state_compile(filter_data->state, filter_data->code);
+        if (rc != NGX_OK) {
+            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "mrb_file(%s) open failed", filter_data->script.data);
+            return NGX_CONF_ERROR;
+        }
     } else {
         filter_data->code = ngx_http_mruby_mrb_code_from_string(cf->pool, &filter_data->script);
         ngx_http_mruby_shared_state_compile(filter_data->state, filter_data->code);

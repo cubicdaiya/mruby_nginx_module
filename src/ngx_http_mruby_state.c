@@ -91,7 +91,8 @@ ngx_int_t ngx_http_mruby_state_reinit_from_file(ngx_mrb_state_t *state, ngx_mrb_
 ngx_mrb_code_t *ngx_http_mruby_mrb_code_from_file(ngx_pool_t *pool, ngx_str_t *code_file_path)
 {
     ngx_mrb_code_t *code;
-    size_t len;
+    size_t          len;
+    u_char         *p;
 
     code = ngx_pcalloc(pool, sizeof(*code));
     if (code == NULL) {
@@ -99,11 +100,22 @@ ngx_mrb_code_t *ngx_http_mruby_mrb_code_from_file(ngx_pool_t *pool, ngx_str_t *c
     }
 
     len = ngx_strlen((char *)code_file_path->data);
-    code->code.file = ngx_pcalloc(pool, len + 1);
-    if (code->code.file == NULL) {
+    if (len == 0) {
         return NGX_CONF_UNSET_PTR;
+    } else if (code_file_path->data[0] == '/') {
+        code->code.file = ngx_pcalloc(pool, len + 1);
+        if (code->code.file == NULL) {
+            return NGX_CONF_UNSET_PTR;
+        }
+        ngx_cpystrn((u_char *)code->code.file, (u_char *)code_file_path->data, code_file_path->len + 1);
+    } else {
+        code->code.file = ngx_pcalloc(pool, ngx_cycle->conf_prefix.len + len + 1);
+        if (code->code.file == NULL) {
+            return NGX_CONF_UNSET_PTR;
+        }
+        p = ngx_cpystrn((u_char *)code->code.file, (u_char *)ngx_cycle->conf_prefix.data, ngx_cycle->conf_prefix.len + 1);
+        ngx_cpystrn(p, (u_char *)code_file_path->data, code_file_path->len + 1);
     }
-    ngx_cpystrn((u_char *)code->code.file, (u_char *)code_file_path->data, code_file_path->len + 1);
     code->code_type = NGX_MRB_CODE_TYPE_FILE;
     return code;
 }
