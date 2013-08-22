@@ -180,5 +180,5 @@ void ngx_mrb_var_class_init(mrb_state *mrb, struct RClass *class)
     class_var = mrb_define_class_under(mrb, class, "Var", mrb->object_class);
 
     mrb_define_method(mrb, class_var, "method_missing", ngx_mrb_var_method_missing, ARGS_ANY());
-    mrb_define_method(mrb, class_var, "set",            ngx_mrb_var_set, ARGS_REQ(2));
+    mrb_define_method(mrb, class_var, "set",            ngx_mrb_var_set,            ARGS_REQ(2));
 }
