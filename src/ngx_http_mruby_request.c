@@ -280,6 +280,7 @@ void ngx_mrb_request_class_init(mrb_state *mrb, struct RClass *class)
     mrb_define_method(mrb, class_request, "filename",      ngx_mrb_get_request_var_filename, ARGS_NONE());
     mrb_define_method(mrb, class_request, "user",          ngx_mrb_get_request_var_user,     ARGS_NONE());
 
+    // Headers_in is read-only
     class_headers_in = mrb_define_class_under(mrb, class, "Headers_in", mrb->object_class);
 
     mrb_define_method(mrb, class_headers_in, "[]",              ngx_mrb_get_request_headers_in,      ARGS_ANY());
