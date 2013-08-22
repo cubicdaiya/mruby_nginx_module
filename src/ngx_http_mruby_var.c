@@ -13,6 +13,8 @@
 
 #include <mruby.h>
 #include <mruby/string.h>
+#include <mruby/class.h>
+#include <mruby/variable.h>
 
 // 
 // Nginx::Var is a getter/sertter for nginx's variables.
@@ -21,6 +23,7 @@
 
 static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_name);
 static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_mrb_var_set_internal(mrb_state *mrb, mrb_value self, char *k, mrb_value o);
 static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self);
 
 static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_name)
@@ -59,8 +62,8 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
 
 static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self)
 {
-    mrb_value  name, a;
-    int        alen;
+    mrb_value  name, *a;
+    int        alen, len;
     mrb_value  s_name;
     char      *c_name;
 
@@ -68,11 +71,15 @@ static mrb_value ngx_mrb_var_method_missing(mrb_state *mrb, mrb_value self)
 
     s_name = mrb_sym2str(mrb, mrb_symbol(name));
     c_name = mrb_str_to_cstr(mrb, s_name);
+    len    = ngx_strlen(c_name);
 
+    if (c_name[len - 1] == '=') {
+        return ngx_mrb_var_set_internal(mrb, self, strtok(c_name, "="), a[0]);
+    }
     return ngx_mrb_var_get(mrb, self, c_name);
 }
 
-static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_mrb_var_set_internal(mrb_state *mrb, mrb_value self, char *k, mrb_value o)
 {
     ngx_http_request_t        *r;
     ngx_http_variable_t       *v;
@@ -81,15 +88,9 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
     ngx_str_t                  key;
     ngx_uint_t                 hash;
     u_char                    *val, *low;
-    char                      *k;
-    mrb_value                  o;
 
     r = ngx_mrb_get_request();
 
-    mrb_get_args(mrb, "zo", &k, &o);
-    if (mrb_type(o) != MRB_TT_STRING) {
-        o = mrb_funcall(mrb, o, "to_s", 0, NULL);
-    }
     val      = (u_char *)RSTRING_PTR(o);
     key.data = (u_char *)k;
     key.len  = ngx_strlen(k);
@@ -173,6 +174,19 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
         , key.data
     );
     return mrb_nil_value();
+}
+
+static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
+{
+    char      *k;
+    mrb_value  o;
+
+    mrb_get_args(mrb, "zo", &k, &o);
+    if (mrb_type(o) != MRB_TT_STRING) {
+        o = mrb_funcall(mrb, o, "to_s", 0, NULL);
+    }
+
+    return ngx_mrb_var_set_internal(mrb, self, k, o);
 }
 
 void ngx_mrb_var_class_init(mrb_state *mrb, struct RClass *class)
