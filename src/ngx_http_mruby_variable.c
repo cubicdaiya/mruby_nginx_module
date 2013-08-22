@@ -74,6 +74,9 @@ static mrb_value ngx_mrb_variable_method_missing(mrb_state *mrb, mrb_value self)
     len    = ngx_strlen(c_name);
 
     if (c_name[len - 1] == '=') {
+        if (mrb_type(a[0]) != MRB_TT_STRING) {
+            a[0] = mrb_funcall(mrb, a[0], "to_s", 0, NULL);
+        }
         return ngx_mrb_variable_set_internal(mrb, self, strtok(c_name, "="), a[0]);
     }
 
