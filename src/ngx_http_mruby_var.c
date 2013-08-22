@@ -32,7 +32,7 @@ static mrb_value ngx_mrb_var_get(mrb_state *mrb, mrb_value self, const char *c_n
 
     r = ngx_mrb_get_request();
 
-    ngx_name.len  = strlen(c_name);
+    ngx_name.len  = ngx_strlen(c_name);
     ngx_name.data = (u_char *)c_name;
     len           = ngx_name.len;
 
@@ -89,8 +89,8 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
         o = mrb_funcall(mrb, o, "to_s", 0, NULL);
     }
     val      = (u_char *)RSTRING_PTR(o);
-    key.len  = strlen(k);
     key.data = (u_char *)k;
+    key.len  = ngx_strlen(k);
     if (key.len) {
         low = ngx_pnalloc(r->pool, key.len);
         if (low == NULL) {
@@ -132,7 +132,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
             vv->not_found    = 0;
             vv->no_cacheable = 0;
             vv->data         = val;
-            vv->len          = (size_t)strlen((char *)val);
+            vv->len          = ngx_strlen(val);
 
             v->set_handler(r, vv, v->data);
 
@@ -145,7 +145,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
             vv->not_found    = 0;
             vv->no_cacheable = 0;
             vv->data         = val;
-            vv->len          = (size_t)strlen((char *)val);
+            vv->len          = ngx_strlen(val);
 
             return mrb_str_new_cstr(mrb, (char *)val);
         }
