@@ -7,11 +7,11 @@
  *
  */
 
-#ifndef NGX_HTTP_MRUBY_VAR_H
-#define NGX_HTTP_MRUBY_VAR_H
+#ifndef NGX_HTTP_MRUBY_VARIABLE_H
+#define NGX_HTTP_MRUBY_VARIABLE_H
 
 #include <mruby.h>
 
-void ngx_mrb_var_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_mrb_variable_class_init(mrb_state *mrb, struct RClass *calss);
 
-#endif // NGX_HTTP_MRUBY_VAR_H
+#endif // NGX_HTTP_MRUBY_VARIABLE_H

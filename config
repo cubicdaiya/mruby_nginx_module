@@ -14,7 +14,7 @@ NGX_ADDON_SRCS="$NGX_ADDON_SRCS \
                 $ngx_addon_dir/src/ngx_http_mruby_filter_handler.c \
                 $ngx_addon_dir/src/ngx_http_mruby_state.c \
                 $ngx_addon_dir/src/ngx_http_mruby_directive.c \
-                $ngx_addon_dir/src/ngx_http_mruby_var.c \
+                $ngx_addon_dir/src/ngx_http_mruby_variable.c \
                 $ngx_addon_dir/src/ngx_http_mruby_error.c \
                 $ngx_addon_dir/src/ngx_http_mruby_context.c \
                 $ngx_addon_dir/src/ngx_http_mruby_digest.c \
@@ -31,7 +31,7 @@ NGX_ADDON_DEPS="$NGX_ADDON_DEPS \
                 $ngx_addon_dir/src/ngx_http_mruby_filter_handler.h \
                 $ngx_addon_dir/src/ngx_http_mruby_state.h \
                 $ngx_addon_dir/src/ngx_http_mruby_directive.h \
-                $ngx_addon_dir/src/ngx_http_mruby_var.h \
+                $ngx_addon_dir/src/ngx_http_mruby_variable.h \
                 $ngx_addon_dir/src/ngx_http_mruby_error.h \
                 $ngx_addon_dir/src/ngx_http_mruby_context.h \
                 $ngx_addon_dir/src/ngx_http_mruby_digest.h \

@@ -12,7 +12,7 @@
 
 #include "ngx_http_mruby_core.h"
 #include "ngx_http_mruby_request.h"
-#include "ngx_http_mruby_var.h"
+#include "ngx_http_mruby_variable.h"
 #include "ngx_http_mruby_context.h"
 #include "ngx_http_mruby_digest.h"
 #include "ngx_http_mruby_time.h"
@@ -31,7 +31,7 @@ ngx_int_t ngx_mrb_class_init(mrb_state *mrb)
 
     ngx_mrb_core_init(mrb, class);          GC_ARENA_RESTORE;
     ngx_mrb_request_class_init(mrb, class); GC_ARENA_RESTORE;
-    ngx_mrb_var_class_init(mrb, class);     GC_ARENA_RESTORE;
+    ngx_mrb_variable_class_init(mrb, class);GC_ARENA_RESTORE;
     ngx_mrb_context_class_init(mrb, class); GC_ARENA_RESTORE;
     ngx_mrb_digest_class_init(mrb, class);  GC_ARENA_RESTORE;
     ngx_mrb_time_class_init(mrb, class);    GC_ARENA_RESTORE;
