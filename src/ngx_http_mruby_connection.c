@@ -10,13 +10,6 @@
 #include "ngx_http_mruby_connection.h"
 #include "ngx_http_mruby_request.h"
 
-#include <mruby.h>
-#include <mruby/proc.h>
-#include <mruby/data.h>
-#include <mruby/compile.h>
-#include <mruby/string.h>
-#include <mruby/class.h>
-
 static mrb_value ngx_mrb_get_conn_var_remote_addr(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_get_conn_var_remote_port(mrb_state *mrb, mrb_value self);
 

@@ -10,11 +10,7 @@
 #ifndef NGX_HTTP_MRUBY_CONNECTION_H
 #define NGX_HTTP_MRUBY_CONNECTION_H
 
-#include <ngx_http.h>
-
 #include <mruby.h>
-#include <mruby/hash.h>
-#include <mruby/variable.h>
 
 void ngx_mrb_conn_class_init(mrb_state *mrb, struct RClass *calss);
 

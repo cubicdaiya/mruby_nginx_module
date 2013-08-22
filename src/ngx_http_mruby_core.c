@@ -7,18 +7,15 @@
  *
  */
 
-#include "ngx_http_mruby_module.h"
 #include "ngx_http_mruby_core.h"
+#include "ngx_http_mruby_module.h"
 #include "ngx_http_mruby_request.h"
 #include "ngx_http_mruby_error.h"
 
 #include <mruby.h>
 #include <mruby/proc.h>
-#include <mruby/data.h>
-#include <mruby/compile.h>
 #include <mruby/string.h>
 #include <mruby/array.h>
-#include <mruby/variable.h>
 
 #include <nginx.h>
 #include <ngx_http.h>

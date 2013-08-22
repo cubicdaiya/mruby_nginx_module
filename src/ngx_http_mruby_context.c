@@ -9,13 +9,12 @@
 
 #include "ngx_http_mruby_context.h"
 #include "ngx_http_mruby_request.h"
+#include "ngx_http_mruby_module.h"
 
 #include <mruby.h>
 #include <mruby/proc.h>
 #include <mruby/data.h>
-#include <mruby/compile.h>
-#include <mruby/string.h>
-#include <mruby/class.h>
+#include <mruby/hash.h>
 
 static mrb_value ngx_mrb_get_request_context_entry(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_set_request_context_entry(mrb_state *mrb, mrb_value self);

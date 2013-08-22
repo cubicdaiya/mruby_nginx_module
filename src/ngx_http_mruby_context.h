@@ -11,8 +11,6 @@
 #define NGX_HTTP_MRUBY_CONTEXT_H
 
 #include <mruby.h>
-#include <mruby/hash.h>
-#include <mruby/variable.h>
 
 void ngx_mrb_context_class_init(mrb_state *mrb, struct RClass *calss);
 

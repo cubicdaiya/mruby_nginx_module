@@ -13,7 +13,6 @@
 #include <nginx.h>
 
 #include "ngx_http_mruby_module.h"
-#include "ngx_http_mruby_request.h"
 #include "ngx_http_mruby_handler.h"
 #include "ngx_http_mruby_filter_handler.h"
 #include "ngx_http_mruby_directive.h"
