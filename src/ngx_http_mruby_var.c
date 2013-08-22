@@ -121,7 +121,7 @@ static mrb_value ngx_mrb_var_set(mrb_state *mrb, mrb_value self)
                 ngx_log_error(NGX_LOG_ERR
                     , r->connection->log
                     , 0
-                    , "%s ERROR :%d: memory allocate failed"
+                    , "%s ERROR %s:%d: memory allocate failed"
                     , MODULE_NAME
                     , __FUNCTION__
                     , __LINE__
