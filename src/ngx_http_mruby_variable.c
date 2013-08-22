@@ -76,6 +76,7 @@ static mrb_value ngx_mrb_variable_method_missing(mrb_state *mrb, mrb_value self)
     if (c_name[len - 1] == '=') {
         return ngx_mrb_variable_set_internal(mrb, self, strtok(c_name, "="), a[0]);
     }
+
     return ngx_mrb_variable_get(mrb, self, c_name);
 }
 
@@ -94,17 +95,21 @@ static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, c
     val      = (u_char *)RSTRING_PTR(o);
     key.data = (u_char *)k;
     key.len  = ngx_strlen(k);
+
     if (key.len) {
         low = ngx_pnalloc(r->pool, key.len);
+
         if (low == NULL) {
             return mrb_nil_value();
         }
     } else {
         return mrb_nil_value();
     }
+
     hash = ngx_hash_strlow(low, key.data, key.len);
     cmcf = ngx_http_get_module_main_conf(r, ngx_http_core_module);
     v    = ngx_hash_find(&cmcf->variables_hash, hash, key.data, key.len);
+
     if (v) {
         if (!(v->flags & NGX_HTTP_VAR_CHANGEABLE)) {
             ngx_log_error(NGX_LOG_ERR
@@ -120,6 +125,7 @@ static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, c
         }
         if (v->set_handler) {
             vv = ngx_palloc(r->pool, sizeof(ngx_http_variable_value_t));
+
             if (vv == NULL) {
                 ngx_log_error(NGX_LOG_ERR
                     , r->connection->log
@@ -131,6 +137,7 @@ static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, c
                 );
                 return mrb_nil_value();
             }
+
             vv->valid        = 1;
             vv->not_found    = 0;
             vv->no_cacheable = 0;
@@ -182,6 +189,7 @@ static mrb_value ngx_mrb_variable_set(mrb_state *mrb, mrb_value self)
     mrb_value  o;
 
     mrb_get_args(mrb, "zo", &k, &o);
+
     if (mrb_type(o) != MRB_TT_STRING) {
         o = mrb_funcall(mrb, o, "to_s", 0, NULL);
     }

@@ -241,6 +241,7 @@ mrb_value ngx_mrb_get_request_var(mrb_state *mrb, mrb_value self)
     struct RClass *class_var, *class_ngx;
 
     iv_var = mrb_iv_get(mrb, self, mrb_intern(mrb, iv_var_str));
+
     if (mrb_nil_p(iv_var)) {
         class_ngx = mrb_class_get(mrb, "Nginx");
         class_var = (struct RClass*)mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_ngx), mrb_intern_cstr(mrb, "Var")));
