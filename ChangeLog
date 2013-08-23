@@ -1,3 +1,21 @@
+2011-08-24 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+	* support relative path for mruby_xxx_handers
+
+	* fix bug(Nginx::Request.var.set is broken)
+
+	* remove Nginx::Connection and Nginx::Server class(Instead use Nginx::Var)
+
+	* fix bug(missing argument for ngx_log_error in mrb_value ngx_mrb_variable_set)
+
+	* fix bug(zero size buf in output when Nginx.return(200) is used)
+
+	* modify context of mruby_cache( add NGX_HTTP_MAIN_CONF)
+
+	* make Nginx::Headers_in readonly
+
+	* bumped version to 0.1.1
+
 2011-08-17 Tatsuhiko Kubo <cubicdaiya@gmail.com>
 
 	* fix bug(Nginx::Context is collected as garbage by mruby's gc)
