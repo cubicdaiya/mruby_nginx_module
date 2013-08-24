@@ -5,8 +5,15 @@ require "net/http"
 class TestMrubyNginxModule < MiniTest::Test
     def setup
       @dir = File.dirname(File.expand_path(__FILE__))
-      nginx_bin     = ENV['NGINX_BIN']
       nginx_options = " -p #{@dir}/ngx_base/ -c #{@dir}/ngx_base/etc/nginx.conf"
+      nginx_bin     = ENV['NGINX_BIN']
+      if nginx_bin == nil then
+        nginx_bin = "/usr/sbin/nginx"
+      end
+      if !File.exists?(nginx_bin)
+        puts "#{nginx_bin} is not a nginx binary"
+        exit false
+      end
       `sudo #{nginx_bin} #{nginx_options}`
       Net::EmptyPort.wait(8000, 10)
     end
