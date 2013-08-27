@@ -88,7 +88,7 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     }
 
     result->data = (u_char *)RSTRING_PTR(mrb_result);
-    result->len  = ngx_strlen(result->data);
+    result->len  = RSTRING_LEN(mrb_result);
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
@@ -218,7 +218,7 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
     }
 
     ctx->filter_ctx.body        = (u_char *)RSTRING_PTR(mrb_result);
-    ctx->filter_ctx.body_length = ngx_strlen(ctx->filter_ctx.body);
+    ctx->filter_ctx.body_length = RSTRING_LEN(mrb_result);
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
@@ -286,7 +286,7 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
     }
 
     ns.data = (u_char *)RSTRING_PTR(argv);
-    ns.len  = ngx_strlen(ns.data);
+    ns.len  = RSTRING_LEN(argv);
 
     if (ns.len == 0) {
         return self;
@@ -424,7 +424,7 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
 
     // save location uri to ns
     ns.data = (u_char *)RSTRING_PTR(uri);
-    ns.len  = ngx_strlen(ns.data);
+    ns.len  = RSTRING_LEN(uri);
 
     if (ns.len == 0) {
         return mrb_nil_value();

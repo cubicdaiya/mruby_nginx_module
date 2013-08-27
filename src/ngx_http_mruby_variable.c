@@ -145,7 +145,7 @@ static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, c
             vv->not_found    = 0;
             vv->no_cacheable = 0;
             vv->data         = val;
-            vv->len          = ngx_strlen(val);
+            vv->len          = RSTRING_LEN(o);
 
             v->set_handler(r, vv, v->data);
 
@@ -158,7 +158,7 @@ static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, c
             vv->not_found    = 0;
             vv->no_cacheable = 0;
             vv->data         = val;
-            vv->len          = ngx_strlen(val);
+            vv->len          = RSTRING_LEN(o);
 
             return mrb_str_new_cstr(mrb, (char *)val);
         }

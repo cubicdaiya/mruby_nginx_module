@@ -36,7 +36,7 @@ static mrb_value ngx_mrb_set_##method_suffix(mrb_state *mrb, mrb_value self)    
     }                                                                             \
     str = (u_char *)RSTRING_PTR(arg);                                             \
     r   = ngx_mrb_get_request();                                                  \
-    member.len  = ngx_strlen(str);                                                \
+    member.len  = RSTRING_LEN(arg);                                               \
     member.data = (u_char *)str;                                                  \
     return self;                                                                  \
 }
@@ -176,7 +176,7 @@ static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers)
 
         if (ngx_strncasecmp(key, header[i].key.data, header[i].key.len) == 0) {
             header[i].value.data = val;
-            header[i].value.len  = ngx_strlen(val);
+            header[i].value.len  = RSTRING_LEN(mrb_val);
             return NGX_OK;
         }
     }
@@ -187,9 +187,9 @@ static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers)
     }
     new_header->hash       = 1;
     new_header->key.data   = key;
-    new_header->key.len    = ngx_strlen(key);
+    new_header->key.len    = RSTRING_LEN(mrb_key);
     new_header->value.data = val;
-    new_header->value.len  = ngx_strlen(val);
+    new_header->value.len  = RSTRING_LEN(mrb_val);
 
     return NGX_OK;
 }
