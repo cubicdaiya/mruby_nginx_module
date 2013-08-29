@@ -78,6 +78,7 @@ static mrb_value ngx_mrb_get_request_header(mrb_state *mrb, ngx_list_t *headers)
 static mrb_value ngx_mrb_get_request_headers_in(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_get_request_headers_out(mrb_state *mrb, mrb_value self);
 static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers);
+static mrb_value ngx_mrb_set_request_headers_in(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_set_request_headers_out(mrb_state *mrb, mrb_value self);
 
 void ngx_mrb_push_request(ngx_http_request_t *r)
@@ -211,6 +212,14 @@ static mrb_value ngx_mrb_get_request_headers_out(mrb_state *mrb, mrb_value self)
     return ngx_mrb_get_request_header(mrb, &r->headers_out.headers);
 }
 
+static mrb_value ngx_mrb_set_request_headers_in(mrb_state *mrb, mrb_value self)
+{
+    ngx_http_request_t *r;
+    r = ngx_mrb_get_request();
+    ngx_mrb_set_request_header(mrb, &r->headers_in.headers);
+    return self;
+}
+
 static mrb_value ngx_mrb_set_request_headers_out(mrb_state *mrb, mrb_value self)
 {
     ngx_http_request_t *r;
@@ -287,6 +296,7 @@ void ngx_mrb_request_class_init(mrb_state *mrb, struct RClass *class)
     class_headers_in = mrb_define_class_under(mrb, class, "Headers_in", mrb->object_class);
 
     mrb_define_method(mrb, class_headers_in, "[]",              ngx_mrb_get_request_headers_in,      ARGS_ANY());
+    mrb_define_method(mrb, class_headers_in, "[]=",             ngx_mrb_set_request_headers_in,      ARGS_ANY());
     mrb_define_method(mrb, class_headers_in, "headers_in_hash", ngx_mrb_get_request_headers_in_hash, ARGS_ANY());
 
     class_headers_out = mrb_define_class_under(mrb, class, "Headers_out", mrb->object_class);
