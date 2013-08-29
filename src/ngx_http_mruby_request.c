@@ -151,6 +151,7 @@ static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers)
 {
     mrb_value           mrb_key, mrb_val;
     u_char             *key, *val;
+    size_t              key_len, val_len;
     ngx_uint_t          i;
     ngx_list_part_t    *part;
     ngx_table_elt_t    *header;
@@ -158,10 +159,12 @@ static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers)
 
     mrb_get_args(mrb, "oo", &mrb_key, &mrb_val);
 
-    key    = (u_char *)RSTRING_PTR(mrb_key);
-    val    = (u_char *)RSTRING_PTR(mrb_val);
-    part   = &headers->part;
-    header = part->elts;
+    key     = (u_char *)RSTRING_PTR(mrb_key);
+    val     = (u_char *)RSTRING_PTR(mrb_val);
+    key_len = RSTRING_LEN(mrb_key);
+    val_len = RSTRING_LEN(mrb_val);
+    part    = &headers->part;
+    header  = part->elts;
 
     /* TODO:optimize later(linear-search is slow) */
     for (i = 0; /* void */; i++) {
@@ -176,7 +179,7 @@ static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers)
 
         if (ngx_strncasecmp(key, header[i].key.data, header[i].key.len) == 0) {
             header[i].value.data = val;
-            header[i].value.len  = RSTRING_LEN(mrb_val);
+            header[i].value.len  = val_len;
             return NGX_OK;
         }
     }
@@ -187,9 +190,9 @@ static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers)
     }
     new_header->hash       = 1;
     new_header->key.data   = key;
-    new_header->key.len    = RSTRING_LEN(mrb_key);
+    new_header->key.len    = key_len;
     new_header->value.data = val;
-    new_header->value.len  = RSTRING_LEN(mrb_val);
+    new_header->value.len  = val_len;
 
     return NGX_OK;
 }
