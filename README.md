@@ -40,3 +40,5 @@ Execute the following command. Note that [echo-nginx-module](https://github.com/
 ```sh
 rake NGINX_BIN=#{nginx_bin}
 ```
+
+The default NGINX_BIN is */usr/sbin/nginx*.
