@@ -9,12 +9,7 @@
 
 #include "ngx_http_mruby_state.h"
 #include "ngx_http_mruby_module.h"
-#include "ngx_http_mruby_request.h"
-#include "ngx_http_mruby_variable.h"
-#include "ngx_http_mruby_context.h"
-#include "ngx_http_mruby_digest.h"
-#include "ngx_http_mruby_time.h"
-#include "ngx_http_mruby_base64.h"
+#include "ngx_http_mruby_class.h"
 
 #include <mruby.h>
 #include <mruby/proc.h>

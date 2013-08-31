@@ -69,4 +69,6 @@ typedef struct ngx_http_mruby_loc_conf_t {
     ngx_http_output_body_filter_pt body_filter_handler;
 } ngx_http_mruby_loc_conf_t;
 
+ngx_http_request_t *ngx_mrb_get_request(void);
+
 #endif // NGX_HTTP_MRUBY_MODULE_H

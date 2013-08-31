@@ -7,9 +7,6 @@
  *
  */
 
-#include "ngx_http_mruby_digest.h"
-#include "ngx_http_mruby_request.h"
-
 #include <nginx.h>
 #include <ngx_config.h>
 #include <ngx_http.h>
@@ -17,7 +14,6 @@
 #include <mruby.h>
 #include <mruby/class.h>
 #include <mruby/string.h>
-
 
 #if (NGX_OPENSSL)
 #include <openssl/evp.h>

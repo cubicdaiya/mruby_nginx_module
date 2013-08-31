@@ -7,7 +7,10 @@
  *
  */
 
-#include "ngx_http_mruby_request.h"
+#include "ngx_http_mruby_module.h"
+
+#include <nginx.h>
+#include <ngx_http.h>
 
 #include <mruby.h>
 #include <mruby/string.h>
@@ -72,8 +75,6 @@ static mrb_value ngx_mrb_get_request_headers_##direction##_hash(mrb_state *mrb, 
     return hash;                                                                                 \
 }
 
-ngx_http_request_t *ngx_mruby_request;
-
 static mrb_value ngx_mrb_get_request_header(mrb_state *mrb, ngx_list_t *headers);
 static mrb_value ngx_mrb_get_request_headers_in(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_get_request_headers_out(mrb_state *mrb, mrb_value self);
@@ -81,15 +82,7 @@ static ngx_int_t ngx_mrb_set_request_header(mrb_state *mrb, ngx_list_t *headers)
 static mrb_value ngx_mrb_set_request_headers_in(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_set_request_headers_out(mrb_state *mrb, mrb_value self);
 
-void ngx_mrb_push_request(ngx_http_request_t *r)
-{
-    ngx_mruby_request = r;
-}
-
-ngx_http_request_t *ngx_mrb_get_request(void)
-{
-    return ngx_mruby_request;
-}
+static mrb_value ngx_mrb_get_request_var(mrb_state *mrb, mrb_value self);
 
 // request member getter
 NGX_MRUBY_DEFINE_METHOD_NGX_GET_REQUEST_MEMBER_STR(request_request_line, r->request_line);
@@ -246,7 +239,7 @@ static mrb_value ngx_mrb_get_request_var_user(mrb_state *mrb, mrb_value self)
     return mrb_funcall(mrb, v, "remote_user", 0, NULL);
 }
 
-mrb_value ngx_mrb_get_request_var(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_mrb_get_request_var(mrb_state *mrb, mrb_value self)
 {
     const char    *iv_var_str = "@iv_var";
     mrb_value     iv_var;

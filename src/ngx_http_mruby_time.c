@@ -7,8 +7,7 @@
  *
  */
 
-#include "ngx_http_mruby_time.h"
-#include "ngx_http_mruby_request.h"
+#include <ngx_http.h>
 
 #include <mruby.h>
 #include <mruby/class.h>

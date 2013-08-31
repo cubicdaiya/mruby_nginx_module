@@ -9,7 +9,6 @@
 
 #include "ngx_http_mruby_core.h"
 #include "ngx_http_mruby_module.h"
-#include "ngx_http_mruby_request.h"
 #include "ngx_http_mruby_error.h"
 
 #include <mruby.h>
@@ -24,11 +23,18 @@
 #include <ngx_buf.h>
 
 ngx_module_t  ngx_http_mruby_module;
+ngx_http_request_t *ngx_mruby_request;
 
+static void ngx_mrb_push_request(ngx_http_request_t *r);
 static void ngx_mrb_irep_clean(ngx_mrb_state_t *state, ngx_mrb_code_t *code);
 static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self);
 static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self);
+
+static void ngx_mrb_push_request(ngx_http_request_t *r)
+{
+    ngx_mruby_request = r;
+}
 
 static void ngx_mrb_irep_clean(ngx_mrb_state_t *state, ngx_mrb_code_t *code)
 {

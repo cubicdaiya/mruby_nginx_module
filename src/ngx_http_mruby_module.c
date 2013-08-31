@@ -18,6 +18,8 @@
 #include "ngx_http_mruby_directive.h"
 #include "ngx_http_mruby_state.h"
 
+extern ngx_http_request_t *ngx_mruby_request;
+
 #define NGX_MRUBY_MERGE_CODE(prev_code, conf_code)     \
     if (prev_code == NGX_CONF_UNSET_PTR) {             \
         prev_code = conf_code;                         \
@@ -211,8 +213,6 @@ ngx_module_t ngx_http_mruby_module = {
     NGX_MODULE_V1_PADDING
 };
 
-extern ngx_http_request_t *ngx_mruby_request;
- 
 static void *ngx_http_mruby_create_main_conf(ngx_conf_t *cf)
 {
     ngx_http_mruby_main_conf_t *mmcf;
@@ -387,4 +387,9 @@ static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf, ng
     }
 
     return NGX_OK;
+}
+
+ngx_http_request_t *ngx_mrb_get_request(void)
+{
+    return ngx_mruby_request;
 }

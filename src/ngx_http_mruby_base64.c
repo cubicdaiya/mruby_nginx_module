@@ -7,8 +7,7 @@
  *
  */
 
-#include "ngx_http_mruby_base64.h"
-#include "ngx_http_mruby_request.h"
+#include "ngx_http_mruby_module.h"
 
 #include <mruby.h>
 #include <mruby/class.h>
