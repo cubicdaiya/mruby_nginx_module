@@ -8,7 +8,6 @@ HTTP_FILTER_MODULES="$HTTP_FILTER_MODULES ngx_http_mruby_module"
 NGX_ADDON_SRCS="$NGX_ADDON_SRCS \
                 $ngx_addon_dir/src/ngx_http_mruby_module.c \
                 $ngx_addon_dir/src/ngx_http_mruby_core.c \
-                $ngx_addon_dir/src/ngx_http_mruby_init.c \
                 $ngx_addon_dir/src/ngx_http_mruby_request.c \
                 $ngx_addon_dir/src/ngx_http_mruby_handler.c \
                 $ngx_addon_dir/src/ngx_http_mruby_filter_handler.c \
@@ -25,7 +24,6 @@ NGX_ADDON_SRCS="$NGX_ADDON_SRCS \
 NGX_ADDON_DEPS="$NGX_ADDON_DEPS \
                 $ngx_addon_dir/src/ngx_http_mruby_module.h \
                 $ngx_addon_dir/src/ngx_http_mruby_core.h \
-                $ngx_addon_dir/src/ngx_http_mruby_init.h \
                 $ngx_addon_dir/src/ngx_http_mruby_request.h \
                 $ngx_addon_dir/src/ngx_http_mruby_handler.h \
                 $ngx_addon_dir/src/ngx_http_mruby_filter_handler.h \

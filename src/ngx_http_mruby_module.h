@@ -15,7 +15,6 @@
 #include <nginx.h>
 
 #include "ngx_http_mruby_core.h"
-#include "ngx_http_mruby_init.h"
 
 #if defined(NDK) && NDK
 typedef struct {

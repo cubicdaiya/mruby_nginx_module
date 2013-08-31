@@ -9,12 +9,39 @@
 
 #include "ngx_http_mruby_state.h"
 #include "ngx_http_mruby_module.h"
+#include "ngx_http_mruby_request.h"
+#include "ngx_http_mruby_variable.h"
+#include "ngx_http_mruby_context.h"
+#include "ngx_http_mruby_digest.h"
+#include "ngx_http_mruby_time.h"
+#include "ngx_http_mruby_base64.h"
 
 #include <mruby.h>
 #include <mruby/proc.h>
 #include <mruby/data.h>
 #include <mruby/compile.h>
 #include <mruby/string.h>
+
+#define GC_ARENA_RESTORE mrb_gc_arena_restore(mrb, 0);
+
+static ngx_int_t ngx_mrb_class_init(mrb_state *mrb);
+
+static ngx_int_t ngx_mrb_class_init(mrb_state *mrb)
+{
+    struct RClass *class;
+
+    class = mrb_define_module(mrb, "Nginx");
+
+    ngx_mrb_core_init(mrb, class);          GC_ARENA_RESTORE;
+    ngx_mrb_request_class_init(mrb, class); GC_ARENA_RESTORE;
+    ngx_mrb_variable_class_init(mrb, class);GC_ARENA_RESTORE;
+    ngx_mrb_context_class_init(mrb, class); GC_ARENA_RESTORE;
+    ngx_mrb_digest_class_init(mrb, class);  GC_ARENA_RESTORE;
+    ngx_mrb_time_class_init(mrb, class);    GC_ARENA_RESTORE;
+    ngx_mrb_base64_class_init(mrb, class);  GC_ARENA_RESTORE;
+
+    return NGX_OK;
+}
 
 ngx_int_t ngx_mrb_init_file(ngx_str_t *script_file_path, ngx_mrb_state_t *state, ngx_mrb_code_t *code)
 {

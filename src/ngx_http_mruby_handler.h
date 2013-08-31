@@ -14,7 +14,6 @@
 #include <ngx_http.h>
 
 #include "ngx_http_mruby_core.h"
-#include "ngx_http_mruby_init.h"
 #include "ngx_http_mruby_module.h"
 
 ngx_int_t ngx_http_mruby_init_handler(ngx_conf_t *cf, ngx_http_mruby_main_conf_t *mmcf);
