@@ -7,6 +7,8 @@
  *
  */
 
+#include "ngx_http_mruby_class.h"
+
 #include <ngx_http.h>
 
 #include <mruby.h>

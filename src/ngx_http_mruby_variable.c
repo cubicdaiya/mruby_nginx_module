@@ -8,6 +8,7 @@
  */
 
 #include "ngx_http_mruby_module.h"
+#include "ngx_http_mruby_class.h"
 
 #include <mruby.h>
 #include <mruby/string.h>
