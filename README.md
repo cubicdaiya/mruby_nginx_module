@@ -1,7 +1,6 @@
 ## Summary
 
-mruby_nginx_module is the powerful extension by mruby for nginx.
-mruby_nginx_module is based [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby).
+mruby_nginx_module is the powerful extension by mruby for nginx and based [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby).
 
 ## Dependencies
 
