@@ -29,7 +29,7 @@ typedef struct {
 #define MODULE_NAME        "mruby_nginx_module"
 #define MODULE_VERSION     "0.1.1"
 
-extern ngx_module_t  ngx_http_mruby_module;
+extern ngx_module_t ngx_http_mruby_module;
 
 typedef struct ngx_http_mruby_main_conf_t {
     ngx_mrb_state_t *state;
@@ -69,6 +69,8 @@ typedef struct ngx_http_mruby_loc_conf_t {
     ngx_http_output_body_filter_pt body_filter_handler;
 } ngx_http_mruby_loc_conf_t;
 
+void ngx_mrb_init_request(void);
+void ngx_mrb_push_request(ngx_http_request_t *r);
 ngx_http_request_t *ngx_mrb_get_request(void);
 
 #endif // NGX_HTTP_MRUBY_MODULE_H
