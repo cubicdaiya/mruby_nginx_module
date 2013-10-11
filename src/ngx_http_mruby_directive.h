@@ -17,6 +17,8 @@
 char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 char *ngx_http_mruby_init_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
+char *ngx_http_mruby_require(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+
 char *ngx_http_mruby_rewrite_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 char *ngx_http_mruby_access_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 char *ngx_http_mruby_content_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);

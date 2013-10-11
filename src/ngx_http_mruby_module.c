@@ -47,6 +47,14 @@ static ngx_command_t ngx_http_mruby_commands[] = {
       NULL 
     },
 
+    { ngx_string("mruby_require"),
+      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
+      ngx_http_mruby_require,
+      NGX_HTTP_MAIN_CONF_OFFSET,
+      0,
+      NULL
+    },
+
     { ngx_string("mruby_init_code"),
       NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
       ngx_http_mruby_init_inline_phase,
