@@ -1,3 +1,23 @@
+2011-10-13 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+	* add feature(Regexp by PCRE)
+
+	* bumped version to 0.2.0
+
+2011-10-12 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+	* add directive 'mruby_require'
+
+	* use mrb_malloc instead of ngx_pnalloc in base64(en|de)coding
+
+	* remove specific ngx_mrb_get_request_var_xxx('hostname' and 'request_filemame' and 'remote_user'). Instead use Nginx::Request.var
+
+	* make Nginx::Headers_in enabled to assign a value
+
+	* small optimization(use RSTRING_LEN instead of ngx_strlen)
+
+	* bumped version to 0.1.2
+
 2011-08-24 Tatsuhiko Kubo <cubicdaiya@gmail.com>
 
 	* support relative path for mruby_xxx_handers
