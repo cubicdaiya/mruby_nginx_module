@@ -19,6 +19,7 @@ NGX_ADDON_SRCS="$NGX_ADDON_SRCS \
                 $ngx_addon_dir/src/ngx_http_mruby_digest.c \
                 $ngx_addon_dir/src/ngx_http_mruby_time.c \
                 $ngx_addon_dir/src/ngx_http_mruby_base64.c \
+                $ngx_addon_dir/src/ngx_http_mruby_regex.c \
                 "
 
 NGX_ADDON_DEPS="$NGX_ADDON_DEPS \

@@ -106,6 +106,12 @@ class TestMrubyNginxModule < MiniTest::Test
       }
     end
 
+    def test_regex
+      get('/regex') { |res|
+        assert_equal(res.body, "true")
+      }
+    end
+
     def teardown
       `sudo pkill nginx`
     end

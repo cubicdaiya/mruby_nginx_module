@@ -34,6 +34,7 @@ static ngx_int_t ngx_mrb_class_init(mrb_state *mrb)
     ngx_mrb_digest_class_init(mrb, class);  GC_ARENA_RESTORE;
     ngx_mrb_time_class_init(mrb, class);    GC_ARENA_RESTORE;
     ngx_mrb_base64_class_init(mrb, class);  GC_ARENA_RESTORE;
+    ngx_mrb_regex_class_init(mrb);          GC_ARENA_RESTORE;
 
     return NGX_OK;
 }

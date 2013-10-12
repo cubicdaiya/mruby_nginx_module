@@ -18,5 +18,6 @@ void ngx_mrb_context_class_init(mrb_state *mrb, struct RClass *calss);
 void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *calss);
 void ngx_mrb_time_class_init(mrb_state *mrb, struct RClass *calss);
 void ngx_mrb_base64_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_mrb_regex_class_init(mrb_state *mrb);
 
 #endif // NGX_HTTP_MRUBY_CLASS_H
