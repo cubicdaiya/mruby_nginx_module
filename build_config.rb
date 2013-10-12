@@ -19,7 +19,6 @@ MRuby::Build.new do |conf|
   #
   conf.gem :git => 'https://github.com/matsumoto-r/mruby-redis.git'
   conf.gem :git => 'https://github.com/matsumoto-r/mruby-userdata.git'
-  conf.gem :git => 'https://github.com/iij/mruby-require.git'
 
   # C compiler settings
   # conf.cc do |cc|
