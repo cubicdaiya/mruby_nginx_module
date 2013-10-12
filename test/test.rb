@@ -94,6 +94,18 @@ class TestMrubyNginxModule < MiniTest::Test
       }
     end
 
+    def test_base64encode
+      get('/base64_encode') { |res|
+        assert_equal(res.body, "Ym9ra28=")
+      }
+    end
+
+    def test_base64decode
+      get('/base64_decode') { |res|
+        assert_equal(res.body, "bokko")
+      }
+    end
+
     def teardown
       `sudo pkill nginx`
     end
