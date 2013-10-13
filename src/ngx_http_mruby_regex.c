@@ -22,6 +22,7 @@
 #define MRUBY_REGEXP_MULTILINE          0x04
 
 static ngx_pool_t *ngx_mrb_pcre_pool = NULL;
+ngx_pool_t *ngx_mrb_conf_pcre_pool   = NULL;
 
 static void *(*old_pcre_malloc)(size_t);
 static void (*old_pcre_free)(void *ptr);
@@ -133,6 +134,7 @@ static mrb_value ngx_mrb_regexp_pcre_initialize(mrb_state *mrb, mrb_value self)
     const char *errstr = NULL;
     struct ngx_mrb_regexp_pcre *reg = NULL;
     mrb_value source, opt = mrb_nil_value();
+    ngx_pool_t *pool;
 
     r   = ngx_mrb_get_request();
     reg = (struct ngx_mrb_regexp_pcre *)DATA_PTR(self);
@@ -151,10 +153,16 @@ static mrb_value ngx_mrb_regexp_pcre_initialize(mrb_state *mrb, mrb_value self)
     coptions = ngx_mrb_mruby_to_pcre_options(opt);
     source   = mrb_str_new(mrb, RSTRING_PTR(source), RSTRING_LEN(source));
 
+    if (r) {
+        pool = r->pool;
+    } else {
+        pool = ngx_mrb_conf_pcre_pool;
+    }
+
     // As nginx orverrides pcre_(malloc|gree), 
     // calling pcre_compile directly fails
     // This is the workaround for it.
-    ngx_mrb_pcre_pool = r->pool;
+    ngx_mrb_pcre_pool = pool;
     old_pcre_malloc   = pcre_malloc;
     old_pcre_free     = pcre_free;
     pcre_malloc       = ngx_mrb_pcre_malloc;
