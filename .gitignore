@@ -16,3 +16,4 @@ test/ngx_base/scgi_temp
 test/ngx_base/uwsgi_temp
 .bundle
 vendor
+test/ngx_base/logs/error.log
