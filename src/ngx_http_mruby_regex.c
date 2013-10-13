@@ -22,7 +22,7 @@
 #define NGX_MRUBY_REGEXP_MULTILINE          0x04
 
 static ngx_pool_t *ngx_mrb_pcre_pool = NULL;
-ngx_pool_t *ngx_mrb_conf_pcre_pool   = NULL;
+ngx_pool_t        *ngx_mrb_conf_pool = NULL;
 
 static void *(*old_pcre_malloc)(size_t);
 static void (*old_pcre_free)(void *ptr);
@@ -156,7 +156,7 @@ static mrb_value ngx_mrb_regexp_pcre_initialize(mrb_state *mrb, mrb_value self)
     if (r) {
         pool = r->pool;
     } else {
-        pool = ngx_mrb_conf_pcre_pool;
+        pool = ngx_mrb_conf_pool;
     }
 
     // As nginx orverrides pcre_(malloc|gree), 

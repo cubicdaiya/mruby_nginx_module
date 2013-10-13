@@ -14,15 +14,15 @@
 #include "ngx_http_mruby_handler.h"
 #include "ngx_http_mruby_state.h"
 
-extern ngx_pool_t *ngx_mrb_conf_pcre_pool;
+extern ngx_pool_t *ngx_mrb_conf_pool;
 
 // this function is called only when initializing
 ngx_int_t ngx_http_mruby_init_handler(ngx_conf_t *cf, ngx_http_mruby_main_conf_t *mmcf)
 {
     ngx_int_t rc;
-    ngx_mrb_conf_pcre_pool = cf->pool;
+    ngx_mrb_conf_pool = cf->pool;
     rc = ngx_mrb_run_conf(cf, mmcf->state, mmcf->init_code);
-    ngx_mrb_conf_pcre_pool = NULL;
+    ngx_mrb_conf_pool = NULL;
     return rc;
 }
 
