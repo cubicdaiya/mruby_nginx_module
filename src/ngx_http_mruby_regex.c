@@ -17,9 +17,9 @@
 #include <mruby/variable.h>
 #include <mruby/class.h>
 
-#define MRUBY_REGEXP_IGNORECASE         0x01
-#define MRUBY_REGEXP_EXTENDED           0x02
-#define MRUBY_REGEXP_MULTILINE          0x04
+#define NGX_MRUBY_REGEXP_IGNORECASE         0x01
+#define NGX_MRUBY_REGEXP_EXTENDED           0x02
+#define NGX_MRUBY_REGEXP_MULTILINE          0x04
 
 static ngx_pool_t *ngx_mrb_pcre_pool = NULL;
 ngx_pool_t *ngx_mrb_conf_pcre_pool   = NULL;
@@ -94,9 +94,9 @@ static int ngx_mrb_mruby_to_pcre_options(mrb_value options)
     } else if (mrb_fixnum_p(options)) {
         int nopt;
         nopt = mrb_fixnum(options);
-        if (nopt & MRUBY_REGEXP_IGNORECASE) coptions |= PCRE_CASELESS;
-        if (nopt & MRUBY_REGEXP_EXTENDED)   coptions |= PCRE_EXTENDED;
-        if (nopt & MRUBY_REGEXP_MULTILINE)  coptions |= PCRE_MULTILINE;
+        if (nopt & NGX_MRUBY_REGEXP_IGNORECASE) coptions |= PCRE_CASELESS;
+        if (nopt & NGX_MRUBY_REGEXP_EXTENDED)   coptions |= PCRE_EXTENDED;
+        if (nopt & NGX_MRUBY_REGEXP_MULTILINE)  coptions |= PCRE_MULTILINE;
     } else if (mrb_string_p(options)) {
         if (strchr(RSTRING_PTR(options), 'i')) coptions |= PCRE_CASELESS;
         if (strchr(RSTRING_PTR(options), 'x')) coptions |= PCRE_EXTENDED;
@@ -113,15 +113,15 @@ static int ngx_mrb_pcre_to_mruby_options(int coptions)
     int options = 0;
 
     if (coptions & PCRE_CASELESS) {
-        options |= MRUBY_REGEXP_IGNORECASE;
+        options |= NGX_MRUBY_REGEXP_IGNORECASE;
     }
 
     if (coptions & PCRE_EXTENDED) {
-        options |= MRUBY_REGEXP_EXTENDED;
+        options |= NGX_MRUBY_REGEXP_EXTENDED;
     }
 
     if (coptions & PCRE_MULTILINE) {
-        options |= MRUBY_REGEXP_MULTILINE;
+        options |= NGX_MRUBY_REGEXP_MULTILINE;
     }
 
     return options;
@@ -402,9 +402,9 @@ void ngx_mrb_regex_class_init(mrb_state *mrb)
     mrb_define_method(mrb, class_re, "match",      ngx_mrb_regexp_pcre_match,      ARGS_REQ(1));
     mrb_define_method(mrb, class_re, "==",         ngx_mrb_regexp_equal,           ARGS_REQ(1));
 
-    mrb_define_const(mrb, class_re, "IGNORECASE", mrb_fixnum_value(MRUBY_REGEXP_IGNORECASE));
-    mrb_define_const(mrb, class_re, "EXTENDED",   mrb_fixnum_value(MRUBY_REGEXP_EXTENDED));
-    mrb_define_const(mrb, class_re, "MULTILINE",  mrb_fixnum_value(MRUBY_REGEXP_MULTILINE));
+    mrb_define_const(mrb, class_re, "IGNORECASE", mrb_fixnum_value(NGX_MRUBY_REGEXP_IGNORECASE));
+    mrb_define_const(mrb, class_re, "EXTENDED",   mrb_fixnum_value(NGX_MRUBY_REGEXP_EXTENDED));
+    mrb_define_const(mrb, class_re, "MULTILINE",  mrb_fixnum_value(NGX_MRUBY_REGEXP_MULTILINE));
 
     class_md = mrb_define_class(mrb, "MatchData", mrb->object_class);
     MRB_SET_INSTANCE_TT(class_md, MRB_TT_DATA);
