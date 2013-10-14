@@ -20,12 +20,12 @@
 // See nginx/src/http/ngx_http_variables.c about nginx's variables
 // 
 
-static mrb_value ngx_mrb_variable_get(mrb_state *mrb, mrb_value self, const char *c_name);
-static mrb_value ngx_mrb_variable_method_missing(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, char *k, mrb_value o);
-static mrb_value ngx_mrb_variable_set(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_variable_get(mrb_state *mrb, mrb_value self, const char *c_name);
+static mrb_value ngx_http_mruby_variable_method_missing(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_variable_set_internal(mrb_state *mrb, mrb_value self, char *k, mrb_value o);
+static mrb_value ngx_http_mruby_variable_set(mrb_state *mrb, mrb_value self);
 
-static mrb_value ngx_mrb_variable_get(mrb_state *mrb, mrb_value self, const char *c_name)
+static mrb_value ngx_http_mruby_variable_get(mrb_state *mrb, mrb_value self, const char *c_name)
 {
     ngx_http_request_t        *r;
     ngx_http_variable_value_t *var;
@@ -34,7 +34,7 @@ static mrb_value ngx_mrb_variable_get(mrb_state *mrb, mrb_value self, const char
     size_t                     len;
     ngx_uint_t                 key;
 
-    r = ngx_mrb_get_request();
+    r = ngx_http_mruby_get_request();
 
     ngx_name.len  = ngx_strlen(c_name);
     ngx_name.data = (u_char *)c_name;
@@ -59,7 +59,7 @@ static mrb_value ngx_mrb_variable_get(mrb_state *mrb, mrb_value self, const char
     return mrb_str_new(mrb, (char *)var->data, var->len);
 }
 
-static mrb_value ngx_mrb_variable_method_missing(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_variable_method_missing(mrb_state *mrb, mrb_value self)
 {
     mrb_value  name, *a;
     int        alen, len;
@@ -76,13 +76,13 @@ static mrb_value ngx_mrb_variable_method_missing(mrb_state *mrb, mrb_value self)
         if (mrb_type(a[0]) != MRB_TT_STRING) {
             a[0] = mrb_funcall(mrb, a[0], "to_s", 0, NULL);
         }
-        return ngx_mrb_variable_set_internal(mrb, self, strtok(c_name, "="), a[0]);
+        return ngx_http_mruby_variable_set_internal(mrb, self, strtok(c_name, "="), a[0]);
     }
 
-    return ngx_mrb_variable_get(mrb, self, c_name);
+    return ngx_http_mruby_variable_get(mrb, self, c_name);
 }
 
-static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, char *k, mrb_value o)
+static mrb_value ngx_http_mruby_variable_set_internal(mrb_state *mrb, mrb_value self, char *k, mrb_value o)
 {
     ngx_http_request_t        *r;
     ngx_http_variable_t       *v;
@@ -92,7 +92,7 @@ static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, c
     ngx_uint_t                 hash;
     u_char                    *val, *low;
 
-    r = ngx_mrb_get_request();
+    r = ngx_http_mruby_get_request();
 
     val      = (u_char *)RSTRING_PTR(o);
     key.data = (u_char *)k;
@@ -185,7 +185,7 @@ static mrb_value ngx_mrb_variable_set_internal(mrb_state *mrb, mrb_value self, c
     return mrb_nil_value();
 }
 
-static mrb_value ngx_mrb_variable_set(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_variable_set(mrb_state *mrb, mrb_value self)
 {
     char      *k;
     mrb_value  o;
@@ -196,15 +196,15 @@ static mrb_value ngx_mrb_variable_set(mrb_state *mrb, mrb_value self)
         o = mrb_funcall(mrb, o, "to_s", 0, NULL);
     }
 
-    return ngx_mrb_variable_set_internal(mrb, self, k, o);
+    return ngx_http_mruby_variable_set_internal(mrb, self, k, o);
 }
 
-void ngx_mrb_variable_class_init(mrb_state *mrb, struct RClass *class)
+void ngx_http_mruby_variable_class_init(mrb_state *mrb, struct RClass *class)
 {
     struct RClass *class_var;
 
     class_var = mrb_define_class_under(mrb, class, "Var", mrb->object_class);
 
-    mrb_define_method(mrb, class_var, "method_missing", ngx_mrb_variable_method_missing, ARGS_ANY());
-    mrb_define_method(mrb, class_var, "set",            ngx_mrb_variable_set,            ARGS_REQ(2));
+    mrb_define_method(mrb, class_var, "method_missing", ngx_http_mruby_variable_method_missing, ARGS_ANY());
+    mrb_define_method(mrb, class_var, "set",            ngx_http_mruby_variable_set,            ARGS_REQ(2));
 }

@@ -16,26 +16,26 @@
 #include <mruby/numeric.h>
 #include <mruby/string.h>
 
-static mrb_value ngx_mrb_update(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_time(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_http_time(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_cookie_time(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_utc_time(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_local_time(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_parse_http_time(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_update(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_time(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_http_time(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_cookie_time(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_utc_time(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_local_time(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_parse_http_time(mrb_state *mrb, mrb_value self);
 
-static mrb_value ngx_mrb_update(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_update(mrb_state *mrb, mrb_value self)
 {
     ngx_time_update();
     return self;
 }
 
-static mrb_value ngx_mrb_time(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_time(mrb_state *mrb, mrb_value self)
 {
     return mrb_fixnum_value(ngx_time());
 }
 
-static mrb_value ngx_mrb_http_time(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_http_time(mrb_state *mrb, mrb_value self)
 {
     mrb_value  mrb_time;
     time_t     time;
@@ -55,7 +55,7 @@ static mrb_value ngx_mrb_http_time(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)buf, p - buf);
 }
 
-static mrb_value ngx_mrb_cookie_time(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_cookie_time(mrb_state *mrb, mrb_value self)
 {
     mrb_value  mrb_time;
     time_t     time;
@@ -75,7 +75,7 @@ static mrb_value ngx_mrb_cookie_time(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)buf, p - buf);
 }
 
-static mrb_value ngx_mrb_utc_time(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_utc_time(mrb_state *mrb, mrb_value self)
 {
     ngx_tm_t  tm;
     u_char    buf[sizeof("2013-08-04 01:00:00") - 1];
@@ -89,7 +89,7 @@ static mrb_value ngx_mrb_utc_time(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)buf, sizeof(buf));
 }
 
-static mrb_value ngx_mrb_local_time(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_local_time(mrb_state *mrb, mrb_value self)
 {
     ngx_tm_t tm;
     u_char   buf[sizeof("2013-08-04 01:00:00") - 1];
@@ -103,7 +103,7 @@ static mrb_value ngx_mrb_local_time(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)buf, sizeof(buf));
 }
 
-static mrb_value ngx_mrb_parse_http_time(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_parse_http_time(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_http_time;
     ngx_str_t http_time;
@@ -120,17 +120,17 @@ static mrb_value ngx_mrb_parse_http_time(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(ngx_http_parse_time(http_time.data, http_time.len));
 }
 
-void ngx_mrb_time_class_init(mrb_state *mrb, struct RClass *class)
+void ngx_http_mruby_time_class_init(mrb_state *mrb, struct RClass *class)
 {
     struct RClass *class_time;
 
     class_time = mrb_define_class_under(mrb, class, "Time", mrb->object_class);
 
-    mrb_define_class_method(mrb, class_time, "update",          ngx_mrb_update,          ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "time",            ngx_mrb_time,            ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "http_time",       ngx_mrb_http_time,       ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "cookie_time",     ngx_mrb_cookie_time,     ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "utc_time",        ngx_mrb_utc_time,        ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "local_time",      ngx_mrb_local_time,      ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "parse_http_time", ngx_mrb_parse_http_time, ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "update",          ngx_http_mruby_update,          ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "time",            ngx_http_mruby_time,            ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "http_time",       ngx_http_mruby_http_time,       ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "cookie_time",     ngx_http_mruby_cookie_time,     ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "utc_time",        ngx_http_mruby_utc_time,        ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "local_time",      ngx_http_mruby_local_time,      ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "parse_http_time", ngx_http_mruby_parse_http_time, ARGS_ANY());
 }

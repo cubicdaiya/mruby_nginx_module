@@ -19,27 +19,27 @@
 
 #define GC_ARENA_RESTORE mrb_gc_arena_restore(mrb, 0);
 
-static ngx_int_t ngx_mrb_class_init(mrb_state *mrb);
+static ngx_int_t ngx_http_mruby_class_init(mrb_state *mrb);
 
-static ngx_int_t ngx_mrb_class_init(mrb_state *mrb)
+static ngx_int_t ngx_http_mruby_class_init(mrb_state *mrb)
 {
     struct RClass *class;
 
     class = mrb_define_module(mrb, "Nginx");
 
-    ngx_mrb_core_init(mrb, class);          GC_ARENA_RESTORE;
-    ngx_mrb_request_class_init(mrb, class); GC_ARENA_RESTORE;
-    ngx_mrb_variable_class_init(mrb, class);GC_ARENA_RESTORE;
-    ngx_mrb_context_class_init(mrb, class); GC_ARENA_RESTORE;
-    ngx_mrb_digest_class_init(mrb, class);  GC_ARENA_RESTORE;
-    ngx_mrb_time_class_init(mrb, class);    GC_ARENA_RESTORE;
-    ngx_mrb_base64_class_init(mrb, class);  GC_ARENA_RESTORE;
-    ngx_mrb_regex_class_init(mrb);          GC_ARENA_RESTORE;
+    ngx_http_mruby_core_init(mrb, class);          GC_ARENA_RESTORE;
+    ngx_http_mruby_request_class_init(mrb, class); GC_ARENA_RESTORE;
+    ngx_http_mruby_variable_class_init(mrb, class);GC_ARENA_RESTORE;
+    ngx_http_mruby_context_class_init(mrb, class); GC_ARENA_RESTORE;
+    ngx_http_mruby_digest_class_init(mrb, class);  GC_ARENA_RESTORE;
+    ngx_http_mruby_time_class_init(mrb, class);    GC_ARENA_RESTORE;
+    ngx_http_mruby_base64_class_init(mrb, class);  GC_ARENA_RESTORE;
+    ngx_http_mruby_regex_class_init(mrb);          GC_ARENA_RESTORE;
 
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_init_file(ngx_str_t *script_file_path, ngx_mrb_state_t *state, ngx_mrb_code_t *code)
+ngx_int_t ngx_http_mruby_init_file(ngx_str_t *script_file_path, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
     FILE *mrb_file;
     mrb_state *mrb;
@@ -50,7 +50,7 @@ ngx_int_t ngx_mrb_init_file(ngx_str_t *script_file_path, ngx_mrb_state_t *state,
     }
 
     mrb = mrb_open();
-    ngx_mrb_class_init(mrb);
+    ngx_http_mruby_class_init(mrb);
 
     state->ai  = mrb_gc_arena_save(mrb);
     p          = mrb_parse_file(mrb, mrb_file, NULL);
@@ -63,13 +63,13 @@ ngx_int_t ngx_mrb_init_file(ngx_str_t *script_file_path, ngx_mrb_state_t *state,
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_init_string(ngx_str_t *script, ngx_mrb_state_t *state, ngx_mrb_code_t *code)
+ngx_int_t ngx_http_mruby_init_string(ngx_str_t *script, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
     mrb_state *mrb;
     struct mrb_parser_state *p;
 
     mrb = mrb_open();
-    ngx_mrb_class_init(mrb);
+    ngx_http_mruby_class_init(mrb);
 
     state->ai   = mrb_gc_arena_save(mrb);
     p           = mrb_parse_string(mrb, (char *)script->data, NULL);
@@ -81,7 +81,7 @@ ngx_int_t ngx_mrb_init_string(ngx_str_t *script, ngx_mrb_state_t *state, ngx_mrb
     return NGX_OK;
 }
 
-static ngx_int_t ngx_mrb_gencode_state(ngx_mrb_state_t *state, ngx_mrb_code_t *code)
+static ngx_int_t ngx_http_mruby_gencode_state(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
     FILE *mrb_file;
     struct mrb_parser_state *p;
@@ -100,20 +100,20 @@ static ngx_int_t ngx_mrb_gencode_state(ngx_mrb_state_t *state, ngx_mrb_code_t *c
     return NGX_OK;
 }
 
-ngx_int_t ngx_http_mruby_state_reinit_from_file(ngx_mrb_state_t *state, ngx_mrb_code_t *code)
+ngx_int_t ngx_http_mruby_state_reinit_from_file(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
     if (state == NGX_CONF_UNSET_PTR) {
         return NGX_ERROR;
     }
-    if (ngx_mrb_gencode_state(state, code) != NGX_OK) {
+    if (ngx_http_mruby_gencode_state(state, code) != NGX_OK) {
         return NGX_ERROR;
     }
     return NGX_OK;
 }
 
-ngx_mrb_code_t *ngx_http_mruby_mrb_code_from_file(ngx_pool_t *pool, ngx_str_t *code_file_path)
+ngx_http_mruby_code_t *ngx_http_mruby_mrb_code_from_file(ngx_pool_t *pool, ngx_str_t *code_file_path)
 {
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     size_t          len;
     u_char         *p;
 
@@ -139,13 +139,13 @@ ngx_mrb_code_t *ngx_http_mruby_mrb_code_from_file(ngx_pool_t *pool, ngx_str_t *c
         p = ngx_cpystrn((u_char *)code->code.file, (u_char *)ngx_cycle->conf_prefix.data, ngx_cycle->conf_prefix.len + 1);
         ngx_cpystrn(p, (u_char *)code_file_path->data, code_file_path->len + 1);
     }
-    code->code_type = NGX_MRB_CODE_TYPE_FILE;
+    code->code_type = NGX_HTTP_MRUBY_CODE_TYPE_FILE;
     return code;
 }
 
-ngx_mrb_code_t *ngx_http_mruby_mrb_code_from_string(ngx_pool_t *pool, ngx_str_t *code_s)
+ngx_http_mruby_code_t *ngx_http_mruby_mrb_code_from_string(ngx_pool_t *pool, ngx_str_t *code_s)
 {
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     size_t len;
 
     code = ngx_pcalloc(pool, sizeof(*code));
@@ -159,28 +159,28 @@ ngx_mrb_code_t *ngx_http_mruby_mrb_code_from_string(ngx_pool_t *pool, ngx_str_t 
         return NGX_CONF_UNSET_PTR;
     }
     ngx_cpystrn((u_char *)code->code.string, code_s->data, len + 1);
-    code->code_type = NGX_MRB_CODE_TYPE_STRING;
+    code->code_type = NGX_HTTP_MRUBY_CODE_TYPE_STRING;
     return code;
 }
 
-ngx_int_t ngx_http_mruby_shared_state_init(ngx_mrb_state_t *state)
+ngx_int_t ngx_http_mruby_shared_state_init(ngx_http_mruby_state_t *state)
 {
     mrb_state *mrb;
 
     mrb = mrb_open();
-    ngx_mrb_class_init(mrb);
+    ngx_http_mruby_class_init(mrb);
 
     state->mrb = mrb;
 
     return NGX_OK;
 }
 
-ngx_int_t ngx_http_mruby_shared_state_compile(ngx_mrb_state_t *state, ngx_mrb_code_t *code)
+ngx_int_t ngx_http_mruby_shared_state_compile(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
     FILE *mrb_file;
     struct mrb_parser_state *p;
 
-    if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
+    if (code->code_type == NGX_HTTP_MRUBY_CODE_TYPE_FILE) {
         if ((mrb_file = fopen((char *)code->code.file, "r")) == NULL) {
             return NGX_ERROR;
         }

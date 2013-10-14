@@ -33,18 +33,18 @@
 #endif
 
 
-static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_md5(mrb_state *mrb, mrb_value self);
 #if (NGX_HAVE_SHA1)
-static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_sha1(mrb_state *mrb, mrb_value self);
 #endif
 #if (NGX_OPENSSL)
-static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_hmac_sha1(mrb_state *mrb, mrb_value self);
 #endif
-static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_crc32_long(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_crc32_short(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_hexdigest(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_crc32_long(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_crc32_short(mrb_state *mrb, mrb_value self);
 
-static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_md5(mrb_state *mrb, mrb_value self)
 {
     mrb_value  mrb_src;
     ngx_str_t  src;
@@ -68,7 +68,7 @@ static mrb_value ngx_mrb_md5(mrb_state *mrb, mrb_value self)
 }
 
 #if (NGX_HAVE_SHA1)
-static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_sha1(mrb_state *mrb, mrb_value self)
 {
     mrb_value  mrb_src;
     ngx_str_t  src;
@@ -93,7 +93,7 @@ static mrb_value ngx_mrb_sha1(mrb_state *mrb, mrb_value self)
 #endif
 
 #if (NGX_OPENSSL)
-static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_hmac_sha1(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_key, mrb_text;
     ngx_str_t text, key;
@@ -123,7 +123,7 @@ static mrb_value ngx_mrb_hmac_sha1(mrb_state *mrb, mrb_value self)
 }
 #endif
 
-static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_hexdigest(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_digest, mrb_hexdigest;
     ngx_str_t digest;
@@ -157,7 +157,7 @@ static mrb_value ngx_mrb_hexdigest(mrb_state *mrb, mrb_value self)
     return mrb_hexdigest;
 }
 
-static mrb_value ngx_mrb_crc32_long(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_crc32_long(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_src;
     ngx_str_t src;
@@ -177,7 +177,7 @@ static mrb_value ngx_mrb_crc32_long(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(crc32);
 }
 
-static mrb_value ngx_mrb_crc32_short(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_crc32_short(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_src;
     ngx_str_t src;
@@ -197,21 +197,21 @@ static mrb_value ngx_mrb_crc32_short(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(crc32);
 }
 
-void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *class)
+void ngx_http_mruby_digest_class_init(mrb_state *mrb, struct RClass *class)
 {
     struct RClass *class_digest;
 
     class_digest = mrb_define_class_under(mrb, class, "Digest", mrb->object_class);
 
-    mrb_define_class_method(mrb, class_digest, "md5",         ngx_mrb_md5,         ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "md5",         ngx_http_mruby_md5,         ARGS_ANY());
 #if NGX_HAVE_SHA1
-    mrb_define_class_method(mrb, class_digest, "sha1",        ngx_mrb_sha1,        ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "sha1",        ngx_http_mruby_sha1,        ARGS_ANY());
 #endif
 #if (NGX_OPENSSL)
-    mrb_define_class_method(mrb, class_digest, "hmac_sha1",   ngx_mrb_hmac_sha1,   ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "hmac_sha1",   ngx_http_mruby_hmac_sha1,   ARGS_ANY());
 #endif
-    mrb_define_class_method(mrb, class_digest, "hexdigest",   ngx_mrb_hexdigest,   ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "hexdigest",   ngx_http_mruby_hexdigest,   ARGS_ANY());
 
-    mrb_define_class_method(mrb, class_digest, "crc32_long",  ngx_mrb_crc32_long,  ARGS_ANY());
-    mrb_define_class_method(mrb, class_digest, "crc32_short", ngx_mrb_crc32_short, ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "crc32_long",  ngx_http_mruby_crc32_long,  ARGS_ANY());
+    mrb_define_class_method(mrb, class_digest, "crc32_short", ngx_http_mruby_crc32_short, ARGS_ANY());
 }

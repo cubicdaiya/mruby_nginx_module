@@ -21,25 +21,25 @@
 #define NGX_MRUBY_REGEXP_EXTENDED           0x02
 #define NGX_MRUBY_REGEXP_MULTILINE          0x04
 
-static ngx_pool_t *ngx_mrb_pcre_pool = NULL;
-ngx_pool_t        *ngx_mrb_conf_pool = NULL;
+static ngx_pool_t *ngx_http_mruby_pcre_pool = NULL;
+ngx_pool_t        *ngx_http_mruby_conf_pool = NULL;
 
 static void *(*old_pcre_malloc)(size_t);
 static void (*old_pcre_free)(void *ptr);
 
-static void *ngx_mrb_pcre_malloc(size_t size)
+static void *ngx_http_mruby_pcre_malloc(size_t size)
 {
-    if (ngx_mrb_pcre_pool) {
-        return ngx_palloc(ngx_mrb_pcre_pool, size);
+    if (ngx_http_mruby_pcre_pool) {
+        return ngx_palloc(ngx_http_mruby_pcre_pool, size);
     }
 
     return NULL;
 }
 
-static void ngx_mrb_pcre_free(void *ptr)
+static void ngx_http_mruby_pcre_free(void *ptr)
 {
-    if (ngx_mrb_pcre_pool) {
-        ngx_pfree(ngx_mrb_pcre_pool, ptr);
+    if (ngx_http_mruby_pcre_pool) {
+        ngx_pfree(ngx_http_mruby_pcre_pool, ptr);
         return;
     }
 }
@@ -49,18 +49,18 @@ static void ngx_mrb_pcre_free(void *ptr)
 // mruby-regex-pcre(https://github.com/iij/mruby-regexp-pcre) and customed
 //
 
-struct ngx_mrb_regexp_pcre {
+struct ngx_http_mruby_regexp_pcre {
     pcre *re;
 };
 
-struct ngx_mrb_matchdata {
+struct ngx_http_mruby_matchdata {
     mrb_int length;
     int *ovector;
 };
 
-static void ngx_mrb_regexp_free(mrb_state *mrb, void *ptr)
+static void ngx_http_mruby_regexp_free(mrb_state *mrb, void *ptr)
 {
-    struct ngx_mrb_regexp_pcre *mrb_re = ptr;
+    struct ngx_http_mruby_regexp_pcre *mrb_re = ptr;
 
     if (mrb_re != NULL) {
     if (mrb_re->re != NULL) {
@@ -70,9 +70,9 @@ static void ngx_mrb_regexp_free(mrb_state *mrb, void *ptr)
   }
 }
 
-static void ngx_mrb_matchdata_free(mrb_state *mrb, void *ptr)
+static void ngx_http_mruby_matchdata_free(mrb_state *mrb, void *ptr)
 {
-    struct ngx_mrb_matchdata *mrb_md = ptr;
+    struct ngx_http_mruby_matchdata *mrb_md = ptr;
 
     if (mrb_md != NULL) {
         if (mrb_md->ovector != NULL) {
@@ -82,10 +82,10 @@ static void ngx_mrb_matchdata_free(mrb_state *mrb, void *ptr)
     }
 }
 
-struct mrb_data_type ngx_mrb_regexp_type    = { "Regexp",    ngx_mrb_regexp_free    };
-struct mrb_data_type ngx_mrb_matchdata_type = { "MatchData", ngx_mrb_matchdata_free };
+struct mrb_data_type ngx_http_mruby_regexp_type    = { "Regexp",    ngx_http_mruby_regexp_free    };
+struct mrb_data_type ngx_http_mruby_matchdata_type = { "MatchData", ngx_http_mruby_matchdata_free };
 
-static int ngx_mrb_mruby_to_pcre_options(mrb_value options)
+static int ngx_http_mruby_mruby_to_pcre_options(mrb_value options)
 {
     int coptions = PCRE_DOTALL;
 
@@ -108,7 +108,7 @@ static int ngx_mrb_mruby_to_pcre_options(mrb_value options)
     return coptions;
 }
 
-static int ngx_mrb_pcre_to_mruby_options(int coptions)
+static int ngx_http_mruby_pcre_to_mruby_options(int coptions)
 {
     int options = 0;
 
@@ -127,46 +127,46 @@ static int ngx_mrb_pcre_to_mruby_options(int coptions)
     return options;
 }
 
-static mrb_value ngx_mrb_regexp_pcre_initialize(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_regexp_pcre_initialize(mrb_state *mrb, mrb_value self)
 {
     ngx_http_request_t   *r;
     int erroff, coptions;
     const char *errstr = NULL;
-    struct ngx_mrb_regexp_pcre *reg = NULL;
+    struct ngx_http_mruby_regexp_pcre *reg = NULL;
     mrb_value source, opt = mrb_nil_value();
     ngx_pool_t *pool;
 
-    r   = ngx_mrb_get_request();
-    reg = (struct ngx_mrb_regexp_pcre *)DATA_PTR(self);
+    r   = ngx_http_mruby_get_request();
+    reg = (struct ngx_http_mruby_regexp_pcre *)DATA_PTR(self);
     if (reg) {
-        ngx_mrb_regexp_free(mrb, reg);
+        ngx_http_mruby_regexp_free(mrb, reg);
     }
-    DATA_TYPE(self) = &ngx_mrb_regexp_type;
+    DATA_TYPE(self) = &ngx_http_mruby_regexp_type;
     DATA_PTR(self) = NULL;
 
     mrb_get_args(mrb, "S|o", &source, &opt);
 
-    reg = mrb_malloc(mrb, sizeof(struct ngx_mrb_regexp_pcre));
+    reg = mrb_malloc(mrb, sizeof(struct ngx_http_mruby_regexp_pcre));
     reg->re = NULL;
     DATA_PTR(self) = reg;
 
-    coptions = ngx_mrb_mruby_to_pcre_options(opt);
+    coptions = ngx_http_mruby_mruby_to_pcre_options(opt);
     source   = mrb_str_new(mrb, RSTRING_PTR(source), RSTRING_LEN(source));
 
     if (r) {
         pool = r->pool;
     } else {
-        pool = ngx_mrb_conf_pool;
+        pool = ngx_http_mruby_conf_pool;
     }
 
     // As nginx orverrides pcre_(malloc|gree), 
     // calling pcre_compile directly fails
     // This is the workaround for it.
-    ngx_mrb_pcre_pool = pool;
+    ngx_http_mruby_pcre_pool = pool;
     old_pcre_malloc   = pcre_malloc;
     old_pcre_free     = pcre_free;
-    pcre_malloc       = ngx_mrb_pcre_malloc;
-    pcre_free         = ngx_mrb_pcre_free;
+    pcre_malloc       = ngx_http_mruby_pcre_malloc;
+    pcre_free         = ngx_http_mruby_pcre_free;
 
     reg->re  = pcre_compile((const char *)RSTRING_PTR(source), coptions, &errstr, &erroff, NULL);
 
@@ -177,7 +177,7 @@ static mrb_value ngx_mrb_regexp_pcre_initialize(mrb_state *mrb, mrb_value self)
         mrb_raisef(mrb, E_ARGUMENT_ERROR, "invalid regular expression");
     }
     mrb_iv_set(mrb, self, mrb_intern(mrb, "@source"), source);
-    mrb_iv_set(mrb, self, mrb_intern(mrb, "@options"), mrb_fixnum_value(ngx_mrb_pcre_to_mruby_options(coptions)));
+    mrb_iv_set(mrb, self, mrb_intern(mrb, "@options"), mrb_fixnum_value(ngx_http_mruby_pcre_to_mruby_options(coptions)));
 
     unsigned char *name_table;
     int i, namecount, name_entry_size;
@@ -197,9 +197,9 @@ static mrb_value ngx_mrb_regexp_pcre_initialize(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-static mrb_value ngx_mrb_regexp_pcre_match(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_regexp_pcre_match(mrb_state *mrb, mrb_value self)
 {
-    struct ngx_mrb_matchdata *mrb_md;
+    struct ngx_http_mruby_matchdata *mrb_md;
     int rc;
     int ccount, matchlen;
     int *match;
@@ -207,9 +207,9 @@ static mrb_value ngx_mrb_regexp_pcre_match(mrb_state *mrb, mrb_value self)
     mrb_value md, str;
     mrb_int i, pos;
     pcre_extra extra;
-    struct ngx_mrb_regexp_pcre *reg;
+    struct ngx_http_mruby_regexp_pcre *reg;
 
-    reg = (struct ngx_mrb_regexp_pcre *)mrb_get_datatype(mrb, self, &ngx_mrb_regexp_type);
+    reg = (struct ngx_http_mruby_regexp_pcre *)mrb_get_datatype(mrb, self, &ngx_http_mruby_regexp_type);
     if (!reg) {
         return mrb_nil_value();
     }
@@ -241,7 +241,7 @@ static mrb_value ngx_mrb_regexp_pcre_match(mrb_state *mrb, mrb_value self)
     c = mrb_class_get(mrb, "MatchData");
     md = mrb_funcall(mrb, mrb_obj_value(c), "new", 0);
 
-    mrb_md = (struct ngx_mrb_matchdata *)mrb_get_datatype(mrb, md, &ngx_mrb_matchdata_type);
+    mrb_md = (struct ngx_http_mruby_matchdata *)mrb_get_datatype(mrb, md, &ngx_http_mruby_matchdata_type);
     mrb_md->ovector = match;
     mrb_md->length = matchlen;
 
@@ -264,22 +264,22 @@ static mrb_value ngx_mrb_regexp_pcre_match(mrb_state *mrb, mrb_value self)
     return md;
 }
 
-static mrb_value ngx_mrb_regexp_equal(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_regexp_equal(mrb_state *mrb, mrb_value self)
 {
     mrb_value other;
-    struct ngx_mrb_regexp_pcre *self_reg, *other_reg;
+    struct ngx_http_mruby_regexp_pcre *self_reg, *other_reg;
 
     mrb_get_args(mrb, "o", &other);
     if (mrb_obj_equal(mrb, self, other)) {
         return mrb_true_value();
     }
 
-    if (mrb_type(other) != MRB_TT_DATA || DATA_TYPE(other) != &ngx_mrb_regexp_type) {
+    if (mrb_type(other) != MRB_TT_DATA || DATA_TYPE(other) != &ngx_http_mruby_regexp_type) {
         return mrb_false_value();
     }
 
-    self_reg  = (struct ngx_mrb_regexp_pcre *)DATA_PTR(self);
-    other_reg = (struct ngx_mrb_regexp_pcre *)DATA_PTR(other);
+    self_reg  = (struct ngx_http_mruby_regexp_pcre *)DATA_PTR(self);
+    other_reg = (struct ngx_http_mruby_regexp_pcre *)DATA_PTR(other);
     if (!self_reg || !other_reg) {
         mrb_raise(mrb, E_RUNTIME_ERROR, "Invalid Regexp");
     }
@@ -292,18 +292,18 @@ static mrb_value ngx_mrb_regexp_equal(mrb_state *mrb, mrb_value self)
     return mrb_false_value();
 }
 
-static mrb_value ngx_mrb_matchdata_init(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_matchdata_init(mrb_state *mrb, mrb_value self)
 {
-    struct ngx_mrb_matchdata *mrb_md;
+    struct ngx_http_mruby_matchdata *mrb_md;
 
-    mrb_md = (struct ngx_mrb_matchdata *)DATA_PTR(self);
+    mrb_md = (struct ngx_http_mruby_matchdata *)DATA_PTR(self);
     if (mrb_md) {
-        ngx_mrb_matchdata_free(mrb, mrb_md);
+        ngx_http_mruby_matchdata_free(mrb, mrb_md);
     }
-    DATA_TYPE(self) = &ngx_mrb_matchdata_type;
+    DATA_TYPE(self) = &ngx_http_mruby_matchdata_type;
     DATA_PTR(self) = NULL;
 
-    mrb_md = (struct ngx_mrb_matchdata *)mrb_malloc(mrb, sizeof(*mrb_md));
+    mrb_md = (struct ngx_http_mruby_matchdata *)mrb_malloc(mrb, sizeof(*mrb_md));
     mrb_md->ovector = NULL;
     mrb_md->length = -1;
     DATA_PTR(self) = mrb_md;
@@ -311,10 +311,10 @@ static mrb_value ngx_mrb_matchdata_init(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-static mrb_value ngx_mrb_matchdata_init_copy(mrb_state *mrb, mrb_value copy)
+static mrb_value ngx_http_mruby_matchdata_init_copy(mrb_state *mrb, mrb_value copy)
 {
     mrb_value src;
-    struct ngx_mrb_matchdata *mrb_md_copy, *mrb_md_src;
+    struct ngx_http_mruby_matchdata *mrb_md_copy, *mrb_md_src;
     int vecsize;
 
     mrb_get_args(mrb, "o", &src);
@@ -324,7 +324,7 @@ static mrb_value ngx_mrb_matchdata_init_copy(mrb_state *mrb, mrb_value copy)
         mrb_raise(mrb, E_TYPE_ERROR, "wrong argument class");
     }
 
-    mrb_md_copy = (struct ngx_mrb_matchdata *)mrb_malloc(mrb, sizeof(*mrb_md_copy));
+    mrb_md_copy = (struct ngx_http_mruby_matchdata *)mrb_malloc(mrb, sizeof(*mrb_md_copy));
     mrb_md_src  = DATA_PTR(src);
 
     if (mrb_md_src->ovector == NULL) {
@@ -338,7 +338,7 @@ static mrb_value ngx_mrb_matchdata_init_copy(mrb_state *mrb, mrb_value copy)
     }
 
     if (DATA_PTR(copy) != NULL) {
-        ngx_mrb_matchdata_free(mrb, DATA_PTR(copy));
+        ngx_http_mruby_matchdata_free(mrb, DATA_PTR(copy));
     }
     DATA_PTR(copy) = mrb_md_copy;
 
@@ -348,12 +348,12 @@ static mrb_value ngx_mrb_matchdata_init_copy(mrb_state *mrb, mrb_value copy)
     return copy;
 }
 
-static mrb_value ngx_mrb_matchdata_beginend(mrb_state *mrb, mrb_value self, int beginend)
+static mrb_value ngx_http_mruby_matchdata_beginend(mrb_state *mrb, mrb_value self, int beginend)
 {
-    struct ngx_mrb_matchdata *mrb_md;
+    struct ngx_http_mruby_matchdata *mrb_md;
     mrb_int i, offs;
 
-    mrb_md = (struct ngx_mrb_matchdata *)mrb_get_datatype(mrb, self, &ngx_mrb_matchdata_type);
+    mrb_md = (struct ngx_http_mruby_matchdata *)mrb_get_datatype(mrb, self, &ngx_http_mruby_matchdata_type);
     if (!mrb_md) return mrb_nil_value();
 
     mrb_get_args(mrb, "i", &i);
@@ -369,21 +369,21 @@ static mrb_value ngx_mrb_matchdata_beginend(mrb_state *mrb, mrb_value self, int 
     }
 }
 
-static mrb_value ngx_mrb_matchdata_begin(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_matchdata_begin(mrb_state *mrb, mrb_value self)
 {
-    return ngx_mrb_matchdata_beginend(mrb, self, 0);
+    return ngx_http_mruby_matchdata_beginend(mrb, self, 0);
 }
 
-static mrb_value ngx_mrb_matchdata_end(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_matchdata_end(mrb_state *mrb, mrb_value self)
 {
-    return ngx_mrb_matchdata_beginend(mrb, self, 1);
+    return ngx_http_mruby_matchdata_beginend(mrb, self, 1);
 }
 
-static mrb_value ngx_mrb_matchdata_length(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_matchdata_length(mrb_state *mrb, mrb_value self)
 {
-    struct ngx_mrb_matchdata *mrb_md;
+    struct ngx_http_mruby_matchdata *mrb_md;
 
-    mrb_md = (struct ngx_mrb_matchdata *)mrb_get_datatype(mrb, self, &ngx_mrb_matchdata_type);
+    mrb_md = (struct ngx_http_mruby_matchdata *)mrb_get_datatype(mrb, self, &ngx_http_mruby_matchdata_type);
     if (!mrb_md) {
         return mrb_nil_value();
     }
@@ -391,16 +391,16 @@ static mrb_value ngx_mrb_matchdata_length(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(mrb_md->length);
 }
 
-void ngx_mrb_regex_class_init(mrb_state *mrb)
+void ngx_http_mruby_regex_class_init(mrb_state *mrb)
 {
     struct RClass *class_re, *class_md;
 
     class_re = mrb_define_class(mrb, "Regexp", mrb->object_class);
     MRB_SET_INSTANCE_TT(class_re, MRB_TT_DATA);
 
-    mrb_define_method(mrb, class_re, "initialize", ngx_mrb_regexp_pcre_initialize, ARGS_REQ(1) | ARGS_OPT(2));
-    mrb_define_method(mrb, class_re, "match",      ngx_mrb_regexp_pcre_match,      ARGS_REQ(1));
-    mrb_define_method(mrb, class_re, "==",         ngx_mrb_regexp_equal,           ARGS_REQ(1));
+    mrb_define_method(mrb, class_re, "initialize", ngx_http_mruby_regexp_pcre_initialize, ARGS_REQ(1) | ARGS_OPT(2));
+    mrb_define_method(mrb, class_re, "match",      ngx_http_mruby_regexp_pcre_match,      ARGS_REQ(1));
+    mrb_define_method(mrb, class_re, "==",         ngx_http_mruby_regexp_equal,           ARGS_REQ(1));
 
     mrb_define_const(mrb, class_re, "IGNORECASE", mrb_fixnum_value(NGX_MRUBY_REGEXP_IGNORECASE));
     mrb_define_const(mrb, class_re, "EXTENDED",   mrb_fixnum_value(NGX_MRUBY_REGEXP_EXTENDED));
@@ -409,9 +409,9 @@ void ngx_mrb_regex_class_init(mrb_state *mrb)
     class_md = mrb_define_class(mrb, "MatchData", mrb->object_class);
     MRB_SET_INSTANCE_TT(class_md, MRB_TT_DATA);
 
-    mrb_define_method(mrb, class_md, "initialize",      ngx_mrb_matchdata_init,      ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "initialize_copy", ngx_mrb_matchdata_init_copy, ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "begin",           ngx_mrb_matchdata_begin,     ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "end",             ngx_mrb_matchdata_end,       ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "length",          ngx_mrb_matchdata_length,    ARGS_NONE());
+    mrb_define_method(mrb, class_md, "initialize",      ngx_http_mruby_matchdata_init,      ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "initialize_copy", ngx_http_mruby_matchdata_init_copy, ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "begin",           ngx_http_mruby_matchdata_begin,     ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "end",             ngx_http_mruby_matchdata_end,       ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "length",          ngx_http_mruby_matchdata_length,    ARGS_NONE());
 }

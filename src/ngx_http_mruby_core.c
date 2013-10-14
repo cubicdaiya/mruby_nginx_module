@@ -24,26 +24,26 @@
 
 ngx_module_t ngx_http_mruby_module;
 
-static void ngx_mrb_irep_clean(ngx_mrb_state_t *state, ngx_mrb_code_t *code);
-static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self);
+static void ngx_http_mruby_irep_clean(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code);
+static mrb_value ngx_http_mruby_return(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_rputs(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_redirect(mrb_state *mrb, mrb_value self);
 
-static void ngx_mrb_irep_clean(ngx_mrb_state_t *state, ngx_mrb_code_t *code)
+static void ngx_http_mruby_irep_clean(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
     state->mrb->irep_len = code->n;
     mrb_irep_free(state->mrb, state->mrb->irep[code->n]);
     state->mrb->exc = 0;
 }
 
-static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_return(mrb_state *mrb, mrb_value self)
 {
-    ngx_mrb_rputs_chain_list_t *chain;
+    ngx_http_mruby_rputs_chain_list_t *chain;
     ngx_http_mruby_ctx_t       *ctx;
     ngx_http_request_t         *r;
     mrb_int                     status;
 
-    r      = ngx_mrb_get_request();
+    r      = ngx_http_mruby_get_request();
     status = NGX_HTTP_OK;
 
     mrb_get_args(mrb, "i", &status);
@@ -71,17 +71,17 @@ static mrb_value ngx_mrb_return(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_rputs(mrb_state *mrb, mrb_value self)
 {
     mrb_value                   argv;
     ngx_buf_t                  *b;
-    ngx_mrb_rputs_chain_list_t *chain;
+    ngx_http_mruby_rputs_chain_list_t *chain;
     u_char                     *str;
     ngx_str_t                   ns;
     ngx_http_request_t         *r;
     ngx_http_mruby_ctx_t       *ctx;
 
-    r   = ngx_mrb_get_request();
+    r   = ngx_http_mruby_get_request();
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
     mrb_get_args(mrb, "o", &argv);
@@ -98,7 +98,7 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
     }
 
     if (ctx->rputs_chain == NULL) {
-        chain       = ngx_pcalloc(r->pool, sizeof(ngx_mrb_rputs_chain_list_t));
+        chain       = ngx_pcalloc(r->pool, sizeof(ngx_http_mruby_rputs_chain_list_t));
         chain->out  = ngx_alloc_chain_link(r->pool);
         chain->last = &chain->out;
     } else {
@@ -131,7 +131,7 @@ static mrb_value ngx_mrb_rputs(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_log(mrb_state *mrb, mrb_value self)
 {   
     mrb_value          *argv;
     mrb_value           msg;
@@ -139,7 +139,7 @@ static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
     mrb_int             log_level;
     ngx_http_request_t *r;
 
-    r = ngx_mrb_get_request();
+    r = ngx_http_mruby_get_request();
 
     mrb_get_args(mrb, "*", &argv, &argc);
 
@@ -189,12 +189,12 @@ static mrb_value ngx_mrb_log(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-static mrb_value ngx_mrb_get_ngx_mruby_version(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_get_ngx_mruby_version(mrb_state *mrb, mrb_value self)
 {   
     return mrb_str_new_cstr(mrb, MODULE_VERSION);
 }
 
-static mrb_value ngx_mrb_get_nginx_version(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_get_nginx_version(mrb_state *mrb, mrb_value self)
 {
     return mrb_str_new_cstr(mrb, NGINX_VERSION);
 }
@@ -203,7 +203,7 @@ static mrb_value ngx_mrb_get_nginx_version(mrb_state *mrb, mrb_value self)
 // used like this:
 // => http code 3xx location in browser
 // => internal redirection in nginx
-static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_redirect(mrb_state *mrb, mrb_value self)
 {
     int                   argc;
     u_char               *str;
@@ -213,7 +213,7 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
     ngx_http_request_t   *r;
     ngx_http_mruby_ctx_t *ctx;
 
-    r    = ngx_mrb_get_request();
+    r    = ngx_http_mruby_get_request();
     ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
     argc = mrb_get_args(mrb, "o|oo", &uri, &code);
 
@@ -276,21 +276,21 @@ static mrb_value ngx_mrb_redirect(mrb_state *mrb, mrb_value self)
     return self;
 }
 
-ngx_int_t ngx_mrb_run_conf(ngx_conf_t *cf, ngx_mrb_state_t *state, ngx_mrb_code_t *code)
+ngx_int_t ngx_http_mruby_run_conf(ngx_conf_t *cf, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     
     mrb_gc_arena_restore(state->mrb, state->ai);
 
     if (state->mrb->exc) {
-        ngx_mrb_raise_conf_error(state, code, cf);
+        ngx_http_mruby_raise_conf_error(state, code, cf);
         return NGX_ERROR;
     }
 
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached,
+ngx_int_t ngx_http_mruby_run_args(ngx_http_request_t *r, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_flag_t cached,
                            ngx_http_variable_value_t *args, size_t nargs, ngx_str_t *result)
 {
     ngx_http_mruby_ctx_t *ctx;
@@ -311,14 +311,14 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
 
     mrb_define_global_const(state->mrb, "ARGV", ARGV);
 
-    ngx_mrb_push_request(r);
+    ngx_http_mruby_push_request(r);
     mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     if (state->mrb->exc) {
-        ngx_mrb_raise_error(state, code, r);
+        ngx_http_mruby_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
         mrb_gc_protect(state->mrb, ctx->table);
         if (!cached) {
-            ngx_mrb_irep_clean(state, code);
+            ngx_http_mruby_irep_clean(state, code);
         }
         return NGX_ERROR;
     }
@@ -334,20 +334,20 @@ ngx_int_t ngx_mrb_run_args(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mr
     mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
-        ngx_mrb_irep_clean(state, code);
+        ngx_http_mruby_irep_clean(state, code);
     }
 
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
+ngx_int_t ngx_http_mruby_run(ngx_http_request_t *r, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_flag_t cached)
 {
     ngx_http_mruby_ctx_t       *ctx;
-    ngx_mrb_rputs_chain_list_t *chain;
+    ngx_http_mruby_rputs_chain_list_t *chain;
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
-    ngx_mrb_push_request(r);
+    ngx_http_mruby_push_request(r);
 
     if (!cached) {
         state->ai = mrb_gc_arena_save(state->mrb);
@@ -356,14 +356,14 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
 
     if (state->mrb->exc) {
-        ngx_mrb_raise_error(state, code, r);
+        ngx_http_mruby_raise_error(state, code, r);
     }
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
   
     if (!cached) {
-        ngx_mrb_irep_clean(state, code);
+        ngx_http_mruby_irep_clean(state, code);
     }
 
     if (ctx->exited) {
@@ -397,7 +397,7 @@ ngx_int_t ngx_mrb_run(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_cod
     return r->headers_out.status;
 }
 
-ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
+ngx_int_t ngx_http_mruby_run_header_filter(ngx_http_request_t *r, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_flag_t cached)
 {
     ngx_http_mruby_ctx_t *ctx;
 
@@ -407,25 +407,25 @@ ngx_int_t ngx_mrb_run_header_filter(ngx_http_request_t *r, ngx_mrb_state_t *stat
         state->ai = mrb_gc_arena_save(state->mrb);
     }
 
-    ngx_mrb_push_request(r);
+    ngx_http_mruby_push_request(r);
     mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
-        ngx_mrb_irep_clean(state, code);
+        ngx_http_mruby_irep_clean(state, code);
     }
 
     if (state->mrb->exc) {
-        ngx_mrb_raise_error(state, code, r);
+        ngx_http_mruby_raise_error(state, code, r);
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
 
     return NGX_OK;
 }
 
-ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_flag_t cached)
+ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_flag_t cached)
 {
     ngx_http_mruby_ctx_t *ctx;
     mrb_value ARGV, mrb_result;
@@ -441,14 +441,14 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
     mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)ctx->filter_ctx.body, ctx->filter_ctx.body_length));
     mrb_define_global_const(state->mrb, "ARGV", ARGV);
 
-    ngx_mrb_push_request(r);
+    ngx_http_mruby_push_request(r);
     mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
     if (state->mrb->exc) {
-        ngx_mrb_raise_error(state, code, r);
+        ngx_http_mruby_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
         mrb_gc_protect(state->mrb, ctx->table);
         if (!cached) {
-            ngx_mrb_irep_clean(state, code);
+            ngx_http_mruby_irep_clean(state, code);
         }
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
@@ -464,13 +464,13 @@ ngx_int_t ngx_mrb_run_body_filter(ngx_http_request_t *r, ngx_mrb_state_t *state,
     mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
-        ngx_mrb_irep_clean(state, code);
+        ngx_http_mruby_irep_clean(state, code);
     }
 
     return NGX_OK;
 }
 
-void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
+void ngx_http_mruby_core_init(mrb_state *mrb, struct RClass *class)
 {
     // status
     mrb_define_const(mrb, class, "OK",                            mrb_fixnum_value(NGX_OK));
@@ -547,10 +547,10 @@ void ngx_mrb_core_init(mrb_state *mrb, struct RClass *class)
     mrb_define_const(mrb, class, "LOG_INFO",   mrb_fixnum_value(NGX_LOG_INFO));
     mrb_define_const(mrb, class, "LOG_DEBUG",  mrb_fixnum_value(NGX_LOG_DEBUG));
 
-    mrb_define_class_method(mrb, class, "rputs",          ngx_mrb_rputs,                 ARGS_ANY());
-    mrb_define_class_method(mrb, class, "return",         ngx_mrb_return,                ARGS_ANY());
-    mrb_define_class_method(mrb, class, "log",            ngx_mrb_log,                   ARGS_ANY());
-    mrb_define_class_method(mrb, class, "module_version", ngx_mrb_get_ngx_mruby_version, ARGS_NONE());
-    mrb_define_class_method(mrb, class, "version",        ngx_mrb_get_nginx_version,     ARGS_NONE());
-    mrb_define_class_method(mrb, class, "redirect",       ngx_mrb_redirect,              ARGS_ANY());
+    mrb_define_class_method(mrb, class, "rputs",          ngx_http_mruby_rputs,                 ARGS_ANY());
+    mrb_define_class_method(mrb, class, "return",         ngx_http_mruby_return,                ARGS_ANY());
+    mrb_define_class_method(mrb, class, "log",            ngx_http_mruby_log,                   ARGS_ANY());
+    mrb_define_class_method(mrb, class, "module_version", ngx_http_mruby_get_ngx_mruby_version, ARGS_NONE());
+    mrb_define_class_method(mrb, class, "version",        ngx_http_mruby_get_nginx_version,     ARGS_NONE());
+    mrb_define_class_method(mrb, class, "redirect",       ngx_http_mruby_redirect,              ARGS_ANY());
 }

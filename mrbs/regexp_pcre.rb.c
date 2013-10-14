@@ -1,4 +1,4 @@
-static const char *ngx_mrb_regexp_pcre_rb_string = 
+static const char *ngx_http_mruby_regexp_pcre_rb_string = 
 "class Regexp\n"
 "  attr_reader :options\n"
 "  attr_reader :source\n"

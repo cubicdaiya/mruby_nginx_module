@@ -12,12 +12,12 @@
 
 #include <mruby.h>
 
-void ngx_mrb_request_class_init(mrb_state *mrb, struct RClass *calss);
-void ngx_mrb_variable_class_init(mrb_state *mrb, struct RClass *calss);
-void ngx_mrb_context_class_init(mrb_state *mrb, struct RClass *calss);
-void ngx_mrb_digest_class_init(mrb_state *mrb, struct RClass *calss);
-void ngx_mrb_time_class_init(mrb_state *mrb, struct RClass *calss);
-void ngx_mrb_base64_class_init(mrb_state *mrb, struct RClass *calss);
-void ngx_mrb_regex_class_init(mrb_state *mrb);
+void ngx_http_mruby_request_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_http_mruby_variable_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_http_mruby_context_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_http_mruby_digest_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_http_mruby_time_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_http_mruby_base64_class_init(mrb_state *mrb, struct RClass *calss);
+void ngx_http_mruby_regex_class_init(mrb_state *mrb);
 
 #endif // NGX_HTTP_MRUBY_CLASS_H

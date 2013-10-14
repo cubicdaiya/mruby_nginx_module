@@ -14,10 +14,10 @@
 #include <mruby/class.h>
 #include <mruby/string.h>
 
-static mrb_value ngx_mrb_base64_encode(mrb_state *mrb, mrb_value self);
-static mrb_value ngx_mrb_base64_decode(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_base64_encode(mrb_state *mrb, mrb_value self);
+static mrb_value ngx_http_mruby_base64_decode(mrb_state *mrb, mrb_value self);
 
-static mrb_value ngx_mrb_base64_encode(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_base64_encode(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_src;
     ngx_str_t src, dst;
@@ -39,7 +39,7 @@ static mrb_value ngx_mrb_base64_encode(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)dst.data, dst.len);
 }
 
-static mrb_value ngx_mrb_base64_decode(mrb_state *mrb, mrb_value self)
+static mrb_value ngx_http_mruby_base64_decode(mrb_state *mrb, mrb_value self)
 {
     mrb_value mrb_src;
     ngx_str_t src, dst;
@@ -63,12 +63,12 @@ static mrb_value ngx_mrb_base64_decode(mrb_state *mrb, mrb_value self)
     return mrb_str_new(mrb, (char *)dst.data, dst.len);
 }
 
-void ngx_mrb_base64_class_init(mrb_state *mrb, struct RClass *class)
+void ngx_http_mruby_base64_class_init(mrb_state *mrb, struct RClass *class)
 {
     struct RClass *class_base64;
 
     class_base64 = mrb_define_class_under(mrb, class, "Base64", mrb->object_class);
 
-    mrb_define_class_method(mrb, class_base64, "encode", ngx_mrb_base64_encode, ARGS_ANY());
-    mrb_define_class_method(mrb, class_base64, "decode", ngx_mrb_base64_decode, ARGS_ANY());
+    mrb_define_class_method(mrb, class_base64, "encode", ngx_http_mruby_base64_encode, ARGS_ANY());
+    mrb_define_class_method(mrb, class_base64, "decode", ngx_http_mruby_base64_decode, ARGS_ANY());
 }

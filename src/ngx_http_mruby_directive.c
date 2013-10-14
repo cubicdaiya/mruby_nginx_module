@@ -19,7 +19,7 @@ char *ngx_http_mruby_require(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_http_mruby_main_conf_t *mmcf;
     ngx_str_t                  *value;
-    ngx_mrb_code_t             *code;
+    ngx_http_mruby_code_t             *code;
     ngx_int_t                   rc;
 
     mmcf  = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
@@ -32,7 +32,7 @@ char *ngx_http_mruby_require(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
 
-    rc = ngx_mrb_run_conf(cf, mmcf->state, code);
+    rc = ngx_http_mruby_run_conf(cf, mmcf->state, code);
     if (rc == NGX_ERROR) {
         return NGX_CONF_ERROR;
     }
@@ -46,7 +46,7 @@ char *ngx_http_mruby_##phase_name##_phase(ngx_conf_t *cf, ngx_command_t *cmd, vo
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);   \
     ngx_http_mruby_loc_conf_t  *mlcf;                                                                   \
     ngx_str_t *value;                                                                                   \
-    ngx_mrb_code_t *code;                                                                               \
+    ngx_http_mruby_code_t *code;                                                                        \
     ngx_int_t rc;                                                                                       \
     if (cmd->post == NULL) {                                                                            \
         return NGX_CONF_ERROR;                                                                          \
@@ -78,7 +78,7 @@ char *ngx_http_mruby_##phase_name##_inline_phase(ngx_conf_t *cf, ngx_command_t *
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);          \
     ngx_http_mruby_loc_conf_t  *mlcf;                                                                          \
     ngx_str_t *value;                                                                                          \
-    ngx_mrb_code_t *code;                                                                                      \
+    ngx_http_mruby_code_t *code;                                                                               \
     if (cmd->post == NULL) {                                                                                   \
         return NGX_CONF_ERROR;                                                                                 \
     }                                                                                                          \
@@ -116,7 +116,7 @@ char *ngx_http_mruby_init_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 { 
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     ngx_int_t rc;
 
     if (cmd->post == NULL) {
@@ -149,7 +149,7 @@ char *ngx_http_mruby_init_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void 
 { 
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
 
     if (cmd->post == NULL) {
         return NGX_CONF_ERROR;
@@ -177,7 +177,7 @@ char *ngx_http_mruby_header_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, voi
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     ngx_int_t rc;
 
     if (cmd->post == NULL) {
@@ -211,7 +211,7 @@ char *ngx_http_mruby_body_filter_phase(ngx_conf_t *cf, ngx_command_t *cmd, void 
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     ngx_int_t rc;
 
     if (cmd->post == NULL) {
@@ -245,7 +245,7 @@ char *ngx_http_mruby_header_filter_inline_phase(ngx_conf_t *cf, ngx_command_t *c
 {
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
 
     if (cmd->post == NULL) {
@@ -273,7 +273,7 @@ char *ngx_http_mruby_body_filter_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd
 {
     ngx_http_mruby_main_conf_t *mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
     ngx_str_t *value;
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     ngx_http_mruby_loc_conf_t *mlcf = conf;
 
     if (cmd->post == NULL) {
@@ -324,7 +324,7 @@ static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, voi
     filter_data->state  = mmcf->state;
     filter_data->size   = filter.size;
     filter_data->script = value[2];
-    if (type == NGX_MRB_CODE_TYPE_FILE) {
+    if (type == NGX_HTTP_MRUBY_CODE_TYPE_FILE) {
         filter_data->code  = ngx_http_mruby_mrb_code_from_file(cf->pool, &filter_data->script);
         rc = ngx_http_mruby_shared_state_compile(filter_data->state, filter_data->code);
         if (rc != NGX_OK) {
@@ -336,7 +336,7 @@ static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, voi
         ngx_http_mruby_shared_state_compile(filter_data->state, filter_data->code);
     } 
     if (filter_data->code == NGX_CONF_UNSET_PTR) {
-        if (type == NGX_MRB_CODE_TYPE_FILE) {
+        if (type == NGX_HTTP_MRUBY_CODE_TYPE_FILE) {
             ngx_conf_log_error(NGX_LOG_ERR, cf, 0,
                                "failed to load mruby script: %s %s:%d", 
                                filter_data->script.data, __FUNCTION__, __LINE__);
@@ -351,11 +351,11 @@ static char *ngx_http_mruby_set_internal(ngx_conf_t *cf, ngx_command_t *cmd, voi
 
 char *ngx_http_mruby_set_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-    return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_MRB_CODE_TYPE_FILE);
+    return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_HTTP_MRUBY_CODE_TYPE_FILE);
 }
 
 char *ngx_http_mruby_set_inline_phase(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-    return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_MRB_CODE_TYPE_STRING);
+    return ngx_http_mruby_set_internal(cf, cmd, conf, NGX_HTTP_MRUBY_CODE_TYPE_STRING);
 }
 #endif

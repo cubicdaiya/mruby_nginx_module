@@ -1,4 +1,4 @@
-static const char *ngx_mrb_string_pcre_rb_string = 
+static const char *ngx_http_mruby_string_pcre_rb_string = 
 "class String\n"
 "  alias_method :old_sub, :sub\n"
 "  def sub(*args, &blk)\n"

@@ -13,16 +13,16 @@
 #include <mruby/array.h>
 #include <mruby/variable.h>
 
-void ngx_mrb_raise_error(ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_http_request_t *r)
+void ngx_http_mruby_raise_error(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_http_request_t *r)
 {
-    if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
-        ngx_mrb_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
+    if (code->code_type == NGX_HTTP_MRUBY_CODE_TYPE_FILE) {
+        ngx_http_mruby_raise_file_error(state->mrb, mrb_obj_value(state->mrb->exc), r, code->code.file);
     } else {
-        ngx_mrb_raise_inline_error(state->mrb, mrb_obj_value(state->mrb->exc), r);
+        ngx_http_mruby_raise_inline_error(state->mrb, mrb_obj_value(state->mrb->exc), r);
     }
 }
 
-void ngx_mrb_raise_inline_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r)
+void ngx_http_mruby_raise_inline_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r)
 {  
     struct RString *str;
     char *err_out;
@@ -40,7 +40,7 @@ void ngx_mrb_raise_inline_error(mrb_state *mrb, mrb_value obj, ngx_http_request_
     }
 }
 
-void ngx_mrb_raise_file_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r, char *code_file)
+void ngx_http_mruby_raise_file_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t *r, char *code_file)
 {  
     struct RString *str;
     char *err_out;
@@ -59,16 +59,16 @@ void ngx_mrb_raise_file_error(mrb_state *mrb, mrb_value obj, ngx_http_request_t 
     }
 }
 
-void ngx_mrb_raise_conf_error(ngx_mrb_state_t *state, ngx_mrb_code_t *code, ngx_conf_t *cf)
+void ngx_http_mruby_raise_conf_error(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_conf_t *cf)
 {
-    if (code->code_type == NGX_MRB_CODE_TYPE_FILE) {
-        ngx_mrb_raise_file_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf, code->code.file);
+    if (code->code_type == NGX_HTTP_MRUBY_CODE_TYPE_FILE) {
+        ngx_http_mruby_raise_file_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf, code->code.file);
     } else {
-        ngx_mrb_raise_inline_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf);
+        ngx_http_mruby_raise_inline_conf_error(state->mrb, mrb_obj_value(state->mrb->exc), cf);
     }
 }
 
-void ngx_mrb_raise_inline_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf)
+void ngx_http_mruby_raise_inline_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf)
 {  
     struct RString *str;
     char *err_out;
@@ -86,7 +86,7 @@ void ngx_mrb_raise_inline_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *
     }
 }
 
-void ngx_mrb_raise_file_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf, char *code_file)
+void ngx_http_mruby_raise_file_conf_error(mrb_state *mrb, mrb_value obj, ngx_conf_t *cf, char *code_file)
 {  
     struct RString *str;
     char *err_out;

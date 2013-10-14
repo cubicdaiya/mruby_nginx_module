@@ -233,7 +233,7 @@ static void *ngx_http_mruby_create_main_conf(ngx_conf_t *cf)
     if (mmcf == NULL) {
         return NULL;
     }
-    mmcf->state = ngx_pcalloc(cf->pool, sizeof(ngx_mrb_state_t));
+    mmcf->state = ngx_pcalloc(cf->pool, sizeof(ngx_http_mruby_state_t));
     if (mmcf->state == NULL) {
         return NULL;
     }
@@ -304,7 +304,7 @@ static char *ngx_http_mruby_merge_loc_conf(ngx_conf_t *cf, void *parent, void *c
 static ngx_int_t ngx_http_mruby_preinit(ngx_conf_t *cf)
 {
     ngx_http_mruby_main_conf_t *mmcf;
-    ngx_mrb_code_t *code;
+    ngx_http_mruby_code_t *code;
     ngx_str_t regexp_pcre_rb, string_pcre_rb;
     ngx_int_t rc;
 
@@ -312,17 +312,17 @@ static ngx_int_t ngx_http_mruby_preinit(ngx_conf_t *cf)
     ngx_http_mruby_shared_state_init(mmcf->state);
 
     
-    regexp_pcre_rb.data = (u_char *)ngx_mrb_regexp_pcre_rb_string;
-    regexp_pcre_rb.len  = ngx_strlen(ngx_mrb_regexp_pcre_rb_string);
-    string_pcre_rb.data = (u_char *)ngx_mrb_string_pcre_rb_string;
-    string_pcre_rb.len  = ngx_strlen(ngx_mrb_string_pcre_rb_string);
+    regexp_pcre_rb.data = (u_char *)ngx_http_mruby_regexp_pcre_rb_string;
+    regexp_pcre_rb.len  = ngx_strlen(ngx_http_mruby_regexp_pcre_rb_string);
+    string_pcre_rb.data = (u_char *)ngx_http_mruby_string_pcre_rb_string;
+    string_pcre_rb.len  = ngx_strlen(ngx_http_mruby_string_pcre_rb_string);
 
     code = ngx_http_mruby_mrb_code_from_string(cf->pool, &regexp_pcre_rb);
     if (code == NGX_CONF_UNSET_PTR) {
         return NGX_ERROR;
     }
     ngx_http_mruby_shared_state_compile(mmcf->state, code);
-    rc = ngx_mrb_run_conf(cf, mmcf->state, code);
+    rc = ngx_http_mruby_run_conf(cf, mmcf->state, code);
     if (rc == NGX_ERROR) {
         return NGX_ERROR;
     }
@@ -333,7 +333,7 @@ static ngx_int_t ngx_http_mruby_preinit(ngx_conf_t *cf)
         return NGX_ERROR;
     }
     ngx_http_mruby_shared_state_compile(mmcf->state, code);
-    rc = ngx_mrb_run_conf(cf, mmcf->state, code);
+    rc = ngx_http_mruby_run_conf(cf, mmcf->state, code);
     if (rc == NGX_ERROR) {
         return NGX_ERROR;
     }
@@ -349,7 +349,7 @@ static ngx_int_t ngx_http_mruby_init(ngx_conf_t *cf)
     cmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_core_module);
     mmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_mruby_module);
 
-    ngx_mrb_init_request();
+    ngx_http_mruby_init_request();
 
     if (ngx_http_mruby_handler_init(cmcf, mmcf) != NGX_OK) {
         return NGX_ERROR;
@@ -431,17 +431,17 @@ static ngx_int_t ngx_http_mruby_handler_init(ngx_http_core_main_conf_t *cmcf, ng
     return NGX_OK;
 }
 
-void ngx_mrb_init_request(void)
+void ngx_http_mruby_init_request(void)
 {
     ngx_mruby_request = NULL;
 }
 
-void ngx_mrb_push_request(ngx_http_request_t *r)
+void ngx_http_mruby_push_request(ngx_http_request_t *r)
 {
     ngx_mruby_request = r;
 }
 
-ngx_http_request_t *ngx_mrb_get_request(void)
+ngx_http_request_t *ngx_http_mruby_get_request(void)
 {
     return ngx_mruby_request;
 }

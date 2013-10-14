@@ -14,15 +14,15 @@
 #include "ngx_http_mruby_handler.h"
 #include "ngx_http_mruby_state.h"
 
-extern ngx_pool_t *ngx_mrb_conf_pool;
+extern ngx_pool_t *ngx_http_mruby_conf_pool;
 
 // this function is called only when initializing
 ngx_int_t ngx_http_mruby_init_handler(ngx_conf_t *cf, ngx_http_mruby_main_conf_t *mmcf)
 {
     ngx_int_t rc;
-    ngx_mrb_conf_pool = cf->pool;
-    rc = ngx_mrb_run_conf(cf, mmcf->state, mmcf->init_code);
-    ngx_mrb_conf_pool = NULL;
+    ngx_http_mruby_conf_pool = cf->pool;
+    rc = ngx_http_mruby_run_conf(cf, mmcf->state, mmcf->init_code);
+    ngx_http_mruby_conf_pool = NULL;
     return rc;
 }
 
@@ -68,7 +68,7 @@ ngx_int_t ngx_http_mruby_##handler_name##_file_handler(ngx_http_request_t *r)   
     }                                                                                           \
     ctx->phase = context_phase;                                                                 \
     ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);                                            \
-    return ngx_mrb_run(r, mmcf->state, code, mlcf->cached);                                     \
+    return ngx_http_mruby_run(r, mmcf->state, code, mlcf->cached);                              \
 }
 
 #define NGX_MRUBY_DEFINE_METHOD_NGX_INLINE_HANDLER(handler_name, code, context_phase)           \
@@ -91,7 +91,7 @@ ngx_int_t ngx_http_mruby_##handler_name##_inline_handler(ngx_http_request_t *r) 
     }                                                                                           \
     ctx->phase = context_phase;                                                                 \
     ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);                                            \
-    return ngx_mrb_run(r, mmcf->state, code, 1);                                                \
+    return ngx_http_mruby_run(r, mmcf->state, code, 1);                                         \
 }
 
 NGX_MRUBY_DEFINE_METHOD_NGX_FILE_HANDLER(rewrite, mlcf->rewrite_code, NGX_HTTP_MRUBY_PHASE_REWRITE)
@@ -135,7 +135,7 @@ ngx_int_t ngx_http_mruby_set_handler(ngx_http_request_t *r, ngx_str_t *val,
         return NGX_ERROR;
     }
 
-    return ngx_mrb_run_args(r, filter_data->state, filter_data->code, mlcf->cached, v, filter_data->size, val);
+    return ngx_http_mruby_run_args(r, filter_data->state, filter_data->code, mlcf->cached, v, filter_data->size, val);
 }
 
 ngx_int_t ngx_http_mruby_set_inline_handler(ngx_http_request_t *r, ngx_str_t *val,
@@ -159,6 +159,6 @@ ngx_int_t ngx_http_mruby_set_inline_handler(ngx_http_request_t *r, ngx_str_t *va
     ctx->phase = NGX_HTTP_MRUBY_PHASE_SET;
     ngx_http_set_ctx(r, ctx, ngx_http_mruby_module);
     filter_data = data;
-    return ngx_mrb_run_args(r, filter_data->state, filter_data->code, 1, v, filter_data->size, val);
+    return ngx_http_mruby_run_args(r, filter_data->state, filter_data->code, 1, v, filter_data->size, val);
 }
 #endif

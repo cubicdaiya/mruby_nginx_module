@@ -27,12 +27,12 @@ string_mrb_path = mrbs_dir + "/string_pcre.rb"
 
 update_inline_regex_mrb(
   regexp_mrb_path, 
-  "ngx_mrb_regexp_pcre_rb_string",
+  "ngx_http_mruby_regexp_pcre_rb_string",
   wrap_dquote_string(regexp_mrb_path)
 )
 
 update_inline_regex_mrb(
   string_mrb_path, 
-  "ngx_mrb_string_pcre_rb_string",
+  "ngx_http_mruby_string_pcre_rb_string",
   wrap_dquote_string(string_mrb_path)
 )
