@@ -3,10 +3,10 @@
 <channel>
         <title>mruby_nginx_module</title>
         <description>mruby_nginx_module - Tatsuhiko Kubo</description>
-        <link>http://cubicdaiya.github.io/mruby_nginx_module</link>
-        <link>http://cubicdaiya.github.io/mruby_nginx_module</link>
-        <lastBuildDate>2013-10-16T01:45:04+09:00</lastBuildDate>
-        <pubDate>2013-10-16T01:45:04+09:00</pubDate>
+        <link>http://cubicdaiya.github.io/mruby_nginx_module/</link>
+        <link>http://cubicdaiya.github.io/mruby_nginx_module/</link>
+        <lastBuildDate>2013-10-16T01:47:11+09:00</lastBuildDate>
+        <pubDate>2013-10-16T01:47:11+09:00</pubDate>
         <ttl>1800</ttl>
 
 
@@ -400,8 +400,8 @@ As noted, our main programming constraint is the fact that our API is limited to
 &lt;p&gt;Please take a look at &lt;a href=&quot;&quot;&gt;&lt;/a&gt;
 or jump right into &lt;a href=&quot;&quot;&gt;Usage&lt;/a&gt; if you&amp;#39;d like.&lt;/p&gt;
 </description>
-                <link>http://cubicdaiya.github.io/mruby_nginx_module/lessons/2011/12/29/jekyll-introduction</link>
-                <guid>http://cubicdaiya.github.io/mruby_nginx_module/lessons/2011/12/29/jekyll-introduction</guid>
+                <link>http://cubicdaiya.github.io/mruby_nginx_module//lessons/2011/12/29/jekyll-introduction</link>
+                <guid>http://cubicdaiya.github.io/mruby_nginx_module//lessons/2011/12/29/jekyll-introduction</guid>
                 <pubDate>2011-12-29T00:00:00+09:00</pubDate>
         </item>
 
