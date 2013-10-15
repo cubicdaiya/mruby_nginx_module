@@ -47,7 +47,17 @@
 				<div class="entry-content">
 					<p><strong>mruby_nginx_module</strong>&#39;s Regular Expression Engine is based <a href="https://github.com/iij/mruby-regexp-pcre">mruby-regexp-pcre</a>.</p>
 
-<h2 id="toc_0">Don&#39;t include other Regexp based PCRE</h2>
+<h2 id="toc_0">Regexp</h2>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">re</span> <span class="o">=</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;(.)(.)&quot;</span><span class="p">)</span>
+<span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;ab&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">last_match</span><span class="o">.</span><span class="n">class</span> <span class="o">==</span> <span class="no">MatchData</span> <span class="ow">and</span>
+         <span class="no">Regexp</span><span class="o">.</span><span class="n">last_match</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;ab&quot;</span> <span class="ow">and</span>
+         <span class="no">Regexp</span><span class="o">.</span><span class="n">last_match</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span> <span class="ow">and</span>
+         <span class="no">Regexp</span><span class="o">.</span><span class="n">last_match</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span> <span class="ow">and</span>
+         <span class="no">Regexp</span><span class="o">.</span><span class="n">last_match</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">==</span> <span class="kp">nil</span>
+<span class="no">Nginx</span><span class="o">.</span><span class="n">rputs</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">to_s</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># =&gt; true</span>
+</code></pre></div>
+<h2 id="toc_1">Don&#39;t include other Regexp based PCRE</h2>
 
 <p>In <strong>mruby_nginx_module</strong> (or <strong>ngx_mruby</strong>), Regexp based PCRE like mruby-regexp-pcre is not able to use directly. </p>
 

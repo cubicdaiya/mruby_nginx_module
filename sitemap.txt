@@ -9,5 +9,3 @@ http://cubicdaiya.github.io/mruby_nginx_module//index.html
 http://cubicdaiya.github.io/mruby_nginx_module//classes.html
 http://cubicdaiya.github.io/mruby_nginx_module//sitemap.txt
 http://cubicdaiya.github.io/mruby_nginx_module//rss.xml
-
-http://cubicdaiya.github.io/mruby_nginx_module//lessons/2011/12/29/jekyll-introduction
