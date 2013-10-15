@@ -9,7 +9,7 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Classes</title>
 	<meta name="author" content="Tatsuhiko Kubo">
-	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<link href='http://cubicdaiya.github.io/mruby_nginx_module/css/style.css' rel="stylesheet" media="all">
 	<link href="http://feeds.feedburner.com/" rel="alternate" title="Classes" type="application/atom+xml">
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
 </head>
@@ -48,14 +48,14 @@
 					<p><strong>mruby_nginx_module&#39;s</strong> classes are following.</p>
 
 <ul>
-<li><a href="classes.html#toc_0">Nginx::Request</a></li>
-<li><a href="classes.html#toc_1">Nginx::Headers_in</a></li>
-<li><a href="classes.html#toc_2">Nginx::Headers_out</a></li>
-<li><a href="classes.html#toc_3">Nginx::Context</a></li>
-<li><a href="classes.html#toc_4">Nginx::Time</a></li>
-<li><a href="classes.html#toc_5">Nginx::Digest</a></li>
-<li><a href="classes.html#toc_6">Nginx::Base64</a></li>
-<li><a href="classes.html#toc_7">Nginx::Var</a></li>
+<li><a href="Classes#nginxrequest">Nginx::Request</a></li>
+<li><a href="Classes#nginxheaders_in">Nginx::Headers_in</a></li>
+<li><a href="Classes#nginxheaders_out">Nginx::Headers_out</a></li>
+<li><a href="Classes#nginxcontext">Nginx::Context</a></li>
+<li><a href="Classes#nginxtime">Nginx::Time</a></li>
+<li><a href="Classes#nginxdigest">Nginx::Digest</a></li>
+<li><a href="Classes#nginxbase64">Nginx::Base64</a></li>
+<li><a href="Classes#nginxvar">Nginx::Var</a></li>
 </ul>
 
 <h2 id="toc_0">Nginx::Request</h2>
@@ -240,6 +240,8 @@ The functions of <code>Nginx::Digest</code> are following.</p>
 <div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">hmac_sha1</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">hmac_sha1</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">)</span>
 <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">hmac_sha1</span><span class="p">)</span> <span class="c1"># =&gt; 104152c5bfdca07bc633eebd46199f0255c9f49d</span>
 </code></pre></div>
+<p>This functions requires OpenSSL library. So you may add <code>--with-http_ssl_module</code> to <strong>configure</strong>.</p>
+
 <h3 id="toc_16">Nginx::Digest.hexdigest</h3>
 
 <p>Nginx::Digest.hexdigest return a hexadecimal value of argument.</p>
@@ -322,18 +324,15 @@ v.author = &quot;cubicdaiya&quot;)
 					<ul>
 						<li><a href="quickstart.html">Quick Start</a></li>
 						<li><a href="directives.html">Directives</a></li>
-						<li><a href="constants.html">Constatns</a></li>
-						<li><a href="coremethods.html">CoreMethods</a></li>
+						<li><a href="constants.html">Constants</a></li>
 						<li><a href="classes.html">Classes</a></li>
 						<li><a href="regexp.html">Regular Expression</a></li>
 					</ul>
 					<h4>about</h4>
-					<ul class="github"><li>Author</li>
 					<ul>
-						<li class="contact"><address><span class="author fn n">Tatsuhiko Kubo</span></address></li>
+						<li class="contact"><address><span class="author fn n"><a href="http://cccis.jp">Tatsuhiko Kubo</a></span></span></address></li>
 						<li class="github"><a href="http://github.com/cubicdaiya/" rel="me">github.com/cubicdaiya</a></li>
 						<li class="twitter"><a href="http://twitter.com/cubicdaiya/" rel="me">twitter.com/cubicdaiya</a></li>
-					</ul>
 					</ul>
 				</div><!-- misc -->
 				<p class="licence">

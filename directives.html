@@ -9,7 +9,7 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Directives</title>
 	<meta name="author" content="Tatsuhiko Kubo">
-	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<link href='http://cubicdaiya.github.io/mruby_nginx_module/css/style.css' rel="stylesheet" media="all">
 	<link href="http://feeds.feedburner.com/" rel="alternate" title="Directives" type="application/atom+xml">
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
 </head>
@@ -49,22 +49,23 @@
 
 <ul>
 <li><a href="directives.html#toc_0">mruby_cache</a></li>
-<li><a href="directives.html#toc_1">mruby_init_code</a></li>
-<li><a href="directives.html#toc_#toc_2">mruby_init</a></li>
-<li><a href="directives.html#toc_#toc_3">mruby_set_code</a></li>
-<li><a href="directives.html#toc_#toc_4">mruby_set</a></li>
-<li><a href="directives.html#toc_5">mruby_rewrite_handler_code</a></li>
-<li><a href="directives.html#toc_#toc_6">mruby_rewrite_handler</a></li>
-<li><a href="directives.html#toc_7">mruby_access_handler_code</a></li>
-<li><a href="directives.html#toc_#toc_8">mruby_access_handler</a></li>
-<li><a href="directives.html#toc_9">mruby_content_handler_code</a></li>
-<li><a href="directives.html#toc_#toc_10">mruby_content_handler</a></li>
-<li><a href="directives.html#toc_#toc_11">mruby_log_handler_code</a></li>
-<li><a href="directives.html#toc_#toc_12">mruby_log_handler</a></li>
-<li><a href="directives.html#toc_13">mruby_header_filter_code</a></li>
-<li><a href="directives.html#toc_#toc_14">mruby_header_filter</a></li>
-<li><a href="directives.html#toc_15">mruby_body_filter_code</a></li>
-<li><a href="directives.html#toc_16">mruby_body_filter</a></li>
+<li><a href="directives.html#toc_1">mruby_require</a></li>
+<li><a href="directives.html#toc_2">mruby_init_code</a></li>
+<li><a href="directives.html#toc_3">mruby_init</a></li>
+<li><a href="directives.html#toc_4">mruby_set_code</a></li>
+<li><a href="directives.html#toc_5">mruby_set</a></li>
+<li><a href="directives.html#toc_6">mruby_rewrite_handler_code</a></li>
+<li><a href="directives.html#toc_7">mruby_rewrite_handler</a></li>
+<li><a href="directives.html#toc_8">mruby_access_handler_code</a></li>
+<li><a href="directives.html#toc_9">mruby_access_handler</a></li>
+<li><a href="directives.html#toc_10">mruby_content_handler_code</a></li>
+<li><a href="directives.html#toc_11">mruby_content_handler</a></li>
+<li><a href="directives.html#toc_12">mruby_log_handler_code</a></li>
+<li><a href="directives.html#toc_13">mruby_log_handler</a></li>
+<li><a href="directives.html#toc_14">mruby_header_filter_code</a></li>
+<li><a href="directives.html#toc_15">mruby_header_filter</a></li>
+<li><a href="directives.html#toc_16">mruby_body_filter_code</a></li>
+<li><a href="directives.html#toc_17">mruby_body_filter</a></li>
 </ul>
 
 <h2 id="toc_0">mruby_cache</h2>
@@ -80,12 +81,25 @@ When <strong>mruby_cache</strong> is enabled the byte-code of mruby is compiled 
 But It does not mean that This directive is alwaly applied.
 In the directives that uses inline-code, <strong>mruby_cache</strong> is always enabled. (For example, <strong>mruby_content_handler_code</strong>)</p>
 
-<h2 id="toc_1">mruby_init_code</h2>
+<h2 id="toc_1">mruby_require</h2>
 
 <ul>
-<li>Syntax : mruby_init_code #{mruby_script_string}</li>
+<li>Syntax : mruby_require #{mruby_script_path}</li>
+<li>Default: on</li>
 <li>Context: http</li>
-<li>Phase:   loading config</li>
+<li>Phase: loading config</li>
+</ul>
+
+<p>This directive loads mruby script of <code>#{mruby_script_path}</code> in loading configuration.</p>
+
+<p><code>\#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<h2 id="toc_2">mruby_init_code</h2>
+
+<ul>
+<li>Syntax : mruby_init_code #{mruby_script_string} </li>
+<li>Context: http</li>
+<li>Phase: loading config</li>
 </ul>
 
 <p><strong>mruby_init_code</strong> receives and executes a string of mruby-script in loading config.</p>
@@ -105,7 +119,7 @@ In the directives that uses inline-code, <strong>mruby_cache</strong> is always 
 mruby
 <span class="err">$</span>
 </code></pre></div>
-<h2 id="toc_2">mruby_init</h2>
+<h2 id="toc_3">mruby_init</h2>
 
 <ul>
 <li>Syntax : mruby_init #{mruby_script_path}</li>
@@ -115,12 +129,12 @@ mruby
 
 <p><strong>mruby_init</strong> is equal to <strong>mruby_init_code</strong> except its argument is a path of mruby-script.</p>
 
-<p>#{mruby_script_path} is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
-<h2 id="toc_3">mruby_set_code</h2>
+<h2 id="toc_4">mruby_set_code</h2>
 
 <ul>
-<li>Syntax : mruby_set_code #{mruby_script_string} #{arg1} #{arg2} ...</li>
+<li>Syntax : mruby_set_code #{mruby_script_string} #{arg1} #{arg2} ... </li>
 <li>Context: server, server if, location, location if</li>
 <li>Phase: server-rewrite, rewrite</li>
 </ul>
@@ -138,29 +152,29 @@ cubicdaiya
 </code></pre></div>
 <p>This directive requires <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a>.</p>
 
-<h2 id="toc_4">mruby_set</h2>
+<h2 id="toc_5">mruby_set</h2>
 
 <ul>
-<li>Syntax : mruby_set #{mruby_script_path} #{arg1} #{arg2} ...</li>
+<li>Syntax : mruby_set #{mruby_script_path} #{arg1} #{arg2} ... </li>
 <li>Context: server, server if, location, location if</li>
 <li>Phase: server-rewrite, rewrite</li>
 </ul>
 
 <p><strong>mruby_set</strong> is equal to <strong>mruby_set_code</strong> except its argument is a path of mruby-script.</p>
 
-<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
 <p>This directive requires <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a>.</p>
 
-<h2 id="toc_5">mruby_rewrite_handler_code</h2>
+<h2 id="toc_6">mruby_rewrite_handler_code</h2>
 
 <ul>
-<li>Syntax : mruby_rewrite_handler_code #{mruby_script_string}</li>
+<li>Syntax : mruby_rewrite_handler_code #{mruby_script_string} </li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: rewrite</li>
 </ul>
 
-<h2 id="toc_6">mruby_rewrite_handler</h2>
+<h2 id="toc_7">mruby_rewrite_handler</h2>
 
 <ul>
 <li>Syntax : mruby_rewrite_handler #{mruby_script_path} </li>
@@ -170,9 +184,9 @@ cubicdaiya
 
 <p><strong>mruby_rewrite_handler</strong> is equal to <strong>mruby_rewrite_handler_code</strong> except its argument is a path of mruby-script.</p>
 
-<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
-<h2 id="toc_7">mruby_access_handler_code</h2>
+<h2 id="toc_8">mruby_access_handler_code</h2>
 
 <ul>
 <li>Syntax : mruby_access_handler_code #{mruby_script_string} </li>
@@ -180,7 +194,7 @@ cubicdaiya
 <li>Phase: access</li>
 </ul>
 
-<h2 id="toc_8">mruby_access_handler</h2>
+<h2 id="toc_9">mruby_access_handler</h2>
 
 <ul>
 <li>Syntax : mruby_access_handler #{mruby_script_path} </li>
@@ -190,9 +204,9 @@ cubicdaiya
 
 <p><strong>mruby_access_handler</strong> is equal to <strong>mruby_access_handler_code</strong> except its argument is a path of mruby-script.</p>
 
-<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
-<h2 id="toc_9">mruby_content_handler_code</h2>
+<h2 id="toc_10">mruby_content_handler_code</h2>
 
 <ul>
 <li>Syntax : mruby_content_handler_code #{mruby_script_string} </li>
@@ -200,42 +214,42 @@ cubicdaiya
 <li>Phase: content</li>
 </ul>
 
-<h2 id="toc_10">mruby_content_handler</h2>
+<h2 id="toc_11">mruby_content_handler</h2>
 
 <ul>
-<li>Syntax : mruby_content_handler #{mruby_script_path} </li>
+<li>Syntax : mruby_content_handler #{mruby_script_path}</li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: content</li>
 </ul>
 
 <p><strong>mruby_content_handler</strong> is equal to <strong>mruby_content_handler_code</strong> except its argument is a path of mruby-script.</p>
 
-<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
-<h2 id="toc_11">mruby_log_handler_code</h2>
+<h2 id="toc_12">mruby_log_handler_code</h2>
 
 <ul>
-<li>Syntax : mruby_log_handler_code #{mruby_script_string} </li>
+<li>Syntax : mruby_log_handler_code #{mruby_script_string}</li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: log</li>
 </ul>
 
-<h2 id="toc_12">mruby_log_handler</h2>
+<h2 id="toc_13">mruby_log_handler</h2>
 
 <ul>
-<li>Syntax : mruby_log_handler #{mruby_script_path}</li>
+<li>Syntax : mruby_log_handler #{mruby_script_path} </li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: log</li>
 </ul>
 
 <p><strong>mruby_log_handler</strong> is equal to <strong>mruby_log_handler_code</strong> except its argument is a path of mruby-script.</p>
 
-<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
-<h2 id="toc_13">mruby_header_filter_code</h2>
+<h2 id="toc_14">mruby_header_filter_code</h2>
 
 <ul>
-<li>Syntax : mruby_header_filter_code #{mruby_script_string} </li>
+<li>Syntax : mruby_header_filter_code #{mruby_script_string}</li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: output-header-filter</li>
 </ul>
@@ -264,22 +278,22 @@ Connection: keep-alive
 ETag: <span class="s2">&quot;50844fa2-264&quot;</span>
 Accept-Ranges: bytes
 </code></pre></div>
-<h2 id="toc_14">mruby_header_filter</h2>
+<h2 id="toc_15">mruby_header_filter</h2>
 
 <ul>
-<li>Syntax : mruby_body_filter_code #{mruby_script_string}</li>
+<li>Syntax : mruby_body_filter_code #{mruby_script_string} </li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: output-header-filter</li>
 </ul>
 
 <p><strong>mruby_header_filter</strong> is equal to <strong>mruby_header_filter_code</strong> except its argument is a path of mruby-script.</p>
 
-<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
-<h2 id="toc_15">mruby_body_filter_code</h2>
+<h2 id="toc_16">mruby_body_filter_code</h2>
 
 <ul>
-<li>Syntax : mruby_body_filter_code #{mruby_script_string} </li>
+<li>Syntax : mruby_body_filter_code #{mruby_script_string}</li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: output-body-filter</li>
 </ul>
@@ -315,17 +329,17 @@ Accept-Ranges: bytes
 &lt;/html&gt;
 <span class="err">$</span>
 </code></pre></div>
-<h2 id="toc_16">mruby_body_filter</h2>
+<h2 id="toc_17">mruby_body_filter</h2>
 
 <ul>
-<li>Syntax : mruby_body_filter_code #{mruby_script_string} </li>
+<li>Syntax : mruby_body_filter_code #{mruby_script_string}</li>
 <li>Context: http, server, location, location if</li>
 <li>Phase: output-body-filter</li>
 </ul>
 
 <p><strong>mruby_body_filter</strong> is equal to <strong>mruby_body_filter_code</strong> except its argument is a path of mruby-script.</p>
 
-<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+<p><code>#{mruby_script_path}</code> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
 
 				</div><!-- entry-content -->
 			</div><!-- bd -->
@@ -355,18 +369,15 @@ Accept-Ranges: bytes
 					<ul>
 						<li><a href="quickstart.html">Quick Start</a></li>
 						<li><a href="directives.html">Directives</a></li>
-						<li><a href="constants.html">Constatns</a></li>
-						<li><a href="coremethods.html">CoreMethods</a></li>
+						<li><a href="constants.html">Constants</a></li>
 						<li><a href="classes.html">Classes</a></li>
 						<li><a href="regexp.html">Regular Expression</a></li>
 					</ul>
 					<h4>about</h4>
-					<ul class="github"><li>Author</li>
 					<ul>
-						<li class="contact"><address><span class="author fn n">Tatsuhiko Kubo</span></address></li>
+						<li class="contact"><address><span class="author fn n"><a href="http://cccis.jp">Tatsuhiko Kubo</a></span></span></address></li>
 						<li class="github"><a href="http://github.com/cubicdaiya/" rel="me">github.com/cubicdaiya</a></li>
 						<li class="twitter"><a href="http://twitter.com/cubicdaiya/" rel="me">twitter.com/cubicdaiya</a></li>
-					</ul>
 					</ul>
 				</div><!-- misc -->
 				<p class="licence">

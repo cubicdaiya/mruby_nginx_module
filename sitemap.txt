@@ -1,11 +1,13 @@
 
-http://username.github.io/regexp.html
-http://username.github.io/directives.html
-http://username.github.io/constants.html
-http://username.github.io/coremethods.html
-http://username.github.io/atom.xml
-http://username.github.io/quickstart.html
-http://username.github.io/index.html
-http://username.github.io/classes.html
-http://username.github.io/sitemap.txt
-http://username.github.io/rss.xml
+http://cubicdaiya.github.io/mruby_nginx_module/regexp.html
+http://cubicdaiya.github.io/mruby_nginx_module/directives.html
+http://cubicdaiya.github.io/mruby_nginx_module/constants.html
+http://cubicdaiya.github.io/mruby_nginx_module/coremethods.html
+http://cubicdaiya.github.io/mruby_nginx_module/atom.xml
+http://cubicdaiya.github.io/mruby_nginx_module/quickstart.html
+http://cubicdaiya.github.io/mruby_nginx_module/index.html
+http://cubicdaiya.github.io/mruby_nginx_module/classes.html
+http://cubicdaiya.github.io/mruby_nginx_module/sitemap.txt
+http://cubicdaiya.github.io/mruby_nginx_module/rss.xml
+
+http://cubicdaiya.github.io/mruby_nginx_module/lessons/2011/12/29/jekyll-introduction
