@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>mruby_nginx_module</title>
+ <link href="http://username.github.io/" rel="self"/>
+ <link href="http://username.github.io"/>
+ <updated>2013-10-16T00:51:18+09:00</updated>
+ <id>http://username.github.io</id>
+ <author>
+   <name>Tatsuhiko Kubo</name>
+   <email>cubicdaiya@gmail.com</email>
+ </author>
+
+ 
+ 
+</feed>

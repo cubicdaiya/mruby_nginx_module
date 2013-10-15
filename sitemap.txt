@@ -1,0 +1,11 @@
+
+http://username.github.io/regexp.html
+http://username.github.io/directives.html
+http://username.github.io/constants.html
+http://username.github.io/coremethods.html
+http://username.github.io/atom.xml
+http://username.github.io/quickstart.html
+http://username.github.io/index.html
+http://username.github.io/classes.html
+http://username.github.io/sitemap.txt
+http://username.github.io/rss.xml

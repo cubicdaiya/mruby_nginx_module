@@ -7,10 +7,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>Embed mruby into Nginx!</title>
+	<title>Regular Expression</title>
 	<meta name="author" content="Tatsuhiko Kubo">
 	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
-	<link href="http://feeds.feedburner.com/" rel="alternate" title="Embed mruby into Nginx!" type="application/atom+xml">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Regular Expression" type="application/atom+xml">
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
 </head>
 <body>
@@ -38,51 +38,22 @@
 			<header>
 				<div class="unit-head">
 					<div class="unit-inner unit-head-inner">
-						<h1 class="h2 entry-title">Embed mruby into Nginx!</h1>
+						<h1 class="h2 entry-title">Regular Expression</h1>
 					</div><!-- unit-inner -->
 				</div><!-- unit-head -->
 			</header>
 
 			<div class="bd">
 				<div class="entry-content">
-					<p><strong>mruby_nginx_module</strong> is the powerful extension by mruby for nginx.</p>
+					<p><strong>mruby_nginx_module</strong>&#39;s Regular Expression Engine is based <a href="https://github.com/iij/mruby-regexp-pcre">mruby-regexp-pcre</a>.</p>
 
-<p>This site describes how to use <strong>mruby_nginx_module</strong> in details.</p>
+<h2 id="toc_0">Don&#39;t include other Regexp based PCRE</h2>
 
-<h1 id="toc_0">Github</h1>
+<p>In <strong>mruby_nginx_module</strong> (or <strong>ngx_mruby</strong>), Regexp based PCRE like mruby-regexp-pcre is not able to use directly. </p>
 
-<p><a href="https://github.com/cubicdaiya/mruby_nginx_module">https://github.com/cubicdaiya/mruby_nginx_module</a></p>
+<p>Because Nginx orverrides pcre_(malloc|free). </p>
 
-<h1 id="toc_1">Install</h1>
-<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>hg clone http://hg.nginx.org/nginx/
-<span class="nv">$ </span>git clone https://github.com/cubicdaiya/mruby_nginx_module.git
-<span class="nv">$ </span><span class="nb">cd </span>mruby_nginx_module
-<span class="nv">$ </span>git submodule update --init
-<span class="nv">$ </span><span class="nb">cd </span>mruby
-<span class="nv">$ </span>rake <span class="nv">ENABLE_GEMS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-O2 -fPIC&quot;</span>
-<span class="nv">$ </span><span class="nb">cd</span> ../../nginx
-<span class="nv">$ </span>./configure --with-pcre --add-module<span class="o">=</span>../mruby_nginx_module
-<span class="nv">$ </span>make
-<span class="nv">$ </span>make install
-</code></pre></div>
-<p>If you want to use <code>mruby_set</code> and <code>mruby_set_code</code>,
-you may embed <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> when executing configure.</p>
-<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>git clone https://github.com/simpl/ngx_devel_kit.git
-<span class="nv">$ </span>ls
-mruby_nginx_module  nginx  ngx_devel_kit
-<span class="nv">$ </span><span class="nb">cd </span>nginx
-<span class="nv">$ </span>./configure --add-module<span class="o">=</span>../mruby_nginx_module --add-module<span class="o">=</span>../mruby_nginx_module
-</code></pre></div>
-<h1 id="toc_2">Table of contents</h1>
-
-<ul>
-<li><a href="quickstart.html">Quick Start</a></li>
-<li><a href="directives.html">Directives</a></li>
-<li><a href="constants.html">Constants</a></li>
-<li><a href="coremethods.html">CoreMethods</a></li>
-<li><a href="classes.html">Classes</a></li>
-<li><a href="regexp.html">Regular Expression</a></li>
-</ul>
+<p><strong>mruby_nginx_module</strong> orverrides pcre_(malloc|free) moreover.</p>
 
 				</div><!-- entry-content -->
 			</div><!-- bd -->
@@ -143,7 +114,7 @@ mruby_nginx_module  nginx  ngx_devel_kit
 		};
 	load('//platform.twitter.com/widgets.js', 'tweetjs');
 	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
-	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/index.html" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/regexp.html" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
 	}(document, 'script'));
 </script>
 <script>

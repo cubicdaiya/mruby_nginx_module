@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Directives</title>
+	<meta name="author" content="Tatsuhiko Kubo">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Directives" type="application/atom+xml">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">mruby_nginx_module</a></li>
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-page">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">Directives</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<p><strong>mruby_nginx_module&#39;s</strong> directives are following.</p>
+
+<ul>
+<li><a href="directives.html#toc_0">mruby_cache</a></li>
+<li><a href="directives.html#toc_1">mruby_init_code</a></li>
+<li><a href="directives.html#toc_#toc_2">mruby_init</a></li>
+<li><a href="directives.html#toc_#toc_3">mruby_set_code</a></li>
+<li><a href="directives.html#toc_#toc_4">mruby_set</a></li>
+<li><a href="directives.html#toc_5">mruby_rewrite_handler_code</a></li>
+<li><a href="directives.html#toc_#toc_6">mruby_rewrite_handler</a></li>
+<li><a href="directives.html#toc_7">mruby_access_handler_code</a></li>
+<li><a href="directives.html#toc_#toc_8">mruby_access_handler</a></li>
+<li><a href="directives.html#toc_9">mruby_content_handler_code</a></li>
+<li><a href="directives.html#toc_#toc_10">mruby_content_handler</a></li>
+<li><a href="directives.html#toc_#toc_11">mruby_log_handler_code</a></li>
+<li><a href="directives.html#toc_#toc_12">mruby_log_handler</a></li>
+<li><a href="directives.html#toc_13">mruby_header_filter_code</a></li>
+<li><a href="directives.html#toc_#toc_14">mruby_header_filter</a></li>
+<li><a href="directives.html#toc_15">mruby_body_filter_code</a></li>
+<li><a href="directives.html#toc_16">mruby_body_filter</a></li>
+</ul>
+
+<h2 id="toc_0">mruby_cache</h2>
+
+<ul>
+<li>Syntax : mruby_cache on OR off</li>
+<li>Default: on</li>
+<li>Context: main, server, location, location if</li>
+</ul>
+
+<p>This directive sets whether <strong>mruby_cache</strong> is enabled or disabled.
+When <strong>mruby_cache</strong> is enabled the byte-code of mruby is compiled only once in start-up.
+But It does not mean that This directive is alwaly applied.
+In the directives that uses inline-code, <strong>mruby_cache</strong> is always enabled. (For example, <strong>mruby_content_handler_code</strong>)</p>
+
+<h2 id="toc_1">mruby_init_code</h2>
+
+<ul>
+<li>Syntax : mruby_init_code #{mruby_script_string}</li>
+<li>Context: http</li>
+<li>Phase:   loading config</li>
+</ul>
+
+<p><strong>mruby_init_code</strong> receives and executes a string of mruby-script in loading config.</p>
+<div class="highlight"><pre><code class="nginx language-nginx" data-lang="nginx"><span class="k">mruby_init_code</span> <span class="s">&quot;@var</span> <span class="p">=</span> <span class="s">&#39;mruby&#39;&quot;</span><span class="p">;</span>
+
+<span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>      <span class="mi">8000</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">localhost</span><span class="p">;</span>
+    <span class="kn">location</span> <span class="s">/print_var</span> <span class="p">{</span>
+        <span class="kn">mruby_content_handler_code</span> <span class="s">&quot;</span>
+            <span class="s">Nginx.rputs(@var)</span>
+            <span class="s">Nginx.rputs(&#39;\n&#39;)</span>
+        <span class="s">&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>curl http://localhost:8000/print_var
+mruby
+<span class="err">$</span>
+</code></pre></div>
+<h2 id="toc_2">mruby_init</h2>
+
+<ul>
+<li>Syntax : mruby_init #{mruby_script_path}</li>
+<li>Context: http</li>
+<li>Phase: loading config</li>
+</ul>
+
+<p><strong>mruby_init</strong> is equal to <strong>mruby_init_code</strong> except its argument is a path of mruby-script.</p>
+
+<p>#{mruby_script_path} is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<h2 id="toc_3">mruby_set_code</h2>
+
+<ul>
+<li>Syntax : mruby_set_code #{mruby_script_string} #{arg1} #{arg2} ...</li>
+<li>Context: server, server if, location, location if</li>
+<li>Phase: server-rewrite, rewrite</li>
+</ul>
+<div class="highlight"><pre><code class="nginx language-nginx" data-lang="nginx"><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>      <span class="mi">8000</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">localhost</span><span class="p">;</span>
+    <span class="kn">location</span> <span class="s">/set</span> <span class="p">{</span>
+        <span class="kn">mruby_set_code</span> <span class="nv">$bokko</span> <span class="s">&quot;&#39;cubic&#39;</span> <span class="s">+</span> <span class="s">&#39;daiya&#39;&quot;</span><span class="p">;</span>
+        <span class="kn">echo</span> <span class="nv">$bokko</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>curl http://localhost:8000/set
+cubicdaiya
+<span class="err">$</span>
+</code></pre></div>
+<p>This directive requires <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a>.</p>
+
+<h2 id="toc_4">mruby_set</h2>
+
+<ul>
+<li>Syntax : mruby_set #{mruby_script_path} #{arg1} #{arg2} ...</li>
+<li>Context: server, server if, location, location if</li>
+<li>Phase: server-rewrite, rewrite</li>
+</ul>
+
+<p><strong>mruby_set</strong> is equal to <strong>mruby_set_code</strong> except its argument is a path of mruby-script.</p>
+
+<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<p>This directive requires <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a>.</p>
+
+<h2 id="toc_5">mruby_rewrite_handler_code</h2>
+
+<ul>
+<li>Syntax : mruby_rewrite_handler_code #{mruby_script_string}</li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: rewrite</li>
+</ul>
+
+<h2 id="toc_6">mruby_rewrite_handler</h2>
+
+<ul>
+<li>Syntax : mruby_rewrite_handler #{mruby_script_path} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: rewrite</li>
+</ul>
+
+<p><strong>mruby_rewrite_handler</strong> is equal to <strong>mruby_rewrite_handler_code</strong> except its argument is a path of mruby-script.</p>
+
+<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<h2 id="toc_7">mruby_access_handler_code</h2>
+
+<ul>
+<li>Syntax : mruby_access_handler_code #{mruby_script_string} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: access</li>
+</ul>
+
+<h2 id="toc_8">mruby_access_handler</h2>
+
+<ul>
+<li>Syntax : mruby_access_handler #{mruby_script_path} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: access</li>
+</ul>
+
+<p><strong>mruby_access_handler</strong> is equal to <strong>mruby_access_handler_code</strong> except its argument is a path of mruby-script.</p>
+
+<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<h2 id="toc_9">mruby_content_handler_code</h2>
+
+<ul>
+<li>Syntax : mruby_content_handler_code #{mruby_script_string} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: content</li>
+</ul>
+
+<h2 id="toc_10">mruby_content_handler</h2>
+
+<ul>
+<li>Syntax : mruby_content_handler #{mruby_script_path} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: content</li>
+</ul>
+
+<p><strong>mruby_content_handler</strong> is equal to <strong>mruby_content_handler_code</strong> except its argument is a path of mruby-script.</p>
+
+<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<h2 id="toc_11">mruby_log_handler_code</h2>
+
+<ul>
+<li>Syntax : mruby_log_handler_code #{mruby_script_string} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: log</li>
+</ul>
+
+<h2 id="toc_12">mruby_log_handler</h2>
+
+<ul>
+<li>Syntax : mruby_log_handler #{mruby_script_path}</li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: log</li>
+</ul>
+
+<p><strong>mruby_log_handler</strong> is equal to <strong>mruby_log_handler_code</strong> except its argument is a path of mruby-script.</p>
+
+<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<h2 id="toc_13">mruby_header_filter_code</h2>
+
+<ul>
+<li>Syntax : mruby_header_filter_code #{mruby_script_string} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: output-header-filter</li>
+</ul>
+<div class="highlight"><pre><code class="nginx language-nginx" data-lang="nginx"><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>       <span class="mi">8000</span><span class="p">;</span>
+    <span class="kn">server_name</span>  <span class="s">localhost</span><span class="p">;</span>
+    <span class="kn">root</span> <span class="s">html</span><span class="p">;</span>
+
+    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="kn">mruby_header_filter_code</span>  <span class="s">&quot;</span>
+            <span class="s">r</span> <span class="p">=</span> <span class="s">Nginx::Request.new()</span>
+            <span class="s">r.content_type</span> <span class="p">=</span> <span class="s">&#39;text/plain&#39;</span>
+        <span class="s">&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The response from nginx is following.</p>
+<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>curl -I <span class="s2">&quot;http://localhost:8000/index.html&quot;</span>
+HTTP/1.1 200 OK
+Server: nginx/1.5.3
+Date: Sat, 27 Jul 2013 04:27:27 GMT
+Content-Type: text/plain
+Content-Length: 627
+Last-Modified: Sun, 21 Oct 2012 19:40:18 GMT
+Connection: keep-alive
+ETag: <span class="s2">&quot;50844fa2-264&quot;</span>
+Accept-Ranges: bytes
+</code></pre></div>
+<h2 id="toc_14">mruby_header_filter</h2>
+
+<ul>
+<li>Syntax : mruby_body_filter_code #{mruby_script_string}</li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: output-header-filter</li>
+</ul>
+
+<p><strong>mruby_header_filter</strong> is equal to <strong>mruby_header_filter_code</strong> except its argument is a path of mruby-script.</p>
+
+<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+<h2 id="toc_15">mruby_body_filter_code</h2>
+
+<ul>
+<li>Syntax : mruby_body_filter_code #{mruby_script_string} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: output-body-filter</li>
+</ul>
+<div class="highlight"><pre><code class="nginx language-nginx" data-lang="nginx"><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>       <span class="mi">8000</span><span class="p">;</span>
+    <span class="kn">server_name</span>  <span class="s">localhost</span><span class="p">;</span>
+    <span class="kn">root</span> <span class="s">html</span><span class="p">;</span>
+
+    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="kn">mruby_body_filter_code</span> <span class="s">&quot;</span>
+            <span class="s">&#39;&lt;html&gt;\n&#39;</span> <span class="s">+</span> <span class="s">ARGV[0]</span> <span class="s">+</span> <span class="s">&#39;&lt;/html&gt;\n&#39;</span>
+        <span class="s">&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>It assumes that /index.html is following.</p>
+<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;head&gt;</span>
+<span class="nt">&lt;title&gt;</span>Welcome to nginx!<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body</span> <span class="na">bgcolor=</span><span class="s">&quot;white&quot;</span> <span class="na">text=</span><span class="s">&quot;black&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;center&gt;&lt;h1&gt;</span>Welcome to nginx!!!<span class="nt">&lt;/h1&gt;&lt;/center&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+</code></pre></div>
+<p>The response from nginx is following.</p>
+<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>curl <span class="s2">&quot;http://localhost:8000/index.html&quot;</span>
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;/head&gt;
+&lt;body <span class="nv">bgcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span> <span class="nv">text</span><span class="o">=</span><span class="s2">&quot;black&quot;</span>&gt;
+&lt;center&gt;&lt;h1&gt;Welcome to nginx!!!&lt;/h1&gt;&lt;/center&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+<span class="err">$</span>
+</code></pre></div>
+<h2 id="toc_16">mruby_body_filter</h2>
+
+<ul>
+<li>Syntax : mruby_body_filter_code #{mruby_script_string} </li>
+<li>Context: http, server, location, location if</li>
+<li>Phase: output-body-filter</li>
+</ul>
+
+<p><strong>mruby_body_filter</strong> is equal to <strong>mruby_body_filter_code</strong> except its argument is a path of mruby-script.</p>
+
+<p><em>#{mruby_script_path}</em> is able to be set as absolete or relative path. The root of relative path is the <em>basename</em> of <strong>--conf-path</strong> in configure.</p>
+
+				</div><!-- entry-content -->
+			</div><!-- bd -->
+
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>pages</h4>
+					<ul>
+						<li><a href="quickstart.html">Quick Start</a></li>
+						<li><a href="directives.html">Directives</a></li>
+						<li><a href="constants.html">Constatns</a></li>
+						<li><a href="coremethods.html">CoreMethods</a></li>
+						<li><a href="classes.html">Classes</a></li>
+						<li><a href="regexp.html">Regular Expression</a></li>
+					</ul>
+					<h4>about</h4>
+					<ul class="github"><li>Author</li>
+					<ul>
+						<li class="contact"><address><span class="author fn n">Tatsuhiko Kubo</span></address></li>
+						<li class="github"><a href="http://github.com/cubicdaiya/" rel="me">github.com/cubicdaiya</a></li>
+						<li class="twitter"><a href="http://twitter.com/cubicdaiya/" rel="me">twitter.com/cubicdaiya</a></li>
+					</ul>
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	(function(d, s) {
+		var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.src = url; js.id = id;
+		fjs.parentNode.insertBefore(js, fjs);
+		};
+	load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/directives.html" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+
