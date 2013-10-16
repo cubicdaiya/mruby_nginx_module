@@ -1,3 +1,11 @@
+2011-10-16 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+	* make Regexp available in mruby_init and mruby_require
+
+	* make Nginx::Context unavailable in loading configuration(SEGV occurs)
+
+	* bumped version to 0.2.1
+
 2011-10-13 Tatsuhiko Kubo <cubicdaiya@gmail.com>
 
 	* add feature(Regexp by PCRE)
