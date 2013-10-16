@@ -6,7 +6,7 @@
 
 The concept of **mruby_nginx_module** is following.
 
- * Give developers by mruby to develop nginx module
+ * Give developers to develop nginx module by mruby
  * Usability that higher affinity with Nginx
  * More features
 
