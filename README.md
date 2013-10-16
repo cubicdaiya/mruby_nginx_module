@@ -48,6 +48,29 @@ But what I want to develop is the product that is more specialized for Nginx.
 
 To that end **mruby_nginx_module** needs to equip more features than **ngx_mruby** and I must implement drastic mechanism.
 
+In detail, **mruby_nginx_modules has the following features currently. These are not included in **ngx_mruby**.
+
+ * Built-in Regexp
+ * Nginx::Context
+  * hash table for sharing data in each request processing phase
+ * Nginx::Time
+  * Nginx time API binding 
+ * Nginx::Digest
+  * Nginx Digest API binding 
+ * Nginx::Base64
+  * Nginx Base64(en|de)coding API binding 
+ * mruby_require
+  * The directive for requiring external mruby script
+
+Additionally I'm going to implement the following features.
+
+ * Nginx::Shared
+  * Nginx shared memory API biding
+ * Nginx::Subrequest
+  * Nginx sub-request API biding
+ * Nginx::Socket
+  * Nginx non-blocking socket API biding
+
 ## Dependencies
 
   - [Nginx](http://nginx.org/)
