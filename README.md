@@ -26,6 +26,30 @@ location /mruby {
 
 Please see [Documents](http://cubicdaiya.github.io/mruby_nginx_module/).
 
+## Dependencies
+
+  - [Nginx](http://nginx.org/)
+  - [mruby](https://github.com/mruby/mruby)
+  - [ngx_devel_kit](https://github.com/simpl/ngx_devel_kit) (optional)
+
+## Build
+
+```sh
+hg clone http://hg.nginx.org/nginx/
+https://github.com/cubicdaiya/mruby_nginx_module.git
+cd mruby_nginx_module
+git submodule update --init
+cd mruby
+rake ENABLE_GEMS="true" CFLAGS="-O2 -fPIC"
+cd ../../nginx
+./configure --with-pcre --add-module=../mruby_nginx_module
+make
+make install
+```
+
+If you want to use **mruby_set** and **mruby_set_code**, you may embed ngx_devel_kit when executing configure with --add-module.
+
+
 ## Difference from ngx_mruby
 
 **mruby_nginx_module** is forked from [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) at July 2013.
@@ -71,29 +95,6 @@ Additionally I'm going to implement the following features.
   * Nginx sub-request API biding
  * Nginx::Socket
   * Nginx non-blocking socket API biding
-
-## Dependencies
-
-  - [Nginx](http://nginx.org/)
-  - [mruby](https://github.com/mruby/mruby)
-  - [ngx_devel_kit](https://github.com/simpl/ngx_devel_kit) (optional)
-
-## Build
-
-```sh
-hg clone http://hg.nginx.org/nginx/
-https://github.com/cubicdaiya/mruby_nginx_module.git
-cd mruby_nginx_module
-git submodule update --init
-cd mruby
-rake ENABLE_GEMS="true" CFLAGS="-O2 -fPIC"
-cd ../../nginx
-./configure --with-pcre --add-module=../mruby_nginx_module
-make
-make install
-```
-
-If you want to use **mruby_set** and **mruby_set_code**, you may embed ngx_devel_kit when executing configure with --add-module.
 
 ## How to test
 
