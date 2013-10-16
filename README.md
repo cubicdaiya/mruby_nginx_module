@@ -47,7 +47,7 @@ make
 make install
 ```
 
-If you want to use **mruby_set** and **mruby_set_code**, you may embed ngx_devel_kit when executing configure with --add-module.
+If you want to use **mruby_set** and **mruby_set_code**, you may embed [ngx_devel_kit](https://github.com/simpl/ngx_devel_kit) when executing configure with --add-module.
 
 
 ## Difference from ngx_mruby
