@@ -50,7 +50,8 @@ To that end **mruby_nginx_module** needs to equip more features than **ngx_mruby
 
 In detail, **mruby_nginx_modules has the following features currently. These are not included in **ngx_mruby**.
 
- * Built-in Regexp
+ * Regexp
+  * built-in regular expression engine
  * Nginx::Context
   * hash table for sharing data in each request processing phase
  * Nginx::Time
