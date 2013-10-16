@@ -10,6 +10,22 @@ The concept of **mruby_nginx_module** is following.
  * Usability that higher affinity with Nginx
  * More features
 
+## Examples
+
+```nginx
+location /mruby {
+    mruby_content_handler_code "
+        sum = 0
+        (1..10).each { |i| sum += i }
+        Nginx.rputs(sum.to_s + "\n") #=> 55
+    ";
+}
+```
+
+## How to use
+
+Please see [Documents](http://cubicdaiya.github.io/mruby_nginx_module/).
+
 ## Difference from ngx_mruby
 
 **mruby_nginx_module** is forked from [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) at July 2013.
@@ -54,10 +70,6 @@ make install
 ```
 
 If you want to use **mruby_set** and **mruby_set_code**, you may embed ngx_devel_kit when executing configure with --add-module.
-
-## How to use
-
-Please see [Documents](http://cubicdaiya.github.io/mruby_nginx_module/).
 
 ## How to test
 
