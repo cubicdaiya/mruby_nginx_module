@@ -48,7 +48,7 @@ But what I want to develop is the product that is more specialized for Nginx.
 
 To that end **mruby_nginx_module** needs to equip more features than **ngx_mruby** and I must implement drastic mechanism.
 
-In detail, **mruby_nginx_modules has the following features currently. These are not included in **ngx_mruby**.
+In detail, **mruby_nginx_modules** has the following features currently. These are not included in **ngx_mruby**.
 
  * Regexp
   * built-in regular expression engine
