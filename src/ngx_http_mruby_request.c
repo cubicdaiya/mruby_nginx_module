@@ -56,7 +56,7 @@ static mrb_value ngx_http_mruby_get_request_headers_##direction##_hash(mrb_state
     mrb_value           hash;                                                                    \
     mrb_value           key;                                                                     \
     mrb_value           value;                                                                   \
-    r      = ngx_http_mruby_get_request();                                                              \
+    r      = ngx_http_mruby_get_request();                                                       \
     hash   = mrb_hash_new(mrb);                                                                  \
     part   = &(r->headers_##direction.headers.part);                                             \
     header = part->elts;                                                                         \
