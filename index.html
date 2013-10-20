@@ -66,7 +66,29 @@
     <span class="s">&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
-<h2 id="toc_2">Difference from ngx_mruby</h2>
+<h2 id="toc_2">Dependencies</h2>
+
+<ul>
+<li><a href="http://nginx.org/">Nginx</a></li>
+<li><a href="https://github.com/mruby/mruby">mruby</a></li>
+<li><a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> (optional)</li>
+</ul>
+
+<h2 id="toc_3">Install</h2>
+<div class="highlight"><pre><code class="sh language-sh" data-lang="sh">hg clone http://hg.nginx.org/nginx/
+https://github.com/cubicdaiya/mruby_nginx_module.git
+<span class="nb">cd </span>mruby_nginx_module
+git submodule update --init
+<span class="nb">cd </span>mruby
+rake <span class="nv">ENABLE_GEMS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-O2 -fPIC&quot;</span>
+<span class="nb">cd</span> ../../nginx
+./configure --with-pcre --add-module<span class="o">=</span>../mruby_nginx_module
+make
+make install
+</code></pre></div>
+<p>If you want to use <strong>mruby_set</strong> and <strong>mruby_set_code</strong>, you may embed <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> when executing configure with --add-module.</p>
+
+<h2 id="toc_4">Difference from ngx_mruby</h2>
 
 <p><strong>mruby_nginx_module</strong> is forked from <a href="https://github.com/matsumoto-r/ngx_mruby">ngx_mruby</a> at July 2013.</p>
 
@@ -106,29 +128,7 @@ what I want to develop were gradually departured from what they want to develop.
 <li>Nginx::Socket(Nginx non-blocking socket API biding)</li>
 </ul>
 
-<h2 id="toc_3">Dependencies</h2>
-
-<ul>
-<li><a href="http://nginx.org/">Nginx</a></li>
-<li><a href="https://github.com/mruby/mruby">mruby</a></li>
-<li><a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> (optional)</li>
-</ul>
-
-<h2 id="toc_4">Install</h2>
-<div class="highlight"><pre><code class="sh language-sh" data-lang="sh">hg clone http://hg.nginx.org/nginx/
-https://github.com/cubicdaiya/mruby_nginx_module.git
-<span class="nb">cd </span>mruby_nginx_module
-git submodule update --init
-<span class="nb">cd </span>mruby
-rake <span class="nv">ENABLE_GEMS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-O2 -fPIC&quot;</span>
-<span class="nb">cd</span> ../../nginx
-./configure --with-pcre --add-module<span class="o">=</span>../mruby_nginx_module
-make
-make install
-</code></pre></div>
-<p>If you want to use <strong>mruby_set</strong> and <strong>mruby_set_code</strong>, you may embed <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> when executing configure with --add-module.</p>
-
-<h1 id="toc_5">Source Code</h1>
+<h2 id="toc_5">Source Code</h2>
 
 <p><a href="https://github.com/cubicdaiya/mruby_nginx_module">https://github.com/cubicdaiya/mruby_nginx_module</a></p>
 
