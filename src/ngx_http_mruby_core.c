@@ -508,8 +508,6 @@ void ngx_http_mruby_core_init(mrb_state *mrb, struct RClass *class)
     mrb_define_const(mrb, class, "HTTP_CLOSE",                    mrb_fixnum_value(NGX_HTTP_CLOSE));
     mrb_define_const(mrb, class, "HTTP_NGINX_CODES",              mrb_fixnum_value(NGX_HTTP_NGINX_CODES));
     mrb_define_const(mrb, class, "HTTP_REQUEST_HEADER_TOO_LARGE", mrb_fixnum_value(NGX_HTTP_REQUEST_HEADER_TOO_LARGE));
-    mrb_define_const(mrb, class, "HTTPS_CERT_ERROR",              mrb_fixnum_value(NGX_HTTPS_CERT_ERROR));
-    mrb_define_const(mrb, class, "HTTPS_NO_CERT",                 mrb_fixnum_value(NGX_HTTPS_NO_CERT));
     mrb_define_const(mrb, class, "HTTP_TO_HTTPS",                 mrb_fixnum_value(NGX_HTTP_TO_HTTPS));
     mrb_define_const(mrb, class, "HTTP_CLIENT_CLOSED_REQUEST",    mrb_fixnum_value(NGX_HTTP_CLIENT_CLOSED_REQUEST));
     mrb_define_const(mrb, class, "HTTP_INTERNAL_SERVER_ERROR",    mrb_fixnum_value(NGX_HTTP_INTERNAL_SERVER_ERROR));
@@ -518,6 +516,8 @@ void ngx_http_mruby_core_init(mrb_state *mrb, struct RClass *class)
     mrb_define_const(mrb, class, "HTTP_SERVICE_UNAVAILABLE",      mrb_fixnum_value(NGX_HTTP_SERVICE_UNAVAILABLE));
     mrb_define_const(mrb, class, "HTTP_GATEWAY_TIME_OUT",         mrb_fixnum_value(NGX_HTTP_GATEWAY_TIME_OUT));
     mrb_define_const(mrb, class, "HTTP_INSUFFICIENT_STORAGE",     mrb_fixnum_value(NGX_HTTP_INSUFFICIENT_STORAGE));
+    mrb_define_const(mrb, class, "HTTPS_CERT_ERROR",              mrb_fixnum_value(NGX_HTTPS_CERT_ERROR));
+    mrb_define_const(mrb, class, "HTTPS_NO_CERT",                 mrb_fixnum_value(NGX_HTTPS_NO_CERT));
 
     // method
     mrb_define_const(mrb, class, "HTTP_UNKNOWN",   mrb_fixnum_value(NGX_HTTP_UNKNOWN));
