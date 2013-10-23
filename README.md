@@ -2,14 +2,14 @@
 
 ## Summary
 
-**mruby_nginx_module** is the powerful extension by mruby for Nginx.
+**mruby_nginx_module** is the powerful extension by mruby for nginx.
 
 ## Concept
 
 The concept of **mruby_nginx_module** is following.
 
  * Give developers to develop nginx module by mruby
- * Usability that higher affinity with Nginx
+ * Usability that higher affinity with nginx
  * More features
 
 ## Examples
@@ -30,7 +30,7 @@ Please see [Documents](http://cubicdaiya.github.io/mruby_nginx_module/).
 
 ## Dependencies
 
-  - [Nginx](http://nginx.org/)
+  - [nginx](http://nginx.org/)
   - [mruby](https://github.com/mruby/mruby)
   - [ngx_devel_kit](https://github.com/simpl/ngx_devel_kit) (optional)
 
@@ -63,13 +63,13 @@ what I want to develop were gradually departured from what they want to develop.
 What I want to develop are as previously noted concepts.
 
  * Give developers by mruby to develop nginx module
- * Usability that higher affinity with Nginx
+ * Usability that higher affinity with nginx
  * More features
 
 [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) is a part of unified web server extension developing support institution(like mod_mruby).
 
 
-But what I want to develop is the product that is more specialized for Nginx. 
+But what I want to develop is the product that is more specialized for nginx. 
 
 
 To that end **mruby_nginx_module** needs to equip more features than **ngx_mruby** and I must implement drastic mechanism.
