@@ -1,0 +1,24 @@
+language: c
+compiler:
+  - gcc
+before_script:
+  - cd ../
+  - wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.33.tar.bz2
+  - wget http://nginx.org/download/nginx-1.4.3.tar.gz
+  - wget https://github.com/simpl/ngx_devel_kit/archive/v0.2.19.tar.gz
+  - wget https://github.com/agentzh/echo-nginx-module/archive/v0.48.tar.gz
+  - wget http://www.openssl.org/source/openssl-1.0.1e.tar.gz
+  - tar jxvf pcre-8.33.tar.bz2
+  - tar zxvf nginx-1.4.3.tar.gz
+  - tar zxvf v0.2.19.tar.gz
+  - tar zxvf v0.48.tar.gz
+  - tar zxvf openssl-1.0.1e.tar.gz
+  - cd mruby_nginx_module/mruby
+  - rake ENABLE_GEMS="true" CFLAGS="-O2 -fPIC"
+  - cd ../../nginx-1.4.3
+  - ./configure --with-pcre=../pcre-8.33 --with-openssl=../openssl-1.0.1e --add-module=../mruby_nginx_module --add-module=../ngx_devel_kit-0.2.19 --add-module=../echo-nginx-module-0.48 --with-http_ssl_module
+  - make 
+  - cd ../mruby_nginx_module
+script:
+  - bundle
+  - NGINX_BIN=../nginx-1.4.3/objs/nginx bundle exec rake test

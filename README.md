@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cubicdaiya/mruby_nginx_module.png?branch=master)](https://travis-ci.org/cubicdaiya/mruby_nginx_module)
+
 ## Summary
 
 **mruby_nginx_module** is the powerful extension by mruby for Nginx.
