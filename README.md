@@ -52,7 +52,7 @@ make install
 If you want to use **mruby_set** and **mruby_set_code**, you may embed [ngx_devel_kit](https://github.com/simpl/ngx_devel_kit) when executing configure with --add-module.
 
 
-## Difference from ngx_mruby
+## Difference between ngx_mruby
 
 **mruby_nginx_module** is forked from [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) at July 2013.
 
@@ -92,11 +92,11 @@ In detail, **mruby_nginx_modules** has the following features currently. These a
 Additionally I'm going to implement the following features.
 
  * Nginx::Shared
-  * Nginx shared memory API biding
+  * Nginx shared memory API binding
  * Nginx::Subrequest
-  * Nginx sub-request API biding
+  * Nginx sub-request API binding
  * Nginx::Socket
-  * Nginx non-blocking socket API biding
+  * Nginx non-blocking socket API binding
 
 ## How to test
 
