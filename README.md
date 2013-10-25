@@ -81,22 +81,22 @@ In detail, **mruby_nginx_modules** has the following features currently. These a
  * Nginx::Context
   * hash table for sharing data in each request processing phase
  * Nginx::Time
-  * Nginx time API binding 
+  * nginx time API binding 
  * Nginx::Digest
-  * Nginx Digest API binding 
+  * nginx Digest API binding 
  * Nginx::Base64
-  * Nginx Base64(en|de)coding API binding 
+  * nginx Base64(en|de)coding API binding 
  * mruby_require
   * The directive for requiring external mruby script
 
 Additionally I'm going to implement the following features.
 
  * Nginx::Shared
-  * Nginx shared memory API binding
+  * nginx shared memory API binding
  * Nginx::Subrequest
-  * Nginx sub-request API binding
+  * nginx sub-request API binding
  * Nginx::Socket
-  * Nginx non-blocking socket API binding
+  * nginx non-blocking socket API binding
 
 ## How to test
 
