@@ -80,46 +80,40 @@
 
 <h4 id="toc_4">Minumum Requre</h4>
 
-<p><strong>mruby+mruby_nginx_module</strong>
-<code>sh
-$ git clone https://github.com/cubicdaiya/mruby_nginx_module.git
-$ cd mruby_nginx_module
-$ git submodule update --init
-$ cd mruby
-$ # Optional commands if you want
-$ rake ENABLE_GEMS=&quot;true&quot; CFLAGS=&quot;-O2 -fPIC&quot;
-</code>
-<strong>nginx+mruby_nginx_module</strong>
-<code>sh
-$ # download and unpack stable nginx version
-$ cd nginx-1.4.1 # for eaxmple
-$ ./configure --with-pcre --add-module=../mruby_nginx_module
-$ make
-$ sudo make install
-</code></p>
-
+<p><strong>mruby+mruby_nginx_module</strong></p>
+<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>git clone https://github.com/cubicdaiya/mruby_nginx_module.git
+<span class="nv">$ </span><span class="nb">cd </span>mruby_nginx_module
+<span class="nv">$ </span>git submodule update --init
+<span class="nv">$ </span><span class="nb">cd </span>mruby
+<span class="nv">$ </span><span class="c"># Optional commands if you want</span>
+<span class="nv">$ </span>rake <span class="nv">ENABLE_GEMS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-O2 -fPIC&quot;</span>
+</code></pre></div>
+<p><strong>nginx+mruby_nginx_module</strong></p>
+<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span><span class="c"># download and unpack stable nginx version</span>
+<span class="nv">$ </span><span class="nb">cd </span>nginx-1.4.1 <span class="c"># for eaxmple</span>
+<span class="nv">$ </span>./configure --with-pcre --add-module<span class="o">=</span>../mruby_nginx_module
+<span class="nv">$ </span>make
+<span class="nv">$ </span>sudo make install
+</code></pre></div>
 <h4 id="toc_5">Optional commands</h4>
 
-<p><strong>mruby+mgem</strong>
-<code>sh
-$ gem install mgem
-$ mgem update &amp;&amp; mgem list 
-$ mgem add mruby-userdata # for example
-$ mgem active mruby-userdata
-$ mgem config # answer the question and then you should add this 
-$ # replcae build_config.rb with last text output or make changes by hand, then
-$ rake ENABLE_GEMS=&quot;true&quot; CFLAGS=&quot;-O2 -fPIC&quot; 
-</code>
-<strong>+nginx-echo-module+ngx_devel_kit</strong>
-<code>sh
-$ # download and unpack stable nginx version
-$ cd nginx-1.4.1 # for eaxmple
-$ ./configure --with-pcre-jit --add-module=../nginx-echo-module \
---add-module=../mruby_nginx_module --add-module=../ngx_devel_kit
-$ make
-$ sudo make install
-</code></p>
-
+<p><strong>mruby+mgem</strong></p>
+<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>gem install mgem
+<span class="nv">$ </span>mgem update <span class="o">&amp;&amp;</span> mgem list 
+<span class="nv">$ </span>mgem add mruby-userdata <span class="c"># for example</span>
+<span class="nv">$ </span>mgem active mruby-userdata
+<span class="nv">$ </span>mgem config <span class="c"># answer the question and then you should add this </span>
+<span class="nv">$ </span><span class="c"># replcae build_config.rb with last text output or make changes by hand, then</span>
+<span class="nv">$ </span>rake <span class="nv">ENABLE_GEMS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-O2 -fPIC&quot;</span> 
+</code></pre></div>
+<p><strong>+nginx-echo-module+ngx_devel_kit</strong></p>
+<div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span><span class="c"># download and unpack stable nginx version</span>
+<span class="nv">$ </span><span class="nb">cd </span>nginx-1.4.1 <span class="c"># for eaxmple</span>
+<span class="nv">$ </span>./configure --with-pcre-jit --add-module<span class="o">=</span>../nginx-echo-module <span class="se">\</span>
+--add-module<span class="o">=</span>../mruby_nginx_module --add-module<span class="o">=</span>../ngx_devel_kit
+<span class="nv">$ </span>make
+<span class="nv">$ </span>sudo make install
+</code></pre></div>
 <p>If you want to use <strong>mruby_set</strong> and <strong>mruby_set_code</strong>, you may embed <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> when executing configure with --add-module.</p>
 
 <h2 id="toc_6">Difference from ngx_mruby</h2>
