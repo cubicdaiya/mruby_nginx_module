@@ -7,7 +7,6 @@ mruby module for nginx [![Build Status](https://travis-ci.org/cubicdaiya/mruby_n
 The concept of **mruby_nginx_module** is following.
  * Give developers to develop nginx module by mruby
  * Usability that higher affinity with nginx
- * More features
 
 ## Examples
 ```nginx
