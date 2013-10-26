@@ -95,7 +95,6 @@ What I want to develop are as previously noted concepts.
 
  * Give developers by mruby to develop nginx module
  * Usability that higher affinity with nginx
- * More features
 
 [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) is a part of unified web server extension developing support institution(like mod_mruby).
 
@@ -103,12 +102,11 @@ What I want to develop are as previously noted concepts.
 But what I want to develop is the product that is more specialized for nginx. 
 
 
-To that end **mruby_nginx_module** needs to equip more features than **ngx_mruby** and I must implement drastic mechanism.
+In detail, **mruby_nginx_modules** has the following features currently. 
 
-In detail, **mruby_nginx_modules** has the following features currently. These are not included in **ngx_mruby**.
 
  * Regexp
-  * built-in regular expression engine
+  * built-in regular expression class
  * Nginx::Context
   * hash table for sharing data in each request processing phase
  * Nginx::Time
@@ -128,5 +126,3 @@ Additionally I'm going to implement the following features.
   * nginx sub-request API binding
  * Nginx::Socket
   * nginx non-blocking socket API binding
-
-
