@@ -54,7 +54,6 @@
 <ul>
 <li>Give developers to develop nginx module by mruby</li>
 <li>Usability that higher affinity with Nginx</li>
-<li>More features</li>
 </ul>
 
 <h2 id="toc_1">Examples</h2>
@@ -68,27 +67,62 @@
 </code></pre></div>
 <h2 id="toc_2">Dependencies</h2>
 
-<ul>
-<li><a href="http://nginx.org/">Nginx</a></li>
-<li><a href="https://github.com/mruby/mruby">mruby</a></li>
-<li><a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> (optional)</li>
-</ul>
+<p>Minumum Requre
+  - <a href="http://nginx.org/download/">nginx</a> - you shoukd be able that have all library dependecy to build nginx from source
+  - <a href="https://github.com/mruby/mruby">mruby</a> - ruby requre</p>
+
+<p>Optional
+  - <a href="http://blog.mruby.sh/201301040627.html">mgem</a> - mruby low level gems
+  - <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a>
+  - <a href="https://github.com/rangechow/nginx-echo-module">nginx-echo-module</a></p>
 
 <h2 id="toc_3">Install</h2>
-<div class="highlight"><pre><code class="sh language-sh" data-lang="sh">hg clone http://hg.nginx.org/nginx/
-https://github.com/cubicdaiya/mruby_nginx_module.git
-<span class="nb">cd </span>mruby_nginx_module
-git submodule update --init
-<span class="nb">cd </span>mruby
-rake <span class="nv">ENABLE_GEMS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-O2 -fPIC&quot;</span>
-<span class="nb">cd</span> ../../nginx
-./configure --with-pcre --add-module<span class="o">=</span>../mruby_nginx_module
-make
-make install
-</code></pre></div>
+
+<h4 id="toc_4">Minumum Requre</h4>
+
+<p><strong>mruby+mruby_nginx_module</strong>
+<code>sh
+$ git clone https://github.com/cubicdaiya/mruby_nginx_module.git
+$ cd mruby_nginx_module
+$ git submodule update --init
+$ cd mruby
+$ # Optional commands if you want
+$ rake ENABLE_GEMS=&quot;true&quot; CFLAGS=&quot;-O2 -fPIC&quot;
+</code>
+<strong>nginx+mruby_nginx_module</strong>
+<code>sh
+$ # download and unpack stable nginx version
+$ cd nginx-1.4.1 # for eaxmple
+$ ./configure --with-pcre --add-module=../mruby_nginx_module
+$ make
+$ sudo make install
+</code></p>
+
+<h4 id="toc_5">Optional commands</h4>
+
+<p><strong>mruby+mgem</strong>
+<code>sh
+$ gem install mgem
+$ mgem update &amp;&amp; mgem list 
+$ mgem add mruby-userdata # for example
+$ mgem active mruby-userdata
+$ mgem config # answer the question and then you should add this 
+$ # replcae build_config.rb with last text output or make changes by hand, then
+$ rake ENABLE_GEMS=&quot;true&quot; CFLAGS=&quot;-O2 -fPIC&quot; 
+</code>
+<strong>+nginx-echo-module+ngx_devel_kit</strong>
+<code>sh
+$ # download and unpack stable nginx version
+$ cd nginx-1.4.1 # for eaxmple
+$ ./configure --with-pcre-jit --add-module=../nginx-echo-module \
+--add-module=../mruby_nginx_module --add-module=../ngx_devel_kit
+$ make
+$ sudo make install
+</code></p>
+
 <p>If you want to use <strong>mruby_set</strong> and <strong>mruby_set_code</strong>, you may embed <a href="https://github.com/simpl/ngx_devel_kit">ngx_devel_kit</a> when executing configure with --add-module.</p>
 
-<h2 id="toc_4">Difference from ngx_mruby</h2>
+<h2 id="toc_6">Difference from ngx_mruby</h2>
 
 <p><strong>mruby_nginx_module</strong> is forked from <a href="https://github.com/matsumoto-r/ngx_mruby">ngx_mruby</a> at July 2013.</p>
 
@@ -107,9 +141,7 @@ what I want to develop were gradually departured from what they want to develop.
 
 <p>But what I want to develop is the product that is more specialized for Nginx. </p>
 
-<p>To that end <strong>mruby_nginx_module</strong> needs to equip more features than <strong>ngx_mruby</strong> and I must implement drastic mechanism.</p>
-
-<p>In detail, <strong>mruby_nginx_modules</strong> has the following features currently. These are not included in <strong>ngx_mruby</strong>.</p>
+<p>In detail, <strong>mruby_nginx_modules</strong> has the following features currently.</p>
 
 <ul>
 <li>Regexp(built-in regular expression engine)</li>
@@ -128,11 +160,11 @@ what I want to develop were gradually departured from what they want to develop.
 <li>Nginx::Socket(Nginx non-blocking socket API biding)</li>
 </ul>
 
-<h2 id="toc_5">Source Code</h2>
+<h2 id="toc_7">Source Code</h2>
 
 <p><a href="https://github.com/cubicdaiya/mruby_nginx_module">https://github.com/cubicdaiya/mruby_nginx_module</a></p>
 
-<h1 id="toc_6">Table of contents</h1>
+<h1 id="toc_8">Table of contents</h1>
 
 <ul>
 <li><a href="quickstart.html">Quick Start</a></li>
