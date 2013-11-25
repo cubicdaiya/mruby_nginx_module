@@ -29,7 +29,7 @@ typedef struct ngx_http_mruby_code_t {
         char *string;
     } code;
     code_type_t code_type;
-    int n;
+    struct RProc* proc;
 } ngx_http_mruby_code_t;
 
 typedef struct ngx_http_mruby_rputs_chain_list_t {

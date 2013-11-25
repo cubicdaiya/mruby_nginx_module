@@ -50,10 +50,14 @@ static ngx_int_t ngx_http_mruby_gencode_state(ngx_http_mruby_state_t *state, ngx
 
     state->ai = mrb_gc_arena_save(state->mrb);
     p         = mrb_parse_file(state->mrb, mrb_file, NULL);
-    code->n   = mrb_generate_code(state->mrb, p);
+    code->proc   = mrb_generate_code(state->mrb, p);
 
     mrb_pool_close(p->pool);
     fclose(mrb_file);
+
+    if (code->proc == NULL) {
+        return NGX_ERROR;
+    }
 
     return NGX_OK;
 }
@@ -148,8 +152,12 @@ ngx_int_t ngx_http_mruby_shared_state_compile(ngx_http_mruby_state_t *state, ngx
         p = mrb_parse_string(state->mrb, (char *)code->code.string, NULL);
     }
 
-    code->n = mrb_generate_code(state->mrb, p);
+    code->proc = mrb_generate_code(state->mrb, p);
     mrb_pool_close(p->pool);
+
+    if (code->proc == NULL) {
+        return NGX_ERROR;
+    }
 
     return NGX_OK;
 }

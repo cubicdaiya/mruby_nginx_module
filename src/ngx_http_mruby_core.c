@@ -31,8 +31,7 @@ static mrb_value ngx_http_mruby_redirect(mrb_state *mrb, mrb_value self);
 
 static void ngx_http_mruby_irep_clean(ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
-    state->mrb->irep_len = code->n;
-    mrb_irep_free(state->mrb, state->mrb->irep[code->n]);
+    mrb_irep_free(state->mrb, code->proc->body.irep);
     state->mrb->exc = 0;
 }
 
@@ -269,7 +268,7 @@ static mrb_value ngx_http_mruby_redirect(mrb_state *mrb, mrb_value self)
 
 ngx_int_t ngx_http_mruby_run_conf(ngx_conf_t *cf, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
-    mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+    mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
     
     mrb_gc_arena_restore(state->mrb, state->ai);
 
@@ -303,7 +302,7 @@ ngx_int_t ngx_http_mruby_run_args(ngx_http_request_t *r, ngx_http_mruby_state_t 
     mrb_define_global_const(state->mrb, "ARGV", ARGV);
 
     ngx_http_mruby_push_request(r);
-    mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+    mrb_result = mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
     if (state->mrb->exc) {
         ngx_http_mruby_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
@@ -342,7 +341,7 @@ ngx_int_t ngx_http_mruby_run(ngx_http_request_t *r, ngx_http_mruby_state_t *stat
         state->ai = mrb_gc_arena_save(state->mrb);
     }
 
-    mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+    mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
 
     if (state->mrb->exc) {
         ngx_http_mruby_raise_error(state, code, r);
@@ -350,7 +349,7 @@ ngx_int_t ngx_http_mruby_run(ngx_http_request_t *r, ngx_http_mruby_state_t *stat
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
-  
+
     if (!cached) {
         ngx_http_mruby_irep_clean(state, code);
     }
@@ -397,7 +396,7 @@ ngx_int_t ngx_http_mruby_run_header_filter(ngx_http_request_t *r, ngx_http_mruby
     }
 
     ngx_http_mruby_push_request(r);
-    mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+    mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     mrb_gc_protect(state->mrb, ctx->table);
@@ -431,7 +430,7 @@ ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_s
     mrb_define_global_const(state->mrb, "ARGV", ARGV);
 
     ngx_http_mruby_push_request(r);
-    mrb_result = mrb_run(state->mrb, mrb_proc_new(state->mrb, state->mrb->irep[code->n]), mrb_top_self(state->mrb));
+    mrb_result = mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
     if (state->mrb->exc) {
         ngx_http_mruby_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
