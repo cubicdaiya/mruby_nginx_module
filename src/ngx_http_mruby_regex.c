@@ -398,9 +398,9 @@ void ngx_http_mruby_regex_class_init(mrb_state *mrb)
     class_re = mrb_define_class(mrb, "Regexp", mrb->object_class);
     MRB_SET_INSTANCE_TT(class_re, MRB_TT_DATA);
 
-    mrb_define_method(mrb, class_re, "initialize", ngx_http_mruby_regexp_pcre_initialize, ARGS_REQ(1) | ARGS_OPT(2));
-    mrb_define_method(mrb, class_re, "match",      ngx_http_mruby_regexp_pcre_match,      ARGS_REQ(1));
-    mrb_define_method(mrb, class_re, "==",         ngx_http_mruby_regexp_equal,           ARGS_REQ(1));
+    mrb_define_method(mrb, class_re, "initialize", ngx_http_mruby_regexp_pcre_initialize, MRB_ARGS_REQ(1) | MRB_ARGS_OPT(2));
+    mrb_define_method(mrb, class_re, "match",      ngx_http_mruby_regexp_pcre_match,      MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, class_re, "==",         ngx_http_mruby_regexp_equal,           MRB_ARGS_REQ(1));
 
     mrb_define_const(mrb, class_re, "IGNORECASE", mrb_fixnum_value(NGX_HTTP_MRUBY_REGEXP_IGNORECASE));
     mrb_define_const(mrb, class_re, "EXTENDED",   mrb_fixnum_value(NGX_HTTP_MRUBY_REGEXP_EXTENDED));
@@ -409,9 +409,9 @@ void ngx_http_mruby_regex_class_init(mrb_state *mrb)
     class_md = mrb_define_class(mrb, "MatchData", mrb->object_class);
     MRB_SET_INSTANCE_TT(class_md, MRB_TT_DATA);
 
-    mrb_define_method(mrb, class_md, "initialize",      ngx_http_mruby_matchdata_init,      ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "initialize_copy", ngx_http_mruby_matchdata_init_copy, ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "begin",           ngx_http_mruby_matchdata_begin,     ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "end",             ngx_http_mruby_matchdata_end,       ARGS_REQ(1));
-    mrb_define_method(mrb, class_md, "length",          ngx_http_mruby_matchdata_length,    ARGS_NONE());
+    mrb_define_method(mrb, class_md, "initialize",      ngx_http_mruby_matchdata_init,      MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "initialize_copy", ngx_http_mruby_matchdata_init_copy, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "begin",           ngx_http_mruby_matchdata_begin,     MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "end",             ngx_http_mruby_matchdata_end,       MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, class_md, "length",          ngx_http_mruby_matchdata_length,    MRB_ARGS_NONE());
 }

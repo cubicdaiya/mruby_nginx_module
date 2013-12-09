@@ -123,11 +123,11 @@ void ngx_http_mruby_time_class_init(mrb_state *mrb, struct RClass *class)
 
     class_time = mrb_define_class_under(mrb, class, "Time", mrb->object_class);
 
-    mrb_define_class_method(mrb, class_time, "update",          ngx_http_mruby_update,          ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "time",            ngx_http_mruby_time,            ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "http_time",       ngx_http_mruby_http_time,       ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "cookie_time",     ngx_http_mruby_cookie_time,     ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "utc_time",        ngx_http_mruby_utc_time,        ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "local_time",      ngx_http_mruby_local_time,      ARGS_ANY());
-    mrb_define_class_method(mrb, class_time, "parse_http_time", ngx_http_mruby_parse_http_time, ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "update",          ngx_http_mruby_update,          MRB_ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "time",            ngx_http_mruby_time,            MRB_ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "http_time",       ngx_http_mruby_http_time,       MRB_ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "cookie_time",     ngx_http_mruby_cookie_time,     MRB_ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "utc_time",        ngx_http_mruby_utc_time,        MRB_ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "local_time",      ngx_http_mruby_local_time,      MRB_ARGS_ANY());
+    mrb_define_class_method(mrb, class_time, "parse_http_time", ngx_http_mruby_parse_http_time, MRB_ARGS_ANY());
 }

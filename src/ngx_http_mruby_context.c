@@ -84,7 +84,7 @@ void ngx_http_mruby_context_class_init(mrb_state *mrb, struct RClass *class)
 
     class_context = mrb_define_class_under(mrb, class, "Context", mrb->object_class);
 
-    mrb_define_method(mrb, class_context, "[]",    ngx_http_mruby_get_request_context_entry, ARGS_ANY());
-    mrb_define_method(mrb, class_context, "[]=",   ngx_http_mruby_set_request_context_entry, ARGS_ANY());
-    mrb_define_method(mrb, class_context, "table", ngx_http_mruby_get_request_context,       ARGS_ANY());
+    mrb_define_method(mrb, class_context, "[]",    ngx_http_mruby_get_request_context_entry, MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_context, "[]=",   ngx_http_mruby_set_request_context_entry, MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_context, "table", ngx_http_mruby_get_request_context,       MRB_ARGS_ANY());
 }

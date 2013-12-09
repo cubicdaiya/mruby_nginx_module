@@ -63,6 +63,6 @@ void ngx_http_mruby_base64_class_init(mrb_state *mrb, struct RClass *class)
 
     class_base64 = mrb_define_class_under(mrb, class, "Base64", mrb->object_class);
 
-    mrb_define_class_method(mrb, class_base64, "encode", ngx_http_mruby_base64_encode, ARGS_ANY());
-    mrb_define_class_method(mrb, class_base64, "decode", ngx_http_mruby_base64_decode, ARGS_ANY());
+    mrb_define_class_method(mrb, class_base64, "encode", ngx_http_mruby_base64_encode, MRB_ARGS_ANY());
+    mrb_define_class_method(mrb, class_base64, "decode", ngx_http_mruby_base64_decode, MRB_ARGS_ANY());
 }
