@@ -50,7 +50,7 @@ $ rake ENABLE_GEMS="true" CFLAGS="-O2 -fPIC"
 ```sh
 $ # download and unpack stable nginx version
 $ cd nginx-1.4.1 # for eaxmple
-$ ./configure --with-pcre --add-module=../mruby_nginx_module
+$ ./configure -add-module=../mruby_nginx_module
 $ make
 $ sudo make install
 ```
