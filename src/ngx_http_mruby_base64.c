@@ -23,10 +23,7 @@ static mrb_value ngx_http_mruby_base64_encode(mrb_state *mrb, mrb_value self)
     ngx_str_t src, dst;
 
     mrb_get_args(mrb, "o", &mrb_src);
-
-    if (mrb_type(mrb_src) != MRB_TT_STRING) {
-        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
-    }
+    mrb_src = mrb_obj_as_string(mrb, mrb_src);
 
     src.data = (u_char *)RSTRING_PTR(mrb_src);
     src.len  = RSTRING_LEN(mrb_src);
@@ -45,10 +42,7 @@ static mrb_value ngx_http_mruby_base64_decode(mrb_state *mrb, mrb_value self)
     ngx_str_t src, dst;
 
     mrb_get_args(mrb, "o", &mrb_src);
-
-    if (mrb_type(mrb_src) != MRB_TT_STRING) {
-        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
-    }
+    mrb_src = mrb_obj_as_string(mrb, mrb_src);
 
     src.data = (u_char *)RSTRING_PTR(mrb_src);
     src.len  = RSTRING_LEN(mrb_src);

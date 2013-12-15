@@ -85,10 +85,7 @@ static mrb_value ngx_http_mruby_rputs(mrb_state *mrb, mrb_value self)
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
     mrb_get_args(mrb, "o", &argv);
-
-    if (mrb_type(argv) != MRB_TT_STRING) {
-        argv = mrb_funcall(mrb, argv, "to_s", 0, NULL);
-    }
+    argv = mrb_obj_as_string(mrb, argv);
 
     ns.data = (u_char *)RSTRING_PTR(argv);
     ns.len  = RSTRING_LEN(argv);
@@ -178,11 +175,7 @@ static mrb_value ngx_http_mruby_log(mrb_state *mrb, mrb_value self)
         return self;
     }
 
-    if (mrb_type(argv[1]) != MRB_TT_STRING) {
-        msg = mrb_funcall(mrb, argv[1], "to_s", 0, NULL);
-    } else {
-        msg = mrb_str_dup(mrb, argv[1]);
-    }
+    msg = mrb_obj_as_string(mrb, argv[1]);
 
     ngx_log_error((ngx_uint_t)log_level, r->connection->log, 0, "%s", RSTRING_PTR(msg));
 
@@ -223,9 +216,7 @@ static mrb_value ngx_http_mruby_redirect(mrb_state *mrb, mrb_value self)
         rc = NGX_HTTP_MOVED_TEMPORARILY;
     }
 
-    if (mrb_type(uri) != MRB_TT_STRING) {
-        uri = mrb_funcall(mrb, uri, "to_s", 0, NULL);
-    }
+    uri = mrb_obj_as_string(mrb, uri);
 
     // save location uri to ns
     ns.data = (u_char *)RSTRING_PTR(uri);
@@ -323,9 +314,7 @@ ngx_int_t ngx_http_mruby_run_args(ngx_http_request_t *r, ngx_http_mruby_state_t 
         return NGX_ERROR;
     }
     
-    if (mrb_type(mrb_result) != MRB_TT_STRING) {
-        mrb_result = mrb_funcall(state->mrb, mrb_result, "to_s", 0, NULL);
-    }
+    mrb_result = mrb_obj_as_string(state->mrb, mrb_result);
 
     result->data = (u_char *)RSTRING_PTR(mrb_result);
     result->len  = RSTRING_LEN(mrb_result);
@@ -453,9 +442,7 @@ ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_s
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
     
-    if (mrb_type(mrb_result) != MRB_TT_STRING) {
-        mrb_result = mrb_funcall(state->mrb, mrb_result, "to_s", 0, NULL);
-    }
+    mrb_result = mrb_obj_as_string(state->mrb, mrb_result);
 
     ctx->filter_ctx.body        = (u_char *)RSTRING_PTR(mrb_result);
     ctx->filter_ctx.body_length = RSTRING_LEN(mrb_result);
