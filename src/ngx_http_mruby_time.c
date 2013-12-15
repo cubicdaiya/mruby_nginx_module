@@ -109,10 +109,7 @@ static mrb_value ngx_http_mruby_parse_http_time(mrb_state *mrb, mrb_value self)
     ngx_str_t http_time;
 
     mrb_get_args(mrb, "o", &mrb_http_time);
-
-    if (mrb_type(mrb_http_time) != MRB_TT_STRING) {
-        mrb_http_time = mrb_funcall(mrb, mrb_http_time, "to_s", 0, NULL);
-    }
+    mrb_http_time = mrb_obj_as_string(mrb, mrb_http_time);
 
     http_time.data = (u_char *)RSTRING_PTR(mrb_http_time);
     http_time.len  = RSTRING_LEN(mrb_http_time);

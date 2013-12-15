@@ -52,10 +52,7 @@ static mrb_value ngx_http_mruby_md5(mrb_state *mrb, mrb_value self)
     u_char     md5_buf[MD5_DIGEST_LENGTH];
 
     mrb_get_args(mrb, "o", &mrb_src);
-
-    if (mrb_type(mrb_src) != MRB_TT_STRING) {
-        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
-    }
+    mrb_src = mrb_obj_as_string(mrb, mrb_src);
 
     src.data = (u_char *)RSTRING_PTR(mrb_src);
     src.len  = RSTRING_LEN(mrb_src);
@@ -76,10 +73,7 @@ static mrb_value ngx_http_mruby_sha1(mrb_state *mrb, mrb_value self)
     u_char     sha_buf[SHA_DIGEST_LENGTH];
 
     mrb_get_args(mrb, "o", &mrb_src);
-
-    if (mrb_type(mrb_src) != MRB_TT_STRING) {
-        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
-    }
+    mrb_src = mrb_obj_as_string(mrb, mrb_src);
 
     src.data = (u_char *)RSTRING_PTR(mrb_src);
     src.len  = RSTRING_LEN(mrb_src);
@@ -102,15 +96,9 @@ static mrb_value ngx_http_mruby_hmac_sha1(mrb_state *mrb, mrb_value self)
     const EVP_MD *evp_md;
 
     mrb_get_args(mrb, "oo", &mrb_text, &mrb_key);
-
-    if (mrb_type(mrb_text) != MRB_TT_STRING) {
-        mrb_text = mrb_funcall(mrb, mrb_text, "to_s", 0, NULL);
-    }
-
-    if (mrb_type(mrb_key) != MRB_TT_STRING) {
-        mrb_key = mrb_funcall(mrb, mrb_key, "to_s", 0, NULL);
-    }
-
+    mrb_text = mrb_obj_as_string(mrb, mrb_text);
+    mrb_key  = mrb_obj_as_string(mrb, mrb_key);
+    
     text.data = (u_char *)RSTRING_PTR(mrb_text);
     text.len  = RSTRING_LEN(mrb_text);
     key.data  = (u_char *)RSTRING_PTR(mrb_key);
@@ -130,10 +118,7 @@ static mrb_value ngx_http_mruby_hexdigest(mrb_state *mrb, mrb_value self)
     u_char    hexdigest[40 + 1];
 
     mrb_get_args(mrb, "o", &mrb_digest);
-
-    if (mrb_type(mrb_digest) != MRB_TT_STRING) {
-        mrb_digest = mrb_funcall(mrb, mrb_digest, "to_s", 0, NULL);
-    }
+    mrb_digest = mrb_obj_as_string(mrb, mrb_digest);
 
     digest.data = (u_char *)RSTRING_PTR(mrb_digest);
     digest.len  = RSTRING_LEN(mrb_digest);
@@ -164,10 +149,7 @@ static mrb_value ngx_http_mruby_crc32_long(mrb_state *mrb, mrb_value self)
     uint32_t  crc32;
 
     mrb_get_args(mrb, "o", &mrb_src);
-
-    if (mrb_type(mrb_src) != MRB_TT_STRING) {
-        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
-    }
+    mrb_src = mrb_obj_as_string(mrb, mrb_src);
 
     src.data = (u_char *)RSTRING_PTR(mrb_src);
     src.len  = RSTRING_LEN(mrb_src);
@@ -184,10 +166,7 @@ static mrb_value ngx_http_mruby_crc32_short(mrb_state *mrb, mrb_value self)
     uint32_t  crc32;
 
     mrb_get_args(mrb, "o", &mrb_src);
-
-    if (mrb_type(mrb_src) != MRB_TT_STRING) {
-        mrb_src = mrb_funcall(mrb, mrb_src, "to_s", 0, NULL);
-    }
+    mrb_src = mrb_obj_as_string(mrb, mrb_src);
 
     src.data = (u_char *)RSTRING_PTR(mrb_src);
     src.len  = RSTRING_LEN(mrb_src);
