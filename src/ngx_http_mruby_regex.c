@@ -176,8 +176,8 @@ static mrb_value ngx_http_mruby_regexp_pcre_initialize(mrb_state *mrb, mrb_value
     if (reg->re == NULL) {
         mrb_raisef(mrb, E_ARGUMENT_ERROR, "invalid regular expression");
     }
-    mrb_iv_set(mrb, self, mrb_intern(mrb, "@source"), source);
-    mrb_iv_set(mrb, self, mrb_intern(mrb, "@options"), mrb_fixnum_value(ngx_http_mruby_pcre_to_mruby_options(coptions)));
+    mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@source"), source);
+    mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@options"), mrb_fixnum_value(ngx_http_mruby_pcre_to_mruby_options(coptions)));
 
     unsigned char *name_table;
     int i, namecount, name_entry_size;
@@ -236,7 +236,7 @@ static mrb_value ngx_http_mruby_regexp_pcre_match(mrb_state *mrb, mrb_value self
     }
 
     /* XXX: need current scope */
-    mrb_obj_iv_set(mrb, (struct RObject *)mrb_class_real(RDATA(self)->c), mrb_intern(mrb, "@last_match"), mrb_nil_value());
+    mrb_obj_iv_set(mrb, (struct RObject *)mrb_class_real(RDATA(self)->c), mrb_intern_lit(mrb, "@last_match"), mrb_nil_value());
 
     c = mrb_class_get(mrb, "MatchData");
     md = mrb_funcall(mrb, mrb_obj_value(c), "new", 0);
@@ -245,20 +245,20 @@ static mrb_value ngx_http_mruby_regexp_pcre_match(mrb_state *mrb, mrb_value self
     mrb_md->ovector = match;
     mrb_md->length = matchlen;
 
-    mrb_iv_set(mrb, md, mrb_intern(mrb, "@regexp"), self);
-    mrb_iv_set(mrb, md, mrb_intern(mrb, "@string"), mrb_str_dup(mrb, str));
+    mrb_iv_set(mrb, md, mrb_intern_lit(mrb, "@regexp"), self);
+    mrb_iv_set(mrb, md, mrb_intern_lit(mrb, "@string"), mrb_str_dup(mrb, str));
     /* XXX: need current scope */
-    mrb_obj_iv_set(mrb, (struct RObject *)mrb_class_real(RDATA(self)->c), mrb_intern(mrb, "@last_match"), md);
+    mrb_obj_iv_set(mrb, (struct RObject *)mrb_class_real(RDATA(self)->c), mrb_intern_lit(mrb, "@last_match"), md);
 
-    mrb_gv_set(mrb, mrb_intern(mrb, "$~"), md);
-    mrb_gv_set(mrb, mrb_intern(mrb, "$&"), mrb_funcall(mrb, md, "to_s", 0));
-    mrb_gv_set(mrb, mrb_intern(mrb, "$`"), mrb_funcall(mrb, md, "pre_match", 0));
-    mrb_gv_set(mrb, mrb_intern(mrb, "$'"), mrb_funcall(mrb, md, "post_match", 0));
+    mrb_gv_set(mrb, mrb_intern_lit(mrb, "$~"), md);
+    mrb_gv_set(mrb, mrb_intern_lit(mrb, "$&"), mrb_funcall(mrb, md, "to_s", 0));
+    mrb_gv_set(mrb, mrb_intern_lit(mrb, "$`"), mrb_funcall(mrb, md, "pre_match", 0));
+    mrb_gv_set(mrb, mrb_intern_lit(mrb, "$'"), mrb_funcall(mrb, md, "post_match", 0));
 
     for (i = 1; i < 10; i++) {
         char sym[8];
         snprintf(sym, sizeof(sym), "$%d", i);
-        mrb_gv_set(mrb, mrb_intern(mrb, sym), mrb_funcall(mrb, md, "[]", 1, mrb_fixnum_value(i)));
+        mrb_gv_set(mrb, mrb_intern(mrb, sym, 8), mrb_funcall(mrb, md, "[]", 1, mrb_fixnum_value(i)));
     }
 
     return md;
@@ -284,8 +284,8 @@ static mrb_value ngx_http_mruby_regexp_equal(mrb_state *mrb, mrb_value self)
         mrb_raise(mrb, E_RUNTIME_ERROR, "Invalid Regexp");
     }
 
-    if (mrb_str_equal(mrb, mrb_iv_get(mrb, self, mrb_intern(mrb, "@source")),
-                      mrb_iv_get(mrb, other, mrb_intern(mrb, "@source")))) {
+    if (mrb_str_equal(mrb, mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@source")),
+                      mrb_iv_get(mrb, other, mrb_intern_lit(mrb, "@source")))) {
         return mrb_true_value();
     }
 
@@ -342,8 +342,8 @@ static mrb_value ngx_http_mruby_matchdata_init_copy(mrb_state *mrb, mrb_value co
     }
     DATA_PTR(copy) = mrb_md_copy;
 
-    mrb_iv_set(mrb, copy, mrb_intern(mrb, "@regexp"), mrb_iv_get(mrb, src, mrb_intern(mrb, "@regexp")));
-    mrb_iv_set(mrb, copy, mrb_intern(mrb, "@string"), mrb_iv_get(mrb, src, mrb_intern(mrb, "@string")));
+    mrb_iv_set(mrb, copy, mrb_intern_lit(mrb, "@regexp"), mrb_iv_get(mrb, src, mrb_intern_lit(mrb, "@regexp")));
+    mrb_iv_set(mrb, copy, mrb_intern_lit(mrb, "@string"), mrb_iv_get(mrb, src, mrb_intern_lit(mrb, "@string")));
     
     return copy;
 }
