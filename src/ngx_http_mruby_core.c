@@ -268,6 +268,8 @@ static mrb_value ngx_http_mruby_redirect(mrb_state *mrb, mrb_value self)
 
 ngx_int_t ngx_http_mruby_run_conf(ngx_conf_t *cf, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code)
 {
+    state->ai = mrb_gc_arena_save(state->mrb);
+
     mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
     
     mrb_gc_arena_restore(state->mrb, state->ai);
@@ -289,9 +291,7 @@ ngx_int_t ngx_http_mruby_run_args(ngx_http_request_t *r, ngx_http_mruby_state_t 
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
-    if (!cached) {
-        state->ai = mrb_gc_arena_save(state->mrb);
-    }
+    state->ai = mrb_gc_arena_save(state->mrb);
 
     ARGV = mrb_ary_new_capa(state->mrb, nargs);
 
@@ -306,7 +306,7 @@ ngx_int_t ngx_http_mruby_run_args(ngx_http_request_t *r, ngx_http_mruby_state_t 
     if (state->mrb->exc) {
         ngx_http_mruby_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
-        mrb_gc_protect(state->mrb, ctx->table);
+        //mrb_gc_protect(state->mrb, ctx->table);
         if (!cached) {
             ngx_http_mruby_irep_clean(state, code);
         }
@@ -319,7 +319,7 @@ ngx_int_t ngx_http_mruby_run_args(ngx_http_request_t *r, ngx_http_mruby_state_t 
     result->len  = RSTRING_LEN(mrb_result);
 
     mrb_gc_arena_restore(state->mrb, state->ai);
-    mrb_gc_protect(state->mrb, ctx->table);
+    //mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
         ngx_http_mruby_irep_clean(state, code);
@@ -337,9 +337,7 @@ ngx_int_t ngx_http_mruby_run(ngx_http_request_t *r, ngx_http_mruby_state_t *stat
 
     ngx_http_mruby_push_request(r);
 
-    if (!cached) {
-        state->ai = mrb_gc_arena_save(state->mrb);
-    }
+    state->ai = mrb_gc_arena_save(state->mrb);
 
     mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
 
@@ -348,7 +346,7 @@ ngx_int_t ngx_http_mruby_run(ngx_http_request_t *r, ngx_http_mruby_state_t *stat
     }
 
     mrb_gc_arena_restore(state->mrb, state->ai);
-    mrb_gc_protect(state->mrb, ctx->table);
+    //mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
         ngx_http_mruby_irep_clean(state, code);
@@ -391,15 +389,14 @@ ngx_int_t ngx_http_mruby_run_header_filter(ngx_http_request_t *r, ngx_http_mruby
 
     ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
-    if (!cached) {
-        state->ai = mrb_gc_arena_save(state->mrb);
-    }
-
     ngx_http_mruby_push_request(r);
+
+    state->ai = mrb_gc_arena_save(state->mrb);
+
     mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
 
     mrb_gc_arena_restore(state->mrb, state->ai);
-    mrb_gc_protect(state->mrb, ctx->table);
+    //mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
         ngx_http_mruby_irep_clean(state, code);
@@ -420,21 +417,20 @@ ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_s
 
     ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
-    if (!cached) {
-        state->ai = mrb_gc_arena_save(state->mrb);
-    }
+    ngx_http_mruby_push_request(r);
+
+    state->ai = mrb_gc_arena_save(state->mrb);
 
     ARGV = mrb_ary_new_capa(state->mrb, 1);
 
     mrb_ary_push(state->mrb, ARGV, mrb_str_new(state->mrb, (char *)ctx->filter_ctx.body, ctx->filter_ctx.body_length));
     mrb_define_global_const(state->mrb, "ARGV", ARGV);
 
-    ngx_http_mruby_push_request(r);
     mrb_result = mrb_run(state->mrb, code->proc, mrb_top_self(state->mrb));
     if (state->mrb->exc) {
         ngx_http_mruby_raise_error(state, code, r);
         mrb_gc_arena_restore(state->mrb, state->ai);
-        mrb_gc_protect(state->mrb, ctx->table);
+        //mrb_gc_protect(state->mrb, ctx->table);
         if (!cached) {
             ngx_http_mruby_irep_clean(state, code);
         }
@@ -447,7 +443,7 @@ ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_s
     ctx->filter_ctx.body_length = RSTRING_LEN(mrb_result);
 
     mrb_gc_arena_restore(state->mrb, state->ai);
-    mrb_gc_protect(state->mrb, ctx->table);
+    //mrb_gc_protect(state->mrb, ctx->table);
 
     if (!cached) {
         ngx_http_mruby_irep_clean(state, code);

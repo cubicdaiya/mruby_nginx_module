@@ -48,7 +48,6 @@ static ngx_int_t ngx_http_mruby_gencode_state(ngx_http_mruby_state_t *state, ngx
         return NGX_ERROR;
     }
 
-    state->ai = mrb_gc_arena_save(state->mrb);
     p         = mrb_parse_file(state->mrb, mrb_file, NULL);
     code->proc   = mrb_generate_code(state->mrb, p);
 
