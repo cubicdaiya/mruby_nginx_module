@@ -285,11 +285,8 @@ ngx_int_t ngx_http_mruby_run_conf(ngx_conf_t *cf, ngx_http_mruby_state_t *state,
 ngx_int_t ngx_http_mruby_run_args(ngx_http_request_t *r, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_flag_t cached,
                            ngx_http_variable_value_t *args, size_t nargs, ngx_str_t *result)
 {
-    ngx_http_mruby_ctx_t *ctx;
     ngx_uint_t i;
     mrb_value ARGV, mrb_result;
-
-    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
     state->ai = mrb_gc_arena_save(state->mrb);
 
@@ -385,10 +382,6 @@ ngx_int_t ngx_http_mruby_run(ngx_http_request_t *r, ngx_http_mruby_state_t *stat
 
 ngx_int_t ngx_http_mruby_run_header_filter(ngx_http_request_t *r, ngx_http_mruby_state_t *state, ngx_http_mruby_code_t *code, ngx_flag_t cached)
 {
-    ngx_http_mruby_ctx_t *ctx;
-
-    ctx = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
-
     ngx_http_mruby_push_request(r);
 
     state->ai = mrb_gc_arena_save(state->mrb);
