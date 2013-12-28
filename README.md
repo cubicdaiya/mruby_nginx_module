@@ -25,9 +25,9 @@ Please see [Documents](http://cubicdaiya.github.io/mruby_nginx_module/).
 
 ## Dependencies
 
-Minumum Requre
+Minumum Require
   - [nginx](http://nginx.org/download/) - you shoukd be able that have all library dependecy to build nginx from source
-  - [mruby](https://github.com/mruby/mruby) - ruby requre
+  - [mruby](https://github.com/mruby/mruby) - ruby require
 
 Optional
   - [mgem](http://blog.mruby.sh/201301040627.html) - mruby low level gems
@@ -36,7 +36,7 @@ Optional
 
 ## Build
 
-#### Minumum Requre
+#### Minumum Require
 **mruby+mruby_nginx_module**
 ```sh
 $ git clone https://github.com/cubicdaiya/mruby_nginx_module.git
