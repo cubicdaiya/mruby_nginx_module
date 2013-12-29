@@ -108,9 +108,9 @@ If you using various value-types(Array, String, Hash, etc), you may use Nginx::C
 <p><code>Nginx::Headers_in</code> is the class for assigning new header and referring to headers of a request.</p>
 <div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">hin</span>   <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Headers_in</span><span class="o">.</span><span class="n">new</span>
 
-<span class="n">host</span>  <span class="o">=</span> <span class="n">hin</span><span class="o">[</span><span class="s2">&quot;Host&quot;</span><span class="o">]</span>         <span class="c1"># Host header</span>
-<span class="n">agent</span> <span class="o">=</span> <span class="n">hin</span><span class="o">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="o">]</span>   <span class="c1"># User-Agent header</span>
-<span class="nb">hash</span>  <span class="o">=</span> <span class="n">hin</span><span class="o">.</span><span class="n">headers_in_hash</span> <span class="c1"># all headers with hash table</span>
+<span class="n">host</span>  <span class="o">=</span> <span class="n">hin</span><span class="o">[</span><span class="s2">&quot;Host&quot;</span><span class="o">]</span>       <span class="c1"># Host header</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">hin</span><span class="o">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="o">]</span> <span class="c1"># User-Agent header</span>
+<span class="nb">hash</span>  <span class="o">=</span> <span class="n">hin</span><span class="o">.</span><span class="n">all</span>           <span class="c1"># all headers with hash table</span>
 
 <span class="n">hin</span><span class="o">[</span><span class="s2">&quot;Host&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
 </code></pre></div>
