@@ -265,13 +265,13 @@ void ngx_http_mruby_request_class_init(mrb_state *mrb, struct RClass *class)
 
     class_headers_in = mrb_define_class_under(mrb, class, "Headers_in", mrb->object_class);
 
-    mrb_define_method(mrb, class_headers_in, "[]",              ngx_http_mruby_get_request_headers_in,      MRB_ARGS_ANY());
-    mrb_define_method(mrb, class_headers_in, "[]=",             ngx_http_mruby_set_request_headers_in,      MRB_ARGS_ANY());
-    mrb_define_method(mrb, class_headers_in, "headers_in_hash", ngx_http_mruby_get_request_headers_in_hash, MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_headers_in, "[]",  ngx_http_mruby_get_request_headers_in,      MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_headers_in, "[]=", ngx_http_mruby_set_request_headers_in,      MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_headers_in, "all", ngx_http_mruby_get_request_headers_in_hash, MRB_ARGS_ANY());
 
     class_headers_out = mrb_define_class_under(mrb, class, "Headers_out", mrb->object_class);
 
-    mrb_define_method(mrb, class_headers_out, "[]",               ngx_http_mruby_get_request_headers_out,      MRB_ARGS_ANY());
-    mrb_define_method(mrb, class_headers_out, "[]=",              ngx_http_mruby_set_request_headers_out,      MRB_ARGS_ANY());
-    mrb_define_method(mrb, class_headers_out, "headers_out_hash", ngx_http_mruby_get_request_headers_out_hash, MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_headers_out, "[]",  ngx_http_mruby_get_request_headers_out,      MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_headers_out, "[]=", ngx_http_mruby_set_request_headers_out,      MRB_ARGS_ANY());
+    mrb_define_method(mrb, class_headers_out, "all", ngx_http_mruby_get_request_headers_out_hash, MRB_ARGS_ANY());
 }
