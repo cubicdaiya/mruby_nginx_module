@@ -67,9 +67,9 @@
 </code></pre></div>
 <h2 id="toc_2">Dependencies</h2>
 
-<p>Minumum Requre
+<p>Minumum Require
   - <a href="http://nginx.org/download/">nginx</a> - you shoukd be able that have all library dependecy to build nginx from source
-  - <a href="https://github.com/mruby/mruby">mruby</a> - ruby requre</p>
+  - <a href="https://github.com/mruby/mruby">mruby</a> - ruby require</p>
 
 <p>Optional
   - <a href="http://blog.mruby.sh/201301040627.html">mgem</a> - mruby low level gems
@@ -78,7 +78,7 @@
 
 <h2 id="toc_3">Install</h2>
 
-<h4 id="toc_4">Minumum Requre</h4>
+<h4 id="toc_4">Minumum Require</h4>
 
 <p><strong>mruby+mruby_nginx_module</strong></p>
 <div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span>git clone https://github.com/cubicdaiya/mruby_nginx_module.git
@@ -91,7 +91,7 @@
 <p><strong>nginx+mruby_nginx_module</strong></p>
 <div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span><span class="c"># download and unpack stable nginx version</span>
 <span class="nv">$ </span><span class="nb">cd </span>nginx-1.4.1 <span class="c"># for eaxmple</span>
-<span class="nv">$ </span>./configure --with-pcre --add-module<span class="o">=</span>../mruby_nginx_module
+<span class="nv">$ </span>./configure --add-module<span class="o">=</span>../mruby_nginx_module
 <span class="nv">$ </span>make
 <span class="nv">$ </span>sudo make install
 </code></pre></div>
@@ -108,7 +108,7 @@
 </code></pre></div>
 <p><strong>+nginx-echo-module+ngx_devel_kit</strong></p>
 <div class="highlight"><pre><code class="sh language-sh" data-lang="sh"><span class="nv">$ </span><span class="c"># download and unpack stable nginx version</span>
-<span class="nv">$ </span><span class="nb">cd </span>nginx-1.4.1 <span class="c"># for eaxmple</span>
+<span class="nv">$ </span><span class="nb">cd </span>nginx-1.4.4 <span class="c"># for eaxmple</span>
 <span class="nv">$ </span>./configure --with-pcre-jit --add-module<span class="o">=</span>../nginx-echo-module <span class="se">\</span>
 --add-module<span class="o">=</span>../mruby_nginx_module --add-module<span class="o">=</span>../ngx_devel_kit
 <span class="nv">$ </span>make

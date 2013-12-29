@@ -48,14 +48,14 @@
 					<p><strong>mruby_nginx_module&#39;s</strong> classes are following.</p>
 
 <ul>
-<li><a href="Classes#nginxrequest">Nginx::Request</a></li>
-<li><a href="Classes#nginxheaders_in">Nginx::Headers_in</a></li>
-<li><a href="Classes#nginxheaders_out">Nginx::Headers_out</a></li>
-<li><a href="Classes#nginxcontext">Nginx::Context</a></li>
-<li><a href="Classes#nginxtime">Nginx::Time</a></li>
-<li><a href="Classes#nginxdigest">Nginx::Digest</a></li>
-<li><a href="Classes#nginxbase64">Nginx::Base64</a></li>
-<li><a href="Classes#nginxvar">Nginx::Var</a></li>
+<li><a href="classes.html#toc_0">Nginx::Request</a></li>
+<li><a href="classes.html#toc_1">Nginx::Headers_in</a></li>
+<li><a href="classes.html#toc_2">Nginx::Headers_out</a></li>
+<li><a href="classes.html#toc_3">Nginx::Context</a></li>
+<li><a href="classes.html#toc_4">Nginx::Time</a></li>
+<li><a href="classes.html#toc_12">Nginx::Digest</a></li>
+<li><a href="classes.html#toc_19">Nginx::Base64</a></li>
+<li><a href="classes.html#toc_22">Nginx::Var</a></li>
 </ul>
 
 <h2 id="toc_0">Nginx::Request</h2>
@@ -78,7 +78,7 @@ The members of <code>Nginx::Request</code> are following.</p>
 </ul>
 
 <p>Following is the example for assigning a value to <code>content_type</code>.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">r</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Request</span><span class="o">.</span><span class="n">new</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">r</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Request</span><span class="o">.</span><span class="n">new</span>
 <span class="n">r</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s2">&quot;text/plain&quot;</span>
 </code></pre></div>
 <p>The member <code>var</code> is special. This is alias for assigning a value and referring to nginx&#39;s variables.</p>
@@ -97,7 +97,7 @@ bokko
 <span class="err">$</span>
 </code></pre></div>
 <p><code>var</code> makes it possible to access nginx&#39;s all variables. But assigning a value to undefined variable produces a error.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">r</span>   <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Request</span><span class="o">.</span><span class="n">new</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">r</span>   <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Request</span><span class="o">.</span><span class="n">new</span>
 <span class="n">val</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">undefined_variable</span> <span class="c1"># error</span>
 </code></pre></div>
 <p><code>var</code> is very useful. But <code>var</code> can treat only string.
@@ -106,7 +106,7 @@ If you using various value-types(Array, String, Hash, etc), you may use Nginx::C
 <h2 id="toc_1">Nginx::Headers_in</h2>
 
 <p><code>Nginx::Headers_in</code> is the class for assigning new header and referring to headers of a request.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">hin</span>   <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Headers_in</span><span class="o">.</span><span class="n">new</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">hin</span>   <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Headers_in</span><span class="o">.</span><span class="n">new</span>
 
 <span class="n">host</span>  <span class="o">=</span> <span class="n">hin</span><span class="o">[</span><span class="s2">&quot;Host&quot;</span><span class="o">]</span>         <span class="c1"># Host header</span>
 <span class="n">agent</span> <span class="o">=</span> <span class="n">hin</span><span class="o">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="o">]</span>   <span class="c1"># User-Agent header</span>
@@ -118,10 +118,10 @@ If you using various value-types(Array, String, Hash, etc), you may use Nginx::C
 
 <p><code>Nginx::Headers_out</code> is the class for assigning new header and referring to headers of a response.
 Following is the example for setting <code>Expires</code> header.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">time</span>      <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">http_time</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">http_time</span><span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">time</span>      <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">http_time</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">http_time</span><span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
 
-<span class="n">hout</span>            <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Headers_out</span><span class="o">.</span><span class="n">new</span>
+<span class="n">hout</span>            <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Headers_out</span><span class="o">.</span><span class="n">new</span>
 <span class="n">hout</span><span class="o">[</span><span class="s2">&quot;Expires&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="n">http_time</span><span class="o">.</span><span class="n">to_s</span>
 </code></pre></div>
 <h2 id="toc_3">Nginx::Context</h2>
@@ -172,41 +172,41 @@ The functions of <code>Nginx::Time</code> are following.</p>
 <h3 id="toc_5">Nginx::Time.update</h3>
 
 <p>Nginx::Time.update updates Nginx&#39;s current time cache.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">update</span> <span class="c1"># update Nginx&#39;s current time cache</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">update</span> <span class="c1"># update Nginx&#39;s current time cache</span>
 </code></pre></div>
 <h3 id="toc_6">Nginx::Time.time</h3>
 
 <p>Nginx::Time.time returns current timestamp as epoch value.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">time</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">time</span> <span class="c1"># =&gt; epoch value</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">time</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">time</span> <span class="c1"># =&gt; epoch value</span>
 </code></pre></div>
 <h3 id="toc_7">Nginx::Time.http_time</h3>
 
 <p>Nginx::Time.http_time returns a formarted string as the http header time.</p>
 <div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">time</span> <span class="o">=</span> <span class="mi">1377710189</span>
-<span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">http_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="c1"># =&gt; Wed, 28 Aug 2013 17:16:29 GMT</span>
+<span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">http_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="c1"># =&gt; Wed, 28 Aug 2013 17:16:29 GMT</span>
 </code></pre></div>
 <h3 id="toc_8">Nginx::Time.cookie_time</h3>
 
 <p>Nginx::Time.cookie_time returns a formarted string as the cookie expiration time.</p>
 <div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">time</span> <span class="o">=</span> <span class="mi">1377710189</span>
-<span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">cookie_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="c1"># =&gt; Wed, 28-Aug-13 17:16:29 GMT</span>
+<span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">cookie_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="c1"># =&gt; Wed, 28-Aug-13 17:16:29 GMT</span>
 </code></pre></div>
 <h3 id="toc_9">Nginx::Time.utc_time</h3>
 
 <p>Nginx::Time.utc_time returns a formarted string as the UTC time by Nginx&#39;s current time cache.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">utc_time</span> <span class="c1"># =&gt; 2013-08-28 17:20:18</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">utc_time</span> <span class="c1"># =&gt; 2013-08-28 17:20:18</span>
 </code></pre></div>
 <h3 id="toc_10">Nginx::Time.localtime</h3>
 
 <p>Nginx::Time.localtime returns a formarted string as the local time by Nginx&#39;s current time cache.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">local_time</span> <span class="c1"># =&gt; 2013-08-28 17:20:18</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">local_time</span> <span class="c1"># =&gt; 2013-08-28 17:20:18</span>
 </code></pre></div>
 <h3 id="toc_11">Nginx::Time.parse_http_time</h3>
 
 <p>Nginx::Time.parse_http_time returns a epoch value with the http header time.</p>
 <div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">time</span>      <span class="o">=</span> <span class="mi">1377710189</span>
-<span class="n">http_time</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">http_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-<span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Time</span><span class="o">.</span><span class="n">parse_http_time</span><span class="p">(</span><span class="n">http_time</span><span class="p">)</span>  <span class="c1"># =&gt; 1377710189</span>
+<span class="n">http_time</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">http_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+<span class="no">Nginx</span><span class="o">::</span><span class="no">Time</span><span class="o">.</span><span class="n">parse_http_time</span><span class="p">(</span><span class="n">http_time</span><span class="p">)</span>  <span class="c1"># =&gt; 1377710189</span>
 </code></pre></div>
 <h2 id="toc_12">Nginx::Digest</h2>
 
@@ -225,20 +225,20 @@ The functions of <code>Nginx::Digest</code> are following.</p>
 <h3 id="toc_13">Nginx::Digest.md5</h3>
 
 <p>Nginx::Digest.md5 return a MD5 value of argument.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">md5</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span>
-<span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">md5</span><span class="p">)</span> <span class="c1"># =&gt; fe9749f7f1d1c8ec7f6ddd1f0521cdb0</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">md5</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span>
+<span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">md5</span><span class="p">)</span> <span class="c1"># =&gt; fe9749f7f1d1c8ec7f6ddd1f0521cdb0</span>
 </code></pre></div>
 <h3 id="toc_14">Nginx::Digest.sha1</h3>
 
 <p>Nginx::Digest.sha1 return a SHA1 value of argument.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">sha1</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">sha1</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span>
-<span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">sha1</span><span class="p">)</span> <span class="c1"># =&gt; cea3d1bca602a6017e9a02520e3d392ba6b7838d</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">sha1</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">sha1</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span>
+<span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">sha1</span><span class="p">)</span> <span class="c1"># =&gt; cea3d1bca602a6017e9a02520e3d392ba6b7838d</span>
 </code></pre></div>
 <h3 id="toc_15">Nginx::Digest.hmac_sha1</h3>
 
 <p>Nginx::Digest.hmac_sha1 return a HMAC_SHA1 value of argument.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">hmac_sha1</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">hmac_sha1</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">)</span>
-<span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">hmac_sha1</span><span class="p">)</span> <span class="c1"># =&gt; 104152c5bfdca07bc633eebd46199f0255c9f49d</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">hmac_sha1</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">hmac_sha1</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">)</span>
+<span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">hmac_sha1</span><span class="p">)</span> <span class="c1"># =&gt; 104152c5bfdca07bc633eebd46199f0255c9f49d</span>
 </code></pre></div>
 <p>This functions requires OpenSSL library. So you may add <code>--with-http_ssl_module</code> to <strong>configure</strong>.</p>
 
@@ -249,12 +249,12 @@ The functions of <code>Nginx::Digest</code> are following.</p>
 <h3 id="toc_17">Nginx::Digest.crc32_long</h3>
 
 <p>Nginx::Digest.crc32_long return a CRC32 digest value of argument.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">crc32_long</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span> <span class="c1"># =&gt; 1494474241</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">crc32_long</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span> <span class="c1"># =&gt; 1494474241</span>
 </code></pre></div>
 <h3 id="toc_18">Nginx::Digest.crc32_short</h3>
 
 <p>Nginx::Digest.crc32_short return a CRC32 digest value of argument.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Digest</span><span class="o">.</span><span class="n">crc32_short</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span> <span class="c1"># =&gt; 1494474241</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">crc32_short</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span> <span class="c1"># =&gt; 1494474241</span>
 </code></pre></div>
 <h2 id="toc_19">Nginx::Base64</h2>
 
@@ -269,13 +269,13 @@ The functions of <code>Nginx::Base64</code> are following.</p>
 <h3 id="toc_20">Nginx::Base64.encode</h3>
 
 <p>Nginx::Base64.encode return base64 encoded string of argument.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Base64</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span> <span class="c1"># =&gt; Ym9ra28=</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">::</span><span class="no">Base64</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span> <span class="c1"># =&gt; Ym9ra28=</span>
 </code></pre></div>
 <h3 id="toc_21">Nginx::Base64.decode</h3>
 
 <p>Nginx::Base64.decode return decoded string of base64 encoded argument.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">encoded</span> <span class="o">=</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Base64</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span>
-<span class="ss">Nginx</span><span class="p">:</span><span class="ss">:Base64</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span> <span class="c1"># =&gt; bokko</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">encoded</span> <span class="o">=</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">Base64</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;bokko&quot;</span><span class="p">)</span>
+<span class="no">Nginx</span><span class="o">::</span><span class="no">Base64</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span> <span class="c1"># =&gt; bokko</span>
 </code></pre></div>
 <h2 id="toc_22">Nginx::Var</h2>
 

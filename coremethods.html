@@ -73,14 +73,14 @@ Following is the example for mruby_nginx_module&#39;s &quot;Hello, World!&quot;.
 
 <p>Nginx.return sets the http status code for a response.</p>
 <div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">.</span><span class="n">rputs</span><span class="p">(</span><span class="s2">&quot;Hello, World!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="no">Nginx</span><span class="o">.</span><span class="n">return</span> <span class="ss">Nginx</span><span class="p">:</span><span class="ss">:HTTP_OK</span>
+<span class="no">Nginx</span><span class="o">.</span><span class="n">return</span> <span class="no">Nginx</span><span class="o">::</span><span class="no">HTTP_OK</span>
 </code></pre></div>
 <p><strong>Nginx.return does not terminate to execute a mruby script. So not call Nginx.return more than once.</strong></p>
 
 <h2 id="toc_2">Nginx.log</h2>
 
 <p>Nginx.log outputs a message to error.log.</p>
-<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="ss">Nginx</span><span class="p">:</span><span class="ss">:LOG_ERR</span><span class="p">,</span> <span class="s2">&quot;error message&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">Nginx</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="no">Nginx</span><span class="o">::</span><span class="no">LOG_ERR</span><span class="p">,</span> <span class="s2">&quot;error message&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="toc_3">Nginx.module_version</h2>
 
