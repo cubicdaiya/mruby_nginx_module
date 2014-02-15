@@ -97,7 +97,7 @@ ngx_int_t ngx_http_mruby_body_filter_handler(ngx_http_request_t *r, ngx_chain_t 
 
     rc = ngx_http_mruby_run_body_filter(r, mmcf->state, mlcf->body_filter_code, mlcf->cached);
     if (rc != NGX_OK) {
-        return rc;
+        return NGX_ERROR;
     }
 
     b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));
@@ -144,7 +144,7 @@ ngx_int_t ngx_http_mruby_body_filter_inline_handler(ngx_http_request_t *r, ngx_c
 
     rc = ngx_http_mruby_run_body_filter(r, mmcf->state, mlcf->body_filter_inline_code, 1);
     if (rc != NGX_OK) {
-        return rc;
+        return NGX_ERROR;
     }
 
     b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));

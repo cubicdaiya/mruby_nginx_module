@@ -397,7 +397,7 @@ ngx_int_t ngx_http_mruby_run_header_filter(ngx_http_request_t *r, ngx_http_mruby
 
     if (state->mrb->exc) {
         ngx_http_mruby_raise_error(state, code, r);
-        return NGX_HTTP_INTERNAL_SERVER_ERROR;
+        return NGX_ERROR;
     }
 
     return NGX_OK;
@@ -428,7 +428,7 @@ ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_s
         if (!cached) {
             ngx_http_mruby_irep_clean(state, code);
         }
-        return NGX_HTTP_INTERNAL_SERVER_ERROR;
+        return NGX_ERROR;
     }
     
     mrb_result = mrb_obj_as_string(state->mrb, mrb_result);
