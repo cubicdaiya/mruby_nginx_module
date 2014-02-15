@@ -407,6 +407,7 @@ ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_s
 {
     ngx_http_mruby_ctx_t *ctx;
     mrb_value ARGV, mrb_result;
+    size_t body_length;
 
     ctx  = ngx_http_get_module_ctx(r, ngx_http_mruby_module);
 
@@ -432,8 +433,12 @@ ngx_int_t ngx_http_mruby_run_body_filter(ngx_http_request_t *r, ngx_http_mruby_s
     
     mrb_result = mrb_obj_as_string(state->mrb, mrb_result);
 
-    ctx->filter_ctx.body        = (u_char *)RSTRING_PTR(mrb_result);
-    ctx->filter_ctx.body_length = RSTRING_LEN(mrb_result);
+    body_length = RSTRING_LEN(mrb_result);
+
+    if (body_length != 0) {
+        ctx->filter_ctx.body        = (u_char *)RSTRING_PTR(mrb_result);
+        ctx->filter_ctx.body_length = body_length;
+    }
 
     mrb_gc_arena_restore(state->mrb, state->ai);
     //mrb_gc_protect(state->mrb, ctx->table);
