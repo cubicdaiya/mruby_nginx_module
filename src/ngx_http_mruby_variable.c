@@ -146,7 +146,7 @@ static mrb_value ngx_http_mruby_variable_set_internal(mrb_state *mrb, mrb_value 
 
             v->set_handler(r, vv, v->data);
 
-            return mrb_str_new_cstr(mrb, (char *)val);
+            return mrb_str_new(mrb, (char *)val, vv->len);
         }
         if (v->flags & NGX_HTTP_VAR_INDEXED) {
             vv = &r->variables[v->index];
@@ -157,7 +157,7 @@ static mrb_value ngx_http_mruby_variable_set_internal(mrb_state *mrb, mrb_value 
             vv->data         = val;
             vv->len          = RSTRING_LEN(o);
 
-            return mrb_str_new_cstr(mrb, (char *)val);
+            return mrb_str_new(mrb, (char *)val, vv->len);
         }
         ngx_log_error(NGX_LOG_ERR
             , r->connection->log
