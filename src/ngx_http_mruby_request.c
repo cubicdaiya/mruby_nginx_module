@@ -231,7 +231,7 @@ static mrb_value ngx_http_mruby_get_request_var(mrb_state *mrb, mrb_value self)
 
     if (mrb_nil_p(iv_var)) {
         class_ngx = mrb_class_get(mrb, "Nginx");
-        class_var = (struct RClass*)mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_ngx), mrb_intern_cstr(mrb, "Var")));
+        class_var = (struct RClass*)mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_ngx), mrb_intern_lit(mrb, "Var")));
         iv_var    = mrb_obj_new(mrb, class_var, 0, NULL);
         mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@iv_var"), iv_var);
     }
