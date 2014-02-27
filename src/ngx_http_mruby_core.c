@@ -191,6 +191,11 @@ static mrb_value ngx_http_mruby_get_nginx_version(mrb_state *mrb, mrb_value self
     return mrb_str_new_lit(mrb, NGINX_VERSION);
 }
 
+static mrb_value ngx_http_mruby_get_nginx_configure(mrb_state *mrb, mrb_value self)
+{
+    return mrb_str_new_lit(mrb, NGX_CONFIGURE);
+}
+
 // like Nginx rewrite keywords
 // used like this:
 // => http code 3xx location in browser
@@ -532,5 +537,6 @@ void ngx_http_mruby_core_init(mrb_state *mrb, struct RClass *class)
     mrb_define_class_method(mrb, class, "log",            ngx_http_mruby_log,                   MRB_ARGS_ANY());
     mrb_define_class_method(mrb, class, "module_version", ngx_http_mruby_get_ngx_mruby_version, MRB_ARGS_NONE());
     mrb_define_class_method(mrb, class, "version",        ngx_http_mruby_get_nginx_version,     MRB_ARGS_NONE());
+    mrb_define_class_method(mrb, class, "configure",      ngx_http_mruby_get_nginx_configure,   MRB_ARGS_NONE());
     mrb_define_class_method(mrb, class, "redirect",       ngx_http_mruby_redirect,              MRB_ARGS_ANY());
 }
