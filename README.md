@@ -4,7 +4,8 @@ mruby module for nginx [![Build Status](https://travis-ci.org/cubicdaiya/mruby_n
 **mruby_nginx_module** is the powerful extension by mruby for nginx.
 
 ## Concept
-The concept of **mruby_nginx_module** is following.
+The concept of **mruby_nginx_module** is the following:
+
  * Give developers to develop nginx module by mruby
  * Usability that higher affinity with nginx
 
@@ -25,8 +26,8 @@ Please see [Documents](http://cubicdaiya.github.io/mruby_nginx_module/).
 
 ## Dependencies
 
-Minumum Require
-  - [nginx](http://nginx.org/download/) - you shoukd be able that have all library dependecy to build nginx from source
+Minimum Requirements
+  - [nginx](http://nginx.org/download/) - you should be able to have all library dependencies to build nginx from source
   - [mruby](https://github.com/mruby/mruby) - ruby require
 
 Optional
@@ -88,17 +89,17 @@ Change it if diferent in ```mruby_nginx_module/test/test.rb```
 **mruby_nginx_module** is forked from [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) at July 2013.
 
 Though I used to develop [ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) with ngx_mruby's developers,
-what I want to develop were gradually departured from what they want to develop.
+what I want to develop were gradually departed from what they want to develop.
 
 What I want to develop are as previously noted concepts.
 
  * Give developers by mruby to develop nginx module
  * Usability that higher affinity with nginx
 
-[ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) is a part of unified web server extension developing support institution(like mod_mruby).
+[ngx_mruby](https://github.com/matsumoto-r/ngx_mruby) is a part of a unified web server extension developing support institution(like mod_mruby).
 
 
-But what I want to develop is the product that is more specialized for nginx. 
+But what I want to develop is a product that is more specialized for nginx. 
 
 
 In detail, **mruby_nginx_modules** has the following features currently. 
